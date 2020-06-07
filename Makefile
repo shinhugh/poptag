@@ -3,6 +3,11 @@
 # Project root directory path (containing this Makefile)
 PATH_ROOT := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 
+# Object files
+OBJ := $(PATH_ROOT)/*.o
+# Executable files
+EXE := $(PATH_ROOT)/test
+
 # Compiler
 CC := g++
 # Compiler flags
@@ -17,7 +22,7 @@ default: test
 # Test program
 
 test: $(PATH_ROOT)/test.o
-	@echo "Building test program."
+	@echo "Building test program.."
 	@$(CC) -o $@ $(PATH_ROOT)/test.o
 	@echo "Complete."
 
@@ -25,6 +30,16 @@ test: $(PATH_ROOT)/test.o
 # Build object file (.cpp)
 
 %.o: %.cpp
-	@echo "Building $@."
+	@echo "Building $@.."
 	@$(CC) $(CFLAGS) -c -o $@ $<
+	@echo "Complete."
+
+# --------------------------------------------------
+# Remove build
+
+.PHONY: clean
+
+clean:
+	@echo "Removing build.."
+	@rm -f $(OBJ) $(EXE)
 	@echo "Complete."
