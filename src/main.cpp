@@ -21,15 +21,14 @@ int main() {
   std::cerr << "Thread initialized: Graphics\n";
 
   // TESTING PORTION START
-  bool ongoing = true;
-  while(ongoing) {
+  bool test_ongoing = true;
+  while(test_ongoing) {
     // Take input from user
     std::string user_input;
     std::cin >> user_input;
     // Quit
     if(user_input == "quit") {
-      // TODO: End game core thread
-      ongoing = false;
+      return 0;
     }
     // Send event to game core to wake up thread
     else if (user_input == "e") {
