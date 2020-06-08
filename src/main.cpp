@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include "game_core.h"
+#include "game_state.h"
 #include "graphics.h"
 
 // ------------------------------------------------------------
@@ -20,9 +21,12 @@ int main() {
   std::thread thread_graphics(graphics_ThreadStart);
   std::cerr << "Thread initialized: Graphics\n";
 
+
+
   // TESTING PORTION START
   bool test_ongoing = true;
-  unsigned int event_counter = 0;
+  bool state_bool = false;
+  unsigned int state_uint = 1;
   while(test_ongoing) {
     // Take input from user
     std::string user_input;
@@ -32,13 +36,25 @@ int main() {
       gameCore_ThreadStop();
       test_ongoing = false;
     }
-    // Send event to game core to wake up thread
-    else if (user_input == "e") {
-      gameCore_QueueEvent(event_counter);
-      event_counter++;
+    // Send update to game core to wake up thread
+    else if (user_input == "bool") {
+      GameStateUpdate_StateBool new_update;
+      new_update.value = state_bool;
+      state_bool = !state_bool;
+      gameCore_QueueUpdate(500, 0, &new_update,
+      sizeof(GameStateUpdate_StateBool));
+    }
+    else if (user_input == "uint") {
+      GameStateUpdate_StateUint new_update;
+      new_update.value = state_uint;
+      state_uint++;
+      gameCore_QueueUpdate(500, 1, &new_update,
+      sizeof(GameStateUpdate_StateUint));
     }
   }
   // TESTING PORTION FINISH
+
+
 
   // Wait until all threads exit
   thread_game_core.join();

@@ -24,10 +24,11 @@ default: game
 # --------------------------------------------------
 # Main executable
 
-game: $(PATH_SRC)/main.o $(PATH_SRC)/game_core.o $(PATH_SRC)/graphics.o
+game: $(PATH_SRC)/main.o $(PATH_SRC)/game_core.o $(PATH_SRC)/game_state.o \
+$(PATH_SRC)/graphics.o
 	@echo "Building main executable.."
 	@$(CC) $(LFLAGS) -o $@ $(PATH_SRC)/main.o $(PATH_SRC)/game_core.o \
-$(PATH_SRC)/graphics.o -pthread
+$(PATH_SRC)/game_state.o $(PATH_SRC)/graphics.o -pthread
 	@echo "Complete."
 
 # --------------------------------------------------
