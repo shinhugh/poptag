@@ -11,7 +11,9 @@ EXE := $(PATH_ROOT)/test
 # Compiler
 CC := g++
 # Compiler flags
-CFLAGS := -g -Wall
+CFLAGS := -g -Wall -I $(PATH_ROOT)/include
+# Linker flags
+LFLAGS := -L $(PATH_ROOT)/lib
 
 # --------------------------------------------------
 # Default target
@@ -23,7 +25,7 @@ default: test
 
 test: $(PATH_ROOT)/test.o
 	@echo "Building test program.."
-	@$(CC) -o $@ $(PATH_ROOT)/test.o
+	@$(CC) $(LFLAGS) -o $@ $(PATH_ROOT)/test.o -pthread -lglfw3 -lGL -ldl -lX11
 	@echo "Complete."
 
 # --------------------------------------------------
