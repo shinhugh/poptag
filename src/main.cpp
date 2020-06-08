@@ -22,6 +22,7 @@ int main() {
 
   // TESTING PORTION START
   bool test_ongoing = true;
+  unsigned int event_counter = 0;
   while(test_ongoing) {
     // Take input from user
     std::string user_input;
@@ -32,13 +33,8 @@ int main() {
     }
     // Send event to game core to wake up thread
     else if (user_input == "e") {
-      {
-        // Lock mutex
-        std::lock_guard<std::mutex> thread_lock(thread_game_core_mutex);
-        // Set awake flag to true
-        thread_game_core_awake = true;
-      }
-      thread_game_core_cv.notify_one();
+      gameCoreQueueEvent(event_counter);
+      event_counter++;
     }
   }
   // TESTING PORTION FINISH
