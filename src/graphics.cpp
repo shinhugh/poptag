@@ -2,6 +2,6 @@
 
 #include <GLFW/glfw3.h>
 
-void threadTaskGraphics() {
+void graphics_ThreadStart() {
 
 }

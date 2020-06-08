@@ -4,6 +4,6 @@
 #define GRAPHICS_H
 
 // Thread's top-level routine
-void threadTaskGraphics();
+void graphics_ThreadStart();
 
 #endif

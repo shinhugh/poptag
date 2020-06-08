@@ -28,6 +28,9 @@ static bool GameEventCompare(const GameEvent *, const GameEvent *);
 
 // Variables
 
+// Whether thread should be terminated
+bool kill_thread;
+
 // Mutex that locks the thread, making it "sleep"
 static std::mutex thread_game_core_mutex;
 
@@ -44,10 +47,7 @@ bool (*)(const GameEvent *, const GameEvent *)> event_queue(GameEventCompare);
 // ------------------------------------------------------------
 
 // Thread's top-level routine
-void threadTaskGameCore() {
-
-  // Whether game is ongoing
-  bool game_ongoing = true;
+void gameCore_ThreadStart() {
 
   /*
    * TODO:
@@ -60,8 +60,10 @@ void threadTaskGameCore() {
   std::unique_lock<std::mutex> thread_lock (thread_game_core_mutex,
   std::defer_lock);
 
+  kill_thread = false;
+
   // Handle events
-  while(game_ongoing) {
+  while(!kill_thread) {
 
     // Lock mutex (wait until lock is acquirable; proceed once acquired)
     thread_lock.lock();
@@ -82,23 +84,20 @@ void threadTaskGameCore() {
     }
 
     // Wake up and reacquire lock
-    std::cerr << "Game core thread has woken up\n"; // DEBUG
 
     // If woken up by notification, new event was added to queue
     if(thread_game_core_wake) {
       // Do nothing
-      std::cerr << "  Reason: Notification\n"; // DEBUG
     }
     // If woken up by timeout, next queued event is ready
     else {
-      std::cerr << "  Reason: Timeout\n"; // DEBUG
       // Get earliest event, which is the one that caused the timeout
-      GameEvent *currEvent = event_queue.top();
-      std::cerr << "  Event counter: "
-      + std::to_string(currEvent->event_counter) + "\n"; // DEBUG
+      GameEvent *curr_event = event_queue.top();
+      std::cerr << "Event counter: "
+      + std::to_string(curr_event->event_counter) + "\n"; // DEBUG
       // Remove event from queue and free memory
       event_queue.pop();
-      delete currEvent;
+      delete curr_event;
     }
 
     // Set wake flag to be false
@@ -107,18 +106,40 @@ void threadTaskGameCore() {
     thread_lock.unlock();
 
   }
+
 }
 
 // ------------------------------------------------------------
 
-void gameCoreQueueEvent(unsigned int event_counter) {
+void gameCore_ThreadStop() {
   {
     // Lock mutex
     std::lock_guard<std::mutex> thread_lock(thread_game_core_mutex);
-    // Queue new event for 3 seconds later
+    // Free memory
+    while(!event_queue.empty()) {
+      GameEvent *curr_event = event_queue.top();
+      event_queue.pop();
+      delete curr_event;
+    }
+    // Set thread termination flag
+    kill_thread = true;
+    // Set wake flag to true
+    thread_game_core_wake = true;
+    // Release lock by letting it go out of scope
+  }
+  thread_game_core_cv.notify_one();
+}
+
+// ------------------------------------------------------------
+
+void gameCore_QueueEvent(unsigned int event_counter) {
+  {
+    // Lock mutex
+    std::lock_guard<std::mutex> thread_lock(thread_game_core_mutex);
+    // Queue new event for 2 seconds later
     GameEvent *new_event = new GameEvent();
     new_event->time = std::chrono::system_clock::now()
-    + std::chrono::seconds(3);
+    + std::chrono::seconds(2);
     new_event->event_counter = event_counter;
     event_queue.push(new_event);
     // Set wake flag to true

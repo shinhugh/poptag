@@ -4,9 +4,12 @@
 #define GAME_CORE_H
 
 // Thread's top-level routine
-void threadTaskGameCore();
+void gameCore_ThreadStart();
+
+// Free all resources and terminate the thread
+void gameCore_ThreadStop();
 
 // Queue an event
-void gameCoreQueueEvent(unsigned int event_counter);
+void gameCore_QueueEvent(unsigned int event_counter);
 
 #endif

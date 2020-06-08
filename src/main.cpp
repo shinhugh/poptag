@@ -13,11 +13,11 @@ int main() {
 
   // Start thread that maintains game state and handles access/modification
   // requests
-  std::thread thread_game_core(threadTaskGameCore);
+  std::thread thread_game_core(gameCore_ThreadStart);
   std::cerr << "Thread initialized: Game core\n";
 
   // Start thread that handles graphics output
-  std::thread thread_graphics(threadTaskGraphics);
+  std::thread thread_graphics(graphics_ThreadStart);
   std::cerr << "Thread initialized: Graphics\n";
 
   // TESTING PORTION START
@@ -29,11 +29,12 @@ int main() {
     std::cin >> user_input;
     // Quit
     if(user_input == "quit") {
-      return 0;
+      gameCore_ThreadStop();
+      test_ongoing = false;
     }
     // Send event to game core to wake up thread
     else if (user_input == "e") {
-      gameCoreQueueEvent(event_counter);
+      gameCore_QueueEvent(event_counter);
       event_counter++;
     }
   }
