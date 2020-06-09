@@ -12,15 +12,16 @@ enum Terrain {ground, breakable, unbreakable};
 class Board {
 
 private:
-  unsigned int width;
-  unsigned int height;
+  unsigned int height, width;
   Terrain **terrain;
 
 public:
   Board(unsigned int, unsigned int);
   Board(const Board&);
-  operator=(const Board&);
+  Board& operator=(const Board&);
   ~Board();
+  unsigned int getHeight();
+  unsigned int getWidth();
   Terrain getTerrain(unsigned int, unsigned int);
   void detonateBomb(unsigned int, unsigned int, unsigned int);
 

@@ -55,6 +55,8 @@ Board& Board::operator=(const Board& src) {
     }
   }
 
+  return *this;
+
 }
 
 // ------------------------------------------------------------
@@ -66,6 +68,22 @@ Board::~Board() {
     delete[] this->terrain[y];
   }
   delete[] this->terrain;
+
+}
+
+// ------------------------------------------------------------
+
+unsigned int Board::getHeight() {
+
+  return this->height;
+
+}
+
+// ------------------------------------------------------------
+
+unsigned int Board::getWidth() {
+
+  return this->width;
 
 }
 

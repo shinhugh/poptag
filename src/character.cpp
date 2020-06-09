@@ -36,8 +36,8 @@ void Character::moveUp() {
   top_right_dest[1] = static_cast<unsigned int>(top_right[1]);
 
   // Check board terrain
-  if(this->board->terrain[top_left_dest[0]][top_left_dest[1]] == ground
-  && this->board->terrain[top_right_dest[0]][top_right_dest[1]] == ground) {
+  if(this->board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground
+  && this->board->getTerrain(top_right_dest[0], top_right_dest[1]) == ground) {
     // Can move freely
     this->y -= this->speed;
   } else {
@@ -65,9 +65,9 @@ void Character::moveRight() {
   bottom_right[1] = this->x + 0.5;
 
   // Movement should not take the character off the board
-  if(top_right[1] + this->speed >= this->board->width) {
+  if(top_right[1] + this->speed >= this->board->getWidth()) {
     // Place farthest right without going off the board
-    this->x = this->board->width - 0.5;
+    this->x = this->board->getWidth() - 0.5;
     return;
   }
 
@@ -82,8 +82,8 @@ void Character::moveRight() {
   + this->speed);
 
   // Check board terrain
-  if(this->board->terrain[top_right_dest[0]][top_right_dest[1]] == ground
-  && this->board->terrain[bottom_right_dest[0]][bottom_right_dest[1]]
+  if(this->board->getTerrain(top_right_dest[0], top_right_dest[1]) == ground
+  && this->board->getTerrain(bottom_right_dest[0], bottom_right_dest[1])
   == ground) {
     // Can move freely
     this->x += this->speed;
@@ -112,9 +112,9 @@ void Character::moveDown() {
   bottom_left[1] = this->x - 0.5;
 
   // Movement should not take the character off the board
-  if(bottom_right[0] + this->speed >= this->board->height) {
+  if(bottom_right[0] + this->speed >= this->board->getHeight()) {
     // Place farthest down without going off the board
-    this->y = this->board->height - 0.5;
+    this->y = this->board->getHeight() - 0.5;
     return;
   }
 
@@ -130,8 +130,10 @@ void Character::moveDown() {
   bottom_left_dest[1] = static_cast<unsigned int>(bottom_left[1]);
 
   // Check board terrain
-  if(this->board->terrain[bottom_right_dest[0]][bottom_right_dest[1]] == ground
-  && this->board->terrain[bottom_left_dest[0]][bottom_left_dest[1]] == ground) {
+  if(this->board->getTerrain(bottom_right_dest[0], bottom_right_dest[1])
+  == ground
+  && this->board->getTerrain(bottom_left_dest[0], bottom_left_dest[1])
+  == ground) {
     // Can move freely
     this->y += this->speed;
   } else {
@@ -175,8 +177,8 @@ void Character::moveLeft() {
   top_left_dest[1] = static_cast<unsigned int>(top_left[1] - this->speed);
 
   // Check board terrain
-  if(this->board->terrain[bottom_left_dest[0]][bottom_left_dest[1]] == ground
-  && this->board->terrain[top_left_dest[0]][top_left_dest[1]] == ground) {
+  if(this->board->getTerrain(bottom_left_dest[0], bottom_left_dest[1]) == ground
+  && this->board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground) {
     // Can move freely
     this->x -= this->speed;
   } else {
@@ -221,6 +223,8 @@ void Character::tick() {
       {
         this->moveLeft();
       }
+      break;
+    default:
       break;
   }
 
