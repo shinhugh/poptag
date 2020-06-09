@@ -12,6 +12,8 @@ GameState::GameState() {
 
 void GameState::internalUpdate() {
 
+  /*
+
   // Update ticks on all bombs
   for(unsigned int i = 0; i < bombs.size(); i++) {
     bombs.at(i).tick();
@@ -28,11 +30,15 @@ void GameState::internalUpdate() {
     }
   }
 
+  */
+
 }
 
 // ------------------------------------------------------------
 
-void GameState::externalUpdate(const EventData *event) {
+void GameState::externalUpdate(void *event_ptr) {
+
+  EventData *event = static_cast<EventData *>(event_ptr);
 
   // Check event type
   switch(event->type) {
@@ -40,7 +46,10 @@ void GameState::externalUpdate(const EventData *event) {
     // Test event
     case test:
       {
-        std::cerr << "Test event: " + std::to_string(event->test_data) + "\n";
+        TestEventData *data = static_cast<TestEventData *>(event->data);
+        std::cerr << "Test event: " + std::to_string(data->test_data) + "\n";
+
+        delete data;
       }
       break;
 

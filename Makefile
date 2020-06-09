@@ -7,7 +7,7 @@ PATH_CORE := $(PATH_SRC)/core
 PATH_GAME := $(PATH_SRC)/game
 
 # Object files
-OBJ := $(PATH_ROOT)/*.o $(PATH_SRC)/*.o
+OBJ := $(PATH_ROOT)/*.o $(PATH_SRC)/*.o $(PATH_CORE)/*.o $(PATH_GAME)/*.o
 # Executable files
 EXE := $(PATH_ROOT)/game
 

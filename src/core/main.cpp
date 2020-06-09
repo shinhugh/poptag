@@ -31,6 +31,7 @@ int main() {
     else if(input == "e") {
       EventData event;
       TestEventData *event_data = new TestEventData();
+      event_data->test_data = true;
       event.type = test;
       event.data = event_data;
       game.queueEvent(&event, sizeof(EventData));

@@ -20,19 +20,18 @@ struct TestEventData {
 
   bool test_data;
 
-}
+};
 
 // ------------------------------------------------------------
 
 class GameState {
 
 private:
-  std::vector<Bomb> bombs;
 
 public:
   GameState();
   void internalUpdate();
-  void externalUpdate(const EventData *);
+  void externalUpdate(void *);
 
 };
 
