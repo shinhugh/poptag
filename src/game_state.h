@@ -11,13 +11,11 @@
 class GameState {
 
 private:
-  bool test_state;
   std::vector<Bomb> bombs;
 
 public:
   GameState();
   void tickUpdate();
-  void updateTestState(bool);
   void placeBomb();
 
 };

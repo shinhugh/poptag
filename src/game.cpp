@@ -51,22 +51,6 @@ unsigned int Game::getTickDuration() {
 
 // ------------------------------------------------------------
 
-void Game::updateTestState(bool value) {
-
-  {
-    // Acquire mutex protecting game state
-    std::lock_guard<std::mutex> lock(this->state_mutex);
-
-    // Update test state
-    this->state.updateTestState(value);
-
-    // Release mutex by letting lock go out of scope
-  }
-
-}
-
-// ------------------------------------------------------------
-
 void Game::placeBomb() {
 
   {

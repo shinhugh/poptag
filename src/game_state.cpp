@@ -4,7 +4,7 @@
 
 // ------------------------------------------------------------
 
-GameState::GameState() : test_state(false) {
+GameState::GameState() {
 
 }
 
@@ -27,15 +27,6 @@ void GameState::tickUpdate() {
       i++;
     }
   }
-
-}
-
-// ------------------------------------------------------------
-
-void GameState::updateTestState(bool value) {
-
-  // Update test state
-  this->test_state = value;
 
 }
 

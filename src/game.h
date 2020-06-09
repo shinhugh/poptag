@@ -24,7 +24,6 @@ public:
   void exit();
   bool isExit();
   unsigned int getTickDuration();
-  void updateTestState(bool);
   void placeBomb();
 
 };
