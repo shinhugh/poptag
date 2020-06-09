@@ -3,11 +3,14 @@
 #ifndef BOMB_H
 #define BOMB_H
 
+#include "board.h"
+
 // ------------------------------------------------------------
 
 class Bomb {
 
 private:
+  Board *board;
   unsigned int y, x;
   unsigned int tick_detonate;
   unsigned int tick_age;
