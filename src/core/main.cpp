@@ -4,6 +4,7 @@
 #include <thread>
 #include <string>
 #include "game.h"
+#include "game_state.h"
 
 // Time interval between ticks, given in microseconds
 #define TICK_MICROSEC 1000
@@ -28,7 +29,11 @@ int main() {
       break;
     }
     else if(input == "e") {
-      game.placeBomb(0, 0);
+      EventData event;
+      TestEventData *event_data = new TestEventData();
+      event.type = test;
+      event.data = event_data;
+      game.queueEvent(&event, sizeof(EventData));
     }
   }
 

@@ -10,7 +10,7 @@ GameState::GameState() {
 
 // ------------------------------------------------------------
 
-void GameState::tickUpdate() {
+void GameState::internalUpdate() {
 
   // Update ticks on all bombs
   for(unsigned int i = 0; i < bombs.size(); i++) {
@@ -32,12 +32,18 @@ void GameState::tickUpdate() {
 
 // ------------------------------------------------------------
 
-void GameState::placeBomb(unsigned int y, unsigned int x) {
+void GameState::externalUpdate(const EventData *event) {
 
-  bombs.push_back(Bomb(y, x));
+  // Check event type
+  switch(event->type) {
 
-  // DEBUG
-  std::cerr << "Bomb placed.\n";
-  // DEBUG
+    // Test event
+    case test:
+      {
+        std::cerr << "Test event: " + std::to_string(event->test_data) + "\n";
+      }
+      break;
+
+  }
 
 }

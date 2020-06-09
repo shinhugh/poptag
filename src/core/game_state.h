@@ -4,7 +4,23 @@
 #define GAME_STATE_H
 
 #include <vector>
-#include "bomb.h"
+
+// ------------------------------------------------------------
+
+enum EventType {test};
+
+struct EventData {
+
+  EventType type;
+  void *data;
+
+};
+
+struct TestEventData {
+
+  bool test_data;
+
+}
 
 // ------------------------------------------------------------
 
@@ -15,8 +31,8 @@ private:
 
 public:
   GameState();
-  void tickUpdate();
-  void placeBomb(unsigned int, unsigned int);
+  void internalUpdate();
+  void externalUpdate(const EventData *);
 
 };
 
