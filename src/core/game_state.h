@@ -5,9 +5,11 @@
 
 #include <vector>
 
+#include "bomb.h"
+
 // ------------------------------------------------------------
 
-enum EventType {test};
+enum EventType {test, bomb};
 
 struct EventData {
 
@@ -16,9 +18,15 @@ struct EventData {
 
 };
 
-struct TestEventData {
+struct EventData_Test {
 
   bool test_data;
+
+};
+
+struct EventData_Bomb {
+
+  unsigned int y, x;
 
 };
 
@@ -27,6 +35,7 @@ struct TestEventData {
 class GameState {
 
 private:
+  std::vector<Bomb> bombs;
 
 public:
   GameState();

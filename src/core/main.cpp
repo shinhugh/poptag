@@ -30,9 +30,18 @@ int main() {
     }
     else if(input == "e") {
       EventData event;
-      TestEventData *event_data = new TestEventData();
+      EventData_Test *event_data = new EventData_Test();
       event_data->test_data = true;
       event.type = test;
+      event.data = event_data;
+      game.queueEvent(&event, sizeof(EventData));
+    }
+    else if(input == "b") {
+      EventData event;
+      EventData_Bomb *event_data = new EventData_Bomb();
+      event_data->y = 1;
+      event_data->x = 1;
+      event.type = bomb;
       event.data = event_data;
       game.queueEvent(&event, sizeof(EventData));
     }
