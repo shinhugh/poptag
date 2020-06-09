@@ -22,10 +22,11 @@ default: game
 # --------------------------------------------------
 # Main executable
 
-game: $(PATH_SRC)/main.o $(PATH_SRC)/game.o $(PATH_SRC)/game_state.o
+game: $(PATH_SRC)/main.o $(PATH_SRC)/game.o $(PATH_SRC)/game_state.o \
+$(PATH_SRC)/bomb.o
 	@echo "Building main executable.."
 	@$(CC) -o $@ $(PATH_SRC)/main.o $(PATH_SRC)/game.o $(PATH_SRC)/game_state.o \
--pthread
+$(PATH_SRC)/bomb.o -pthread
 	@echo "Complete."
 
 # --------------------------------------------------

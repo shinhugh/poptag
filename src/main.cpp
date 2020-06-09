@@ -5,8 +5,8 @@
 #include <string>
 #include "game.h"
 
-// Time interval between 2 ticks, given in microseconds
-#define TICK_MICROSEC 1000000
+// Time interval between ticks, given in microseconds
+#define TICK_MICROSEC 1000
 
 // ------------------------------------------------------------
 
@@ -28,7 +28,7 @@ int main() {
       break;
     }
     else if(input == "e") {
-      game.updateTestState(true);
+      game.placeBomb();
     }
   }
 
