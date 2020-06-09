@@ -1,38 +1,25 @@
 #include "game_state.h"
 
-#include <iostream> // DEBUG
+// ------------------------------------------------------------
 
-// Very basic states, just to test out everything
-static bool state_bool;
-static unsigned int state_uint;
+GameState::GameState() : test_state(false) {
+
+}
 
 // ------------------------------------------------------------
 
-void update_state(unsigned int update_type, void *update_data) {
+void GameState::tickUpdate() {
 
-  switch(update_type) {
+  // Update test state
+  this->test_state = !(this->test_state);
 
-    case 0:
-      {
-        GameStateUpdate_StateBool *update_data_parsed
-        = static_cast<GameStateUpdate_StateBool *>(update_data);
-        state_bool = update_data_parsed->value;
-      }
-      break;
+}
 
-    case 1:
-      {
-        GameStateUpdate_StateUint *update_data_parsed
-        = static_cast<GameStateUpdate_StateUint *>(update_data);
-        state_uint = update_data_parsed->value;
-      }
-      break;
+// ------------------------------------------------------------
 
-  }
+void GameState::updateTestState(bool value) {
 
-   // DEBUG START
-  std::cerr << "state_bool: " + std::to_string(state_bool) + "\n";
-  std::cerr << "state_uint: " + std::to_string(state_uint) + "\n";
-   // DEBUG FINISH
+  // Update test state
+  this->test_state = value;
 
 }

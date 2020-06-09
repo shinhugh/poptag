@@ -1,19 +1,18 @@
-// Ongoing state of the game
+// Ongoing state for a game instance
 
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
-// Type 0
-struct GameStateUpdate_StateBool {
-  bool value;
-};
+class GameState {
 
-// Type 1
-struct GameStateUpdate_StateUint {
-  unsigned int value;
-};
+private:
+  bool test_state;
 
-// Immediately update game state, specified by update type and data
-void update_state(unsigned int update_type, void *update_data);
+public:
+  GameState();
+  void tickUpdate();
+  void updateTestState(bool);
+
+};
 
 #endif
