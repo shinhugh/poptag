@@ -2,8 +2,8 @@
 
 // ------------------------------------------------------------
 
-Board::Board(unsigned int width, unsigned int height) :
-width(width), height(height) {
+Board::Board(unsigned int height, unsigned int width) :
+height(height), width(width) {
 
   // Allocate memory for terrain
   this->terrain = new Terrain *[this->height];
@@ -23,7 +23,7 @@ width(width), height(height) {
 // ------------------------------------------------------------
 
 Board::Board(const Board& src) :
-width(src.width), height(src.height) {
+height(src.height), width(src.width) {
 
   // Allocate memory for terrain
   this->terrain = new Terrain *[this->height];
@@ -45,8 +45,8 @@ width(src.width), height(src.height) {
 Board& Board::operator=(const Board& src) {
 
   // Copy width and height from source
-  this->width = src.width;
   this->height = src.height;
+  this->width = src.width;
 
   // Copy terrain from source
   for(unsigned int y = 0; y < this->height; y++) {
