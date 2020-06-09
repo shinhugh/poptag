@@ -8,14 +8,18 @@
 class Bomb {
 
 private:
+  unsigned int y, x;
   unsigned int tick_detonate;
   unsigned int tick_age;
+  unsigned int range;
 
 public:
-  Bomb();
+  Bomb(unsigned int, unsigned int);
   void tick();
-  unsigned int getTickAge();
   unsigned int getTickDetonate();
+  unsigned int getTickAge();
+  unsigned int getRange();
+  unsigned int setRange(unsigned int);
 
 };
 
