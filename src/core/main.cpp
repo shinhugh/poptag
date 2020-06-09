@@ -30,20 +30,22 @@ int main() {
     }
     else if(input == "e") {
       EventData event;
-      EventData_Test *event_data = new EventData_Test();
-      event_data->test_data = true;
+      EventData_Test event_data;
+      event_data.test_data = true;
       event.type = test;
-      event.data = event_data;
-      game.queueEvent(&event, sizeof(EventData));
+      event.data = &event_data;
+      event.data_size = sizeof(EventData_Test);
+      game.queueEvent(event);
     }
     else if(input == "b") {
       EventData event;
-      EventData_Bomb *event_data = new EventData_Bomb();
-      event_data->y = 1;
-      event_data->x = 1;
+      EventData_Bomb event_data;
+      event_data.y = 1;
+      event_data.x = 1;
       event.type = bomb;
-      event.data = event_data;
-      game.queueEvent(&event, sizeof(EventData));
+      event.data = &event_data;
+      event.data_size = sizeof(EventData_Bomb);
+      game.queueEvent(event);
     }
   }
 

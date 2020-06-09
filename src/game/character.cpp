@@ -191,9 +191,7 @@ void Character::moveLeft() {
 // ------------------------------------------------------------
 
 Character::Character(float y, float x, float speed) :
-y(y), x(x), speed(speed), dir_move(none), dir_face(down) {
-
-}
+y(y), x(x), speed(speed), dir_move(none), dir_face(down) {}
 
 // ------------------------------------------------------------
 

@@ -4,9 +4,7 @@
 
 // ------------------------------------------------------------
 
-GameState::GameState() {
-
-}
+GameState::GameState() {}
 
 // ------------------------------------------------------------
 
@@ -32,37 +30,26 @@ void GameState::internalUpdate() {
 
 // ------------------------------------------------------------
 
-void GameState::externalUpdate(void *event_ptr) {
-
-  EventData *event = static_cast<EventData *>(event_ptr);
+void GameState::externalUpdate(unsigned int type, void *event_data) {
 
   // Check event type
-  switch(event->type) {
+  switch(type) {
 
     // Test event
     case test:
       {
-
-        EventData_Test *data = static_cast<EventData_Test *>(event->data);
+        EventData_Test *data = static_cast<EventData_Test *>(event_data);
         std::cerr << "Test event: " + std::to_string(data->test_data) + "\n";
-
-        delete data;
-
       }
       break;
 
     // Bomb event
     case bomb:
       {
-
-        EventData_Bomb *data = static_cast<EventData_Bomb *>(event->data);
+        EventData_Bomb *data = static_cast<EventData_Bomb *>(event_data);
+        this->bombs.push_back(Bomb(data->y, data->x));
         std::cerr << "Bomb event: [" + std::to_string(data->y) + ", "
         + std::to_string(data->x) + "]\n";
-
-        this->bombs.push_back(Bomb(data->y, data->x));
-
-        delete data;
-
       }
       break;
 

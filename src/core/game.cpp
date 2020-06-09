@@ -5,10 +5,55 @@
 
 // ------------------------------------------------------------
 
-Game::Game(unsigned int tick_duration) :
-exit_flag(false), tick_duration(tick_duration) {
+EventData::EventData() :
+type(0), data(0), data_size(0) {}
+
+// ------------------------------------------------------------
+
+EventData::EventData(const EventData& src) :
+type(src.type), data_size(src.data_size) {
+
+  if(src.data) {
+    this->data = new unsigned char[this->data_size];
+    memcpy(this->data, src.data, this->data_size);
+  } else {
+    this->data = 0;
+  }
 
 }
+
+// ------------------------------------------------------------
+
+EventData& EventData::operator=(const EventData& src) {
+
+  this->type = src.type;
+  this->data_size = src.data_size;
+  if(this->data) {
+    delete[] (static_cast<unsigned char *>(this->data));
+  }
+  if(src.data) {
+    this->data = new unsigned char[this->data_size];
+    memcpy(this->data, src.data, this->data_size);
+  } else {
+    this->data = 0;
+  }
+
+}
+
+// ------------------------------------------------------------
+
+EventData::~EventData() {
+
+  if(this->data) {
+    delete[] (static_cast<unsigned char *>(this->data));
+  }
+
+}
+
+// ------------------------------------------------------------
+
+Game::Game(unsigned int tick_duration) :
+exit_flag(false), tick_duration(tick_duration) {}
 
 // ------------------------------------------------------------
 
@@ -19,7 +64,7 @@ void Game::tickUpdate() {
   while(!(this->event_queue.empty())) {
 
     // Next queued event
-    EventRequest event;
+    EventData event;
 
     {
       // Acquire mutex protecting event queue
@@ -37,13 +82,10 @@ void Game::tickUpdate() {
       std::lock_guard<std::mutex> lock(this->state_mutex);
 
       // Handle event
-      this->state.externalUpdate(event.data);
+      this->state.externalUpdate(event.type, event.data);
 
       // Release mutex by letting lock go out of scope
     }
-
-    // Free memory
-    delete[] (static_cast<unsigned char *>(event.data));
 
   }
 
@@ -64,16 +106,7 @@ void Game::tickUpdate() {
 
 // ------------------------------------------------------------
 
-void Game::queueEvent(void *data, unsigned int data_size) {
-
-  // Interpret data as array of bytes; make copy
-  unsigned char *data_bytes = new unsigned char[data_size];
-  memcpy(data_bytes, data, data_size);
-
-  // Create event instance
-  EventRequest event;
-  event.data = data_bytes;
-  event.data_size = data_size;
+void Game::queueEvent(const EventData& event) {
 
   {
     // Acquire mutex protecting event queue

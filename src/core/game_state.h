@@ -11,13 +11,6 @@
 
 enum EventType {test, bomb};
 
-struct EventData {
-
-  EventType type;
-  void *data;
-
-};
-
 struct EventData_Test {
 
   bool test_data;
@@ -40,7 +33,7 @@ private:
 public:
   GameState();
   void internalUpdate();
-  void externalUpdate(void *);
+  void externalUpdate(unsigned int, void *);
 
 };
 

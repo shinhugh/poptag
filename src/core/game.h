@@ -13,6 +13,27 @@ struct EventRequest {
 
   void *data;
   unsigned int data_size;
+  /*
+  EventRequest();
+  EventRequest(const EventRequest&);
+  EventRequest& operator=(const EventRequest&);
+  ~EventRequest();
+  */
+
+};
+
+// ------------------------------------------------------------
+
+struct EventData {
+
+  unsigned int type;
+  void *data;
+  unsigned int data_size;
+
+  EventData();
+  EventData(const EventData&);
+  EventData& operator=(const EventData&);
+  ~EventData();
 
 };
 
@@ -25,7 +46,7 @@ class Game {
 private:
   GameState state;
   std::mutex state_mutex;
-  std::queue<EventRequest> event_queue;
+  std::queue<EventData> event_queue;
   std::mutex event_queue_mutex;
   bool exit_flag;
   unsigned int tick_duration;
@@ -33,7 +54,7 @@ private:
 public:
   Game(unsigned int);
   void tickUpdate();
-  void queueEvent(void *, unsigned int);
+  void queueEvent(const EventData&);
   void exit();
   bool isExit();
   unsigned int getTickDuration();
