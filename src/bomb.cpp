@@ -3,7 +3,7 @@
 // ------------------------------------------------------------
 
 Bomb::Bomb(unsigned int y, unsigned int x) :
-tick_detonate(3000), tick_age(0), range(2), y(y), x(x) {
+y(y), x(x), tick_detonate(3000), tick_age(0), range(2) {
 
 }
 
@@ -41,7 +41,7 @@ unsigned int Bomb::getRange() {
 
 // ------------------------------------------------------------
 
-unsigned int Bomb::setRange(unsigned int range) {
+void Bomb::setRange(unsigned int range) {
 
   this->range = range;
 

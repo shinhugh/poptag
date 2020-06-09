@@ -22,7 +22,7 @@ public:
   unsigned int getTickDetonate();
   unsigned int getTickAge();
   unsigned int getRange();
-  unsigned int setRange(unsigned int);
+  void setRange(unsigned int);
 
 };
 
