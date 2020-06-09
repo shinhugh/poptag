@@ -27,6 +27,7 @@ private:
 public:
   Character(float, float, float);
   void tick();
+  void setDirMove(Direction);
 
 };
 

@@ -51,14 +51,14 @@ unsigned int Game::getTickDuration() {
 
 // ------------------------------------------------------------
 
-void Game::placeBomb() {
+void Game::placeBomb(unsigned int y, unsigned int x) {
 
   {
     // Acquire mutex protecting game state
     std::lock_guard<std::mutex> lock(this->state_mutex);
 
     // Update test state
-    this->state.placeBomb();
+    this->state.placeBomb(y, x);
 
     // Release mutex by letting lock go out of scope
   }
@@ -69,16 +69,22 @@ void Game::placeBomb() {
 
 void core_ThreadRoutine(Game& game) {
 
+  // Sleep for 1 tick
+  auto wakeup_time = std::chrono::system_clock::now()
+  + (game.getTickDuration() * std::chrono::microseconds(1));
+  std::this_thread::sleep_until(wakeup_time);
+  // Wake up and calculate when to wake up next
+  wakeup_time = std::chrono::system_clock::now()
+  + (game.getTickDuration() * std::chrono::microseconds(1));
+
   while(!game.isExit()) {
+    // Update state, reflecting passage of 1 tick
+    game.tickUpdate();
     // Sleep for 1 tick
-    auto wakeup_time = std::chrono::system_clock::now()
-    + (game.getTickDuration() * std::chrono::microseconds(1));
     std::this_thread::sleep_until(wakeup_time);
-    // If exit flag hasn't been set during sleep, update state
-    if(!game.isExit()) {
-      // Update state, reflecting passage of 1 tick
-      game.tickUpdate();
-    }
+    // Wake up and calculate when to wake up next
+    wakeup_time = std::chrono::system_clock::now()
+    + (game.getTickDuration() * std::chrono::microseconds(1));
   }
 
 }

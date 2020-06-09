@@ -16,7 +16,7 @@ private:
 public:
   GameState();
   void tickUpdate();
-  void placeBomb();
+  void placeBomb(unsigned int, unsigned int);
 
 };
 

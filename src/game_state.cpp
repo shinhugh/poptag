@@ -32,9 +32,9 @@ void GameState::tickUpdate() {
 
 // ------------------------------------------------------------
 
-void GameState::placeBomb() {
+void GameState::placeBomb(unsigned int y, unsigned int x) {
 
-  bombs.push_back(Bomb());
+  bombs.push_back(Bomb(y, x));
 
   // DEBUG
   std::cerr << "Bomb placed.\n";

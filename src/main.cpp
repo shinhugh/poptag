@@ -28,7 +28,7 @@ int main() {
       break;
     }
     else if(input == "e") {
-      game.placeBomb();
+      game.placeBomb(0, 0);
     }
   }
 
