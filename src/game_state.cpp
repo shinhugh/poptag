@@ -12,12 +12,21 @@ GameState::GameState() : test_state(false) {
 
 void GameState::tickUpdate() {
 
-  // Update test state
-  this->test_state = !(this->test_state);
+  // Update ticks on all bombs
+  for(unsigned int i = 0; i < bombs.size(); i++) {
+    bombs.at(i).tick();
+  }
 
-  // DEBUG
-  std::cerr << "test_state: " + std::to_string(this->test_state) + "\n";
-  // DEBUG
+  // Search for expired bombs
+  for(unsigned int i = 0; i < bombs.size();) {
+    if(bombs.at(i).getTickAge() >= bombs.at(i).getTickDetonate()) {
+      // Remove bomb from list
+      bombs.erase(bombs.begin() + i);
+      std::cerr << "BOOM!\n";
+    } else {
+      i++;
+    }
+  }
 
 }
 
@@ -28,8 +37,16 @@ void GameState::updateTestState(bool value) {
   // Update test state
   this->test_state = value;
 
+}
+
+// ------------------------------------------------------------
+
+void GameState::placeBomb() {
+
+  bombs.push_back(Bomb());
+
   // DEBUG
-  std::cerr << "test_state: " + std::to_string(this->test_state) + "\n";
+  std::cerr << "Bomb placed.\n";
   // DEBUG
 
 }

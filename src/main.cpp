@@ -5,12 +5,15 @@
 #include <string>
 #include "game.h"
 
+// Time interval between 2 ticks, given in microseconds
+#define TICK_MICROSEC 1000000
+
 // ------------------------------------------------------------
 
 int main() {
 
   // Game instance
-  Game game(1000000); // 1 tick = 1 second
+  Game game(TICK_MICROSEC);
 
   // Initialize core game thread
   std::thread thread_core(core_ThreadRoutine, std::ref(game));

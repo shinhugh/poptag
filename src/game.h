@@ -21,10 +21,11 @@ private:
 public:
   Game(unsigned int);
   void tickUpdate();
-  void updateTestState(bool);
   void exit();
   bool isExit();
   unsigned int getTickDuration();
+  void updateTestState(bool);
+  void placeBomb();
 
 };
 
