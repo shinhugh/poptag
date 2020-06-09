@@ -23,6 +23,8 @@ public:
   void tickUpdate();
   void updateTestState(bool);
   void exit();
+  bool isExit();
+  unsigned int getTickDuration();
 
 };
 
@@ -30,7 +32,7 @@ public:
 
 // Top-level routine for game core thread
 // Repeatedly update the state for a game instance
-void core_ThreadStart(Game&);
+void core_ThreadRoutine(Game&);
 
 // ------------------------------------------------------------
 

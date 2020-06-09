@@ -1,3 +1,4 @@
+#include <thread>
 #include <chrono>
 #include "game.h"
 
@@ -50,17 +51,34 @@ void Game::exit() {
 
 // ------------------------------------------------------------
 
-void core_ThreadStart(Game& game) {
+bool Game::isExit() {
 
-  game.exit_flag = false;
+  return this->exit_flag;
 
-  while(!game.exit_flag) {
+}
+
+// ------------------------------------------------------------
+
+unsigned int Game::getTickDuration() {
+
+  return this->tick_duration;
+
+}
+
+// ------------------------------------------------------------
+
+void core_ThreadRoutine(Game& game) {
+
+  while(!game.isExit()) {
     // Sleep for 1 tick
     auto wakeup_time = std::chrono::system_clock::now()
-    + (game.tick_duration * std::chrono::microseconds(1));
+    + (game.getTickDuration() * std::chrono::microseconds(1));
     std::this_thread::sleep_until(wakeup_time);
-    // Update state, reflecting passage of 1 tick
-    game.tickUpdate();
+    // If exit flag hasn't been set during sleep, update state
+    if(!game.isExit()) {
+      // Update state, reflecting passage of 1 tick
+      game.tickUpdate();
+    }
   }
 
 }
