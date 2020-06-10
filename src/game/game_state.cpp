@@ -68,14 +68,24 @@ void GameState::externalUpdate(unsigned int type, void *event_data) {
 
 void GameState::drawState() {
 
-  std::cerr << "\n+";
+  std::cerr << "\n  ";
   for(unsigned int x = 0; x < this->board.getWidth(); x++) {
+    if(x > 0) {
+      std::cerr << " ";
+    }
+    std::cerr << std::to_string(x);
+  }
+  std::cerr << "\n +";
+  for(unsigned int x = 0; x < 2 * this->board.getWidth() - 1; x++) {
     std::cerr << "-";
   }
   std::cerr << "+\n";
   for(unsigned int y = 0; y < this->board.getHeight(); y++) {
-    std::cerr << "|";
+    std::cerr << std::to_string(y) + "|";
     for(unsigned int x = 0; x < this->board.getWidth(); x++) {
+      if(x > 0) {
+        std::cerr << "|";
+      }
       switch(this->board.getTerrain(y, x)) {
         case ground:
           {
@@ -109,7 +119,7 @@ void GameState::drawState() {
     std::cerr << "|\n";
   }
   std::cerr << "+";
-  for(unsigned int x = 0; x < this->board.getWidth(); x++) {
+  for(unsigned int x = 0; x < 2 * this->board.getWidth() - 1; x++) {
     std::cerr << "-";
   }
   std::cerr << "+\n\n";
