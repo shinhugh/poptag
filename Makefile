@@ -24,13 +24,25 @@ default: game
 # --------------------------------------------------
 # Main executable
 
-game: $(PATH_CORE)/main.o $(PATH_CORE)/game.o $(PATH_CORE)/event_data.o \
-$(PATH_GAME)/game_state.o $(PATH_GAME)/board.o $(PATH_GAME)/character.o \
-$(PATH_GAME)/bomb.o
+game: \
+$(PATH_CORE)/main.o \
+$(PATH_CORE)/game.h $(PATH_CORE)/game.o \
+$(PATH_CORE)/input.h $(PATH_CORE)/input.o \
+$(PATH_CORE)/event_data.h $(PATH_CORE)/event_data.o \
+$(PATH_GAME)/game_state.h $(PATH_GAME)/game_state.o \
+$(PATH_GAME)/board.h $(PATH_GAME)/board.o \
+$(PATH_GAME)/character.h $(PATH_GAME)/character.o \
+$(PATH_GAME)/bomb.h $(PATH_GAME)/bomb.o
 	@echo "Building main executable.."
-	@$(CC) -o $@ $(PATH_CORE)/main.o $(PATH_CORE)/game.o \
-$(PATH_CORE)/event_data.o $(PATH_GAME)/game_state.o $(PATH_GAME)/board.o \
-$(PATH_GAME)/character.o $(PATH_GAME)/bomb.o -pthread
+	@$(CC) -o $@ $(PATH_CORE)/main.o \
+$(PATH_CORE)/game.o \
+$(PATH_CORE)/input.o \
+$(PATH_CORE)/event_data.o \
+$(PATH_GAME)/game_state.o \
+$(PATH_GAME)/board.o \
+$(PATH_GAME)/character.o \
+$(PATH_GAME)/bomb.o \
+-pthread
 	@echo "Complete."
 
 # --------------------------------------------------

@@ -22,11 +22,12 @@ int main() {
   std::cerr << "Thread initialized: Game core\n";
 
   // Initialize user input thread
-  std::thread thread_core(input_ThreadRoutine, std::ref(game));
+  std::thread thread_input(input_ThreadRoutine, std::ref(game));
   std::cerr << "Thread initialized: User input\n";
 
   // Wait until all threads exit
   thread_core.join();
+  thread_input.join();
 
   return 0;
 
