@@ -81,6 +81,16 @@ void GameState::drawState() {
   }
   std::cerr << "+\n";
   for(unsigned int y = 0; y < this->board.getHeight(); y++) {
+    if(y > 0) {
+      std::cerr << " |";
+      for(unsigned int x = 0; x < this->board.getWidth(); x++) {
+        if(x > 0) {
+          std::cerr << "+";
+        }
+        std::cerr << "-";
+      }
+      std::cerr << "|\n";
+    }
     std::cerr << std::to_string(y) + "|";
     for(unsigned int x = 0; x < this->board.getWidth(); x++) {
       if(x > 0) {
@@ -118,7 +128,7 @@ void GameState::drawState() {
     }
     std::cerr << "|\n";
   }
-  std::cerr << "+";
+  std::cerr << " +";
   for(unsigned int x = 0; x < 2 * this->board.getWidth() - 1; x++) {
     std::cerr << "-";
   }
