@@ -5,7 +5,8 @@
 
 // ------------------------------------------------------------
 
-GameState::GameState() {}
+GameState::GameState() :
+board(BOARD_HEIGHT, BOARD_WIDTH) {}
 
 // ------------------------------------------------------------
 
@@ -60,5 +61,57 @@ void GameState::externalUpdate(unsigned int type, void *event_data) {
       break;
 
   }
+
+}
+
+// ------------------------------------------------------------
+
+void GameState::drawState() {
+
+  std::cerr << "\n+";
+  for(unsigned int x = 0; x < this->board.getWidth(); x++) {
+    std::cerr << "-";
+  }
+  std::cerr << "+\n";
+  for(unsigned int y = 0; y < this->board.getHeight(); y++) {
+    std::cerr << "|";
+    for(unsigned int x = 0; x < this->board.getWidth(); x++) {
+      switch(this->board.getTerrain(y, x)) {
+        case ground:
+          {
+            bool bomb_here = false;
+            for(unsigned int i = 0; i < this->bombs.size(); i++) {
+              if(this->bombs.at(i).getY() == y
+              && this->bombs.at(i).getX() == x) {
+                bomb_here = true;
+                break;
+              }
+            }
+            if(bomb_here) {
+              std::cerr << "B";
+            } else {
+              std::cerr << " ";
+            }
+          }
+          break;
+        case breakable:
+          {
+            std::cerr << "O";
+          }
+          break;
+        case unbreakable:
+          {
+            std::cerr << "X";
+          }
+          break;
+      }
+    }
+    std::cerr << "|\n";
+  }
+  std::cerr << "+";
+  for(unsigned int x = 0; x < this->board.getWidth(); x++) {
+    std::cerr << "-";
+  }
+  std::cerr << "+\n\n";
 
 }

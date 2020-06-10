@@ -11,6 +11,14 @@ exit_flag(false), tick_duration(tick_duration) {}
 
 void Game::tickUpdate() {
 
+  // DEBUG: Print state to stderr
+  static unsigned int tick_count = 0;
+  if(tick_count % 1000 == 0) {
+    this->state.drawState();
+  }
+  tick_count++;
+  // DEBUG
+
   // Update state with respect to external events
 
   while(!(this->event_queue.empty())) {

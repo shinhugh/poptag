@@ -17,11 +17,13 @@ private:
 
 public:
   Bomb(unsigned int, unsigned int, unsigned int, unsigned int);
-  void tick();
+  unsigned int getY();
+  unsigned int getX();
   unsigned int getTickDetonate();
   unsigned int getTickAge();
   unsigned int getRange();
   void setRange(unsigned int);
+  void tick();
 
 };
 

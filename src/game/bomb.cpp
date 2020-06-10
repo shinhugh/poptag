@@ -8,9 +8,17 @@ y(y), x(x), tick_detonate(tick_detonate), tick_age(0), range(range) {}
 
 // ------------------------------------------------------------
 
-void Bomb::tick() {
+unsigned int Bomb::getY() {
 
-  this->tick_age++;
+  return this->y;
+
+}
+
+// ------------------------------------------------------------
+
+unsigned int Bomb::getX() {
+
+  return this->x;
 
 }
 
@@ -43,5 +51,13 @@ unsigned int Bomb::getRange() {
 void Bomb::setRange(unsigned int range) {
 
   this->range = range;
+
+}
+
+// ------------------------------------------------------------
+
+void Bomb::tick() {
+
+  this->tick_age++;
 
 }

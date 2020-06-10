@@ -3,6 +3,9 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#define BOARD_HEIGHT 10
+#define BOARD_WIDTH 10
+
 // ------------------------------------------------------------
 
 enum Terrain {ground, breakable, unbreakable};
