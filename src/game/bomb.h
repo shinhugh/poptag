@@ -10,14 +10,13 @@
 class Bomb {
 
 private:
-  Board *board;
   unsigned int y, x;
   unsigned int tick_detonate;
   unsigned int tick_age;
   unsigned int range;
 
 public:
-  Bomb(unsigned int, unsigned int);
+  Bomb(unsigned int, unsigned int, unsigned int, unsigned int);
   void tick();
   unsigned int getTickDetonate();
   unsigned int getTickAge();

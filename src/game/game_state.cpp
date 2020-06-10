@@ -36,21 +36,26 @@ void GameState::externalUpdate(unsigned int type, void *event_data) {
   // Check event type
   switch(type) {
 
-    // Test event
+    // Test
     case test:
       {
         EventData_Test *data = static_cast<EventData_Test *>(event_data);
-        std::cerr << "Test event: " + std::to_string(data->test_data) + "\n";
+        std::cerr << "Test: " + data->message + "\n";
       }
       break;
 
-    // Bomb event
-    case bomb:
+    // Place bomb
+    case placeBomb:
       {
-        EventData_Bomb *data = static_cast<EventData_Bomb *>(event_data);
-        this->bombs.push_back(Bomb(data->y, data->x));
-        std::cerr << "Bomb event: [" + std::to_string(data->y) + ", "
-        + std::to_string(data->x) + "]\n";
+        // Parse event
+        EventData_PlaceBomb *data
+        = static_cast<EventData_PlaceBomb *>(event_data);
+        // Add bomb
+        this->bombs.push_back(Bomb(data->y, data->x, data->tick_detonate,
+        data->range));
+        // Log
+        std::cerr << "Bomb placed at: (" + std::to_string(data->y) + ", "
+        + std::to_string(data->x) + ")\n";
       }
       break;
 

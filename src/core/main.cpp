@@ -30,21 +30,23 @@ int main() {
       game.exit();
       break;
     }
-    else if(input == "e") {
+    else if(input == "test") {
       EventData event;
       EventData_Test event_data;
-      event_data.test_data = true;
+      event_data.message = "Hello world!";
       event.setType(test);
       event.setData(&event_data, sizeof(EventData_Test));
       game.queueEvent(event);
     }
-    else if(input == "b") {
+    else if(input == "bomb") {
       EventData event;
-      EventData_Bomb event_data;
+      EventData_PlaceBomb event_data;
       event_data.y = 1;
       event_data.x = 1;
-      event.setType(bomb);
-      event.setData(&event_data, sizeof(EventData_Bomb));
+      event_data.tick_detonate = 1000;
+      event_data.range = 1;
+      event.setType(placeBomb);
+      event.setData(&event_data, sizeof(EventData_PlaceBomb));
       game.queueEvent(event);
     }
   }

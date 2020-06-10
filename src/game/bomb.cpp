@@ -2,8 +2,9 @@
 
 // ------------------------------------------------------------
 
-Bomb::Bomb(unsigned int y, unsigned int x) :
-y(y), x(x), tick_detonate(3000), tick_age(0), range(2) {}
+Bomb::Bomb(unsigned int y, unsigned int x, unsigned int tick_detonate,
+unsigned int range) :
+y(y), x(x), tick_detonate(tick_detonate), tick_age(0), range(range) {}
 
 // ------------------------------------------------------------
 

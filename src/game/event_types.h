@@ -3,19 +3,23 @@
 #ifndef EVENT_TYPES_H
 #define EVENT_TYPES_H
 
+#include <string>
+
 // ------------------------------------------------------------
 
-enum EventType {test, bomb};
+enum EventType {test, placeBomb};
 
 struct EventData_Test {
 
-  bool test_data;
+  std::string message;
 
 };
 
-struct EventData_Bomb {
+struct EventData_PlaceBomb {
 
   unsigned int y, x;
+  unsigned int tick_detonate;
+  unsigned int range;
 
 };
 
