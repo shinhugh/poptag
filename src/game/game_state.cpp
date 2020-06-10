@@ -56,7 +56,7 @@ void GameState::externalUpdate(unsigned int type, void *event_data) {
         EventData_Initialize *data
         = static_cast<EventData_Initialize *>(event_data);
         this->characters.clear();
-        this->characters.push_back(Character(0, 0, 0.001));
+        this->characters.push_back(Character(&(this->board), 0.5, 0.5, 0.003));
       }
       break;
 

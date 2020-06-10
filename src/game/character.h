@@ -25,7 +25,7 @@ private:
   void moveLeft();
 
 public:
-  Character(float, float, float);
+  Character(Board*, float, float, float);
   float getY();
   float getX();
   void setDirMove(Direction);

@@ -26,7 +26,7 @@ void input_ThreadRoutine(Game& game) {
     }
 
     // Initialize
-    else if(input == "init") {
+    else if(input == "i") {
       EventData event;
       EventData_Initialize event_data;
       event_data.initialize = true;
@@ -61,10 +61,10 @@ void input_ThreadRoutine(Game& game) {
     // Move up
     else if(input == "w") {
       EventData event;
-      EventData_MoveStop event_data;
+      EventData_MoveUp event_data;
       event_data.character_id = 0;
-      event.setType(moveStop);
-      event.setData(&event_data, sizeof(EventData_MoveStop));
+      event.setType(moveUp);
+      event.setData(&event_data, sizeof(EventData_MoveUp));
       game.queueEvent(event);
     }
 

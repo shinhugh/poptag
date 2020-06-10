@@ -14,9 +14,9 @@ void Character::moveUp() {
   // Top left and top right corners of character's outer box
   float top_left[2];
   float top_right[2];
-  top_left[0] = this->y - 0.5;
-  top_left[1] = this->x - 0.5;
-  top_right[0] = this->y - 0.5;
+  top_left[0] = this->y > 0.5 ? this->y - 0.5 : 0;
+  top_left[1] = this->x > 0.5 ? this->x - 0.5 : 0;
+  top_right[0] = this->y > 0.5 ? this->y - 0.5 : 0;
   top_right[1] = this->x + 0.5;
 
   // Movement should not take the character off the board
@@ -34,6 +34,11 @@ void Character::moveUp() {
   top_left_dest[1] = static_cast<unsigned int>(top_left[1]);
   top_right_dest[0] = static_cast<unsigned int>(top_right[0] - this->speed);
   top_right_dest[1] = static_cast<unsigned int>(top_right[1]);
+
+  // Correct potential errors
+  if(top_right_dest[1] >= this->board->getWidth()) {
+    top_right_dest[1] = this->board->getWidth() - 1;
+  }
 
   // Check board terrain
   if(this->board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground
@@ -59,7 +64,7 @@ void Character::moveRight() {
   // Top right and bottom right corners of character's outer box
   float top_right[2];
   float bottom_right[2];
-  top_right[0] = this->y - 0.5;
+  top_right[0] = this->y > 0.5 ? this->y - 0.5 : 0;
   top_right[1] = this->x + 0.5;
   bottom_right[0] = this->y + 0.5;
   bottom_right[1] = this->x + 0.5;
@@ -80,6 +85,11 @@ void Character::moveRight() {
   bottom_right_dest[0] = static_cast<unsigned int>(bottom_right[0]);
   bottom_right_dest[1] = static_cast<unsigned int>(bottom_right[1]
   + this->speed);
+
+  // Correct potential errors
+  if(bottom_right_dest[0] >= this->board->getHeight()) {
+    bottom_right_dest[0] = this->board->getHeight() - 1;
+  }
 
   // Check board terrain
   if(this->board->getTerrain(top_right_dest[0], top_right_dest[1]) == ground
@@ -109,7 +119,7 @@ void Character::moveDown() {
   bottom_right[0] = this->y + 0.5;
   bottom_right[1] = this->x + 0.5;
   bottom_left[0] = this->y + 0.5;
-  bottom_left[1] = this->x - 0.5;
+  bottom_left[1] = this->x > 0.5 ? this->x - 0.5 : 0;
 
   // Movement should not take the character off the board
   if(bottom_right[0] + this->speed >= this->board->getHeight()) {
@@ -128,6 +138,11 @@ void Character::moveDown() {
   bottom_left_dest[0] = static_cast<unsigned int>(bottom_left[0]
   + this->speed);
   bottom_left_dest[1] = static_cast<unsigned int>(bottom_left[1]);
+
+  // Correct potential errors
+  if(bottom_right_dest[1] >= this->board->getWidth()) {
+    bottom_right_dest[1] = this->board->getWidth() - 1;
+  }
 
   // Check board terrain
   if(this->board->getTerrain(bottom_right_dest[0], bottom_right_dest[1])
@@ -156,9 +171,9 @@ void Character::moveLeft() {
   float bottom_left[2];
   float top_left[2];
   bottom_left[0] = this->y + 0.5;
-  bottom_left[1] = this->x - 0.5;
-  top_left[0] = this->y - 0.5;
-  top_left[1] = this->x - 0.5;
+  bottom_left[1] = this->x > 0.5 ? this->x - 0.5 : 0;
+  top_left[0] = this->y > 0.5 ? this->y - 0.5 : 0;
+  top_left[1] = this->x > 0.5 ? this->x - 0.5 : 0;
 
   // Movement should not take the character off the board
   if(bottom_left[1] <= this->speed) {
@@ -176,6 +191,11 @@ void Character::moveLeft() {
   top_left_dest[0] = static_cast<unsigned int>(top_left[0]);
   top_left_dest[1] = static_cast<unsigned int>(top_left[1] - this->speed);
 
+  // Correct potential errors
+  if(bottom_left_dest[0] >= this->board->getHeight()) {
+    bottom_left_dest[0] = this->board->getHeight() - 1;
+  }
+
   // Check board terrain
   if(this->board->getTerrain(bottom_left_dest[0], bottom_left_dest[1]) == ground
   && this->board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground) {
@@ -190,8 +210,8 @@ void Character::moveLeft() {
 
 // ------------------------------------------------------------
 
-Character::Character(float y, float x, float speed) :
-y(y), x(x), speed(speed), dir_move(stop), dir_face(down) {}
+Character::Character(Board *board, float y, float x, float speed) :
+board(board), y(y), x(x), speed(speed), dir_move(stop), dir_face(down) {}
 
 // ------------------------------------------------------------
 
