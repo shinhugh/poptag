@@ -7,7 +7,7 @@
 
 // ------------------------------------------------------------
 
-enum Direction {none, up, right, down, left};
+enum Direction {stop, up, right, down, left};
 
 // ------------------------------------------------------------
 
@@ -26,8 +26,10 @@ private:
 
 public:
   Character(float, float, float);
-  void tick();
+  float getY();
+  float getX();
   void setDirMove(Direction);
+  void tick();
 
 };
 

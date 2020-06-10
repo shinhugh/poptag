@@ -25,6 +25,16 @@ void input_ThreadRoutine(Game& game) {
       game.queueEvent(event);
     }
 
+    // Initialize
+    else if(input == "init") {
+      EventData event;
+      EventData_Initialize event_data;
+      event_data.initialize = true;
+      event.setType(initialize);
+      event.setData(&event_data, sizeof(EventData_Initialize));
+      game.queueEvent(event);
+    }
+
     // Place bomb
     else if(input.substr(0, input.find(" ")) == "b") {
       EventData event;
@@ -40,27 +50,52 @@ void input_ThreadRoutine(Game& game) {
 
     // Stop moving
     else if(input == "e") {
-
+      EventData event;
+      EventData_MoveStop event_data;
+      event_data.character_id = 0;
+      event.setType(moveStop);
+      event.setData(&event_data, sizeof(EventData_MoveStop));
+      game.queueEvent(event);
     }
 
     // Move up
     else if(input == "w") {
-
+      EventData event;
+      EventData_MoveStop event_data;
+      event_data.character_id = 0;
+      event.setType(moveStop);
+      event.setData(&event_data, sizeof(EventData_MoveStop));
+      game.queueEvent(event);
     }
 
     // Move right
     else if(input == "d") {
-
+      EventData event;
+      EventData_MoveRight event_data;
+      event_data.character_id = 0;
+      event.setType(moveRight);
+      event.setData(&event_data, sizeof(EventData_MoveRight));
+      game.queueEvent(event);
     }
 
     // Move down
     else if(input == "s") {
-
+      EventData event;
+      EventData_MoveDown event_data;
+      event_data.character_id = 0;
+      event.setType(moveDown);
+      event.setData(&event_data, sizeof(EventData_MoveDown));
+      game.queueEvent(event);
     }
 
     // Move left
     else if(input == "a") {
-
+      EventData event;
+      EventData_MoveLeft event_data;
+      event_data.character_id = 0;
+      event.setType(moveLeft);
+      event.setData(&event_data, sizeof(EventData_MoveLeft));
+      game.queueEvent(event);
     }
 
   }

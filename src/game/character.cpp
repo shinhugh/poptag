@@ -191,7 +191,31 @@ void Character::moveLeft() {
 // ------------------------------------------------------------
 
 Character::Character(float y, float x, float speed) :
-y(y), x(x), speed(speed), dir_move(none), dir_face(down) {}
+y(y), x(x), speed(speed), dir_move(stop), dir_face(down) {}
+
+// ------------------------------------------------------------
+
+float Character::getY() {
+
+  return this->y;
+
+}
+
+// ------------------------------------------------------------
+
+float Character::getX() {
+
+  return this->x;
+
+}
+
+// ------------------------------------------------------------
+
+void Character::setDirMove(Direction dir_move) {
+
+  this->dir_move = dir_move;
+
+}
 
 // ------------------------------------------------------------
 
@@ -225,13 +249,5 @@ void Character::tick() {
     default:
       break;
   }
-
-}
-
-// ------------------------------------------------------------
-
-void Character::setDirMove(Direction dir_move) {
-
-  this->dir_move = dir_move;
 
 }

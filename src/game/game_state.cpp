@@ -12,6 +12,11 @@ board(BOARD_HEIGHT, BOARD_WIDTH) {}
 
 void GameState::internalUpdate() {
 
+  // Update positions of all characters
+  for(unsigned int i = 0; i < this->characters.size(); i++) {
+    this->characters.at(i).tick();
+  }
+
   // Update ticks on all bombs
   for(unsigned int i = 0; i < this->bombs.size(); i++) {
     this->bombs.at(i).tick();
@@ -45,6 +50,16 @@ void GameState::externalUpdate(unsigned int type, void *event_data) {
       }
       break;
 
+    // Initialize
+    case initialize:
+      {
+        EventData_Initialize *data
+        = static_cast<EventData_Initialize *>(event_data);
+        this->characters.clear();
+        this->characters.push_back(Character(0, 0, 0.001));
+      }
+      break;
+
     // Place bomb
     case placeBomb:
       {
@@ -57,6 +72,50 @@ void GameState::externalUpdate(unsigned int type, void *event_data) {
         // Log
         std::cerr << "Bomb placed at: (" + std::to_string(data->y) + ", "
         + std::to_string(data->x) + ")\n";
+      }
+      break;
+
+    // Stop moving
+    case moveStop:
+      {
+        EventData_MoveStop *data
+        = static_cast<EventData_MoveStop *>(event_data);
+        this->characters.at(data->character_id).setDirMove(stop);
+      }
+      break;
+
+    // Move up
+    case moveUp:
+      {
+        EventData_MoveUp *data = static_cast<EventData_MoveUp *>(event_data);
+        this->characters.at(data->character_id).setDirMove(up);
+      }
+      break;
+
+    // Move right
+    case moveRight:
+      {
+        EventData_MoveRight *data
+        = static_cast<EventData_MoveRight *>(event_data);
+        this->characters.at(data->character_id).setDirMove(right);
+      }
+      break;
+
+    // Move down
+    case moveDown:
+      {
+        EventData_MoveDown *data
+        = static_cast<EventData_MoveDown *>(event_data);
+        this->characters.at(data->character_id).setDirMove(down);
+      }
+      break;
+
+    // Move left
+    case moveLeft:
+      {
+        EventData_MoveLeft *data
+        = static_cast<EventData_MoveLeft *>(event_data);
+        this->characters.at(data->character_id).setDirMove(left);
       }
       break;
 
@@ -133,5 +192,12 @@ void GameState::drawState() {
     std::cerr << "-";
   }
   std::cerr << "+\n\n";
+
+  std::cerr << "Character positions:\n";
+  for(unsigned int i = 0; i < this->characters.size(); i++) {
+    std::cerr << "Character " + std::to_string(i) + ":\n("
+    + std::to_string(this->characters.at(i).getY()) + ", "
+    + std::to_string(this->characters.at(i).getX()) + ")\n";
+  }
 
 }
