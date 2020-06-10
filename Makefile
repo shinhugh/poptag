@@ -25,11 +25,12 @@ default: game
 # Main executable
 
 game: $(PATH_CORE)/main.o $(PATH_CORE)/game.o $(PATH_CORE)/game_state.o \
-$(PATH_GAME)/board.o $(PATH_GAME)/character.o $(PATH_GAME)/bomb.o
+$(PATH_CORE)/event_data.o $(PATH_GAME)/board.o $(PATH_GAME)/character.o \
+$(PATH_GAME)/bomb.o
 	@echo "Building main executable.."
 	@$(CC) -o $@ $(PATH_CORE)/main.o $(PATH_CORE)/game.o \
-$(PATH_CORE)/game_state.o $(PATH_GAME)/board.o $(PATH_GAME)/character.o \
-$(PATH_GAME)/bomb.o -pthread
+$(PATH_CORE)/game_state.o $(PATH_CORE)/event_data.o $(PATH_GAME)/board.o \
+$(PATH_GAME)/character.o $(PATH_GAME)/bomb.o -pthread
 	@echo "Complete."
 
 # --------------------------------------------------

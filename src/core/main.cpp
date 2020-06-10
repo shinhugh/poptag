@@ -3,8 +3,10 @@
 #include <iostream>
 #include <thread>
 #include <string>
+#include <cstring>
 #include "game.h"
 #include "game_state.h"
+#include "event_types.h"
 
 // Time interval between ticks, given in microseconds
 #define TICK_MICROSEC 1000
@@ -32,9 +34,8 @@ int main() {
       EventData event;
       EventData_Test event_data;
       event_data.test_data = true;
-      event.type = test;
-      event.data = &event_data;
-      event.data_size = sizeof(EventData_Test);
+      event.setType(test);
+      event.setData(&event_data, sizeof(EventData_Test));
       game.queueEvent(event);
     }
     else if(input == "b") {
@@ -42,9 +43,8 @@ int main() {
       EventData_Bomb event_data;
       event_data.y = 1;
       event_data.x = 1;
-      event.type = bomb;
-      event.data = &event_data;
-      event.data_size = sizeof(EventData_Bomb);
+      event.setType(bomb);
+      event.setData(&event_data, sizeof(EventData_Bomb));
       game.queueEvent(event);
     }
   }

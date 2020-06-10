@@ -1,54 +1,6 @@
 #include <thread>
 #include <chrono>
-#include <cstring>
 #include "game.h"
-
-// ------------------------------------------------------------
-
-EventData::EventData() :
-type(0), data(0), data_size(0) {}
-
-// ------------------------------------------------------------
-
-EventData::EventData(const EventData& src) :
-type(src.type), data_size(src.data_size) {
-
-  if(src.data) {
-    this->data = new unsigned char[this->data_size];
-    memcpy(this->data, src.data, this->data_size);
-  } else {
-    this->data = 0;
-  }
-
-}
-
-// ------------------------------------------------------------
-
-EventData& EventData::operator=(const EventData& src) {
-
-  this->type = src.type;
-  this->data_size = src.data_size;
-  if(this->data) {
-    delete[] (static_cast<unsigned char *>(this->data));
-  }
-  if(src.data) {
-    this->data = new unsigned char[this->data_size];
-    memcpy(this->data, src.data, this->data_size);
-  } else {
-    this->data = 0;
-  }
-
-}
-
-// ------------------------------------------------------------
-
-EventData::~EventData() {
-
-  if(this->data) {
-    delete[] (static_cast<unsigned char *>(this->data));
-  }
-
-}
 
 // ------------------------------------------------------------
 
@@ -82,7 +34,7 @@ void Game::tickUpdate() {
       std::lock_guard<std::mutex> lock(this->state_mutex);
 
       // Handle event
-      this->state.externalUpdate(event.type, event.data);
+      this->state.externalUpdate(event.getType(), event.getData());
 
       // Release mutex by letting lock go out of scope
     }

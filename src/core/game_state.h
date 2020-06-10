@@ -9,22 +9,6 @@
 
 // ------------------------------------------------------------
 
-enum EventType {test, bomb};
-
-struct EventData_Test {
-
-  bool test_data;
-
-};
-
-struct EventData_Bomb {
-
-  unsigned int y, x;
-
-};
-
-// ------------------------------------------------------------
-
 class GameState {
 
 private:

@@ -6,36 +6,7 @@
 #include <mutex>
 #include <queue>
 #include "game_state.h"
-
-// ------------------------------------------------------------
-
-struct EventRequest {
-
-  void *data;
-  unsigned int data_size;
-  /*
-  EventRequest();
-  EventRequest(const EventRequest&);
-  EventRequest& operator=(const EventRequest&);
-  ~EventRequest();
-  */
-
-};
-
-// ------------------------------------------------------------
-
-struct EventData {
-
-  unsigned int type;
-  void *data;
-  unsigned int data_size;
-
-  EventData();
-  EventData(const EventData&);
-  EventData& operator=(const EventData&);
-  ~EventData();
-
-};
+#include "event_data.h"
 
 // ------------------------------------------------------------
 

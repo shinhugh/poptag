@@ -1,4 +1,5 @@
 #include "game_state.h"
+#include "event_types.h"
 
 #include <iostream> // DEBUG
 
