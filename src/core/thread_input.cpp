@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "thread_input.h"
 #include "data_packet.h"
 #include "event_data.h"

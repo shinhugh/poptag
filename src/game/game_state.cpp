@@ -70,9 +70,6 @@ void GameState::externalUpdate(DataPacket packet) {
         // Add bomb
         this->bombs.push_back(Bomb(event_data->y, event_data->x,
         event_data->tick_detonate, event_data->range));
-        // Log
-        std::cerr << "Bomb placed at: (" + std::to_string(event_data->y) + ", "
-        + std::to_string(event_data->x) + ")\n";
       }
       break;
 
@@ -150,6 +147,8 @@ DataPacket GameState::readState() {
 
 // ------------------------------------------------------------
 
+/*
+
 void GameState::drawState() { // TODO: Remove
 
   std::cerr << "\n  ";
@@ -226,3 +225,5 @@ void GameState::drawState() { // TODO: Remove
   }
 
 }
+
+*/

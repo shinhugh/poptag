@@ -1,6 +1,7 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <string>
 #include "thread_display.h"
 #include "data_packet.h"
 #include "state_data.h"

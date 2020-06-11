@@ -24,7 +24,7 @@ public:
   void externalUpdate(DataPacket);
   DataPacket readState();
 
-  void drawState(); // TODO: Remove
+  // void drawState(); // TODO: Remove
 
 };
 
