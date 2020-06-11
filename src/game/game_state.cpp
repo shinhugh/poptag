@@ -1,5 +1,6 @@
 #include "game_state.h"
 #include "event_data.h"
+#include "state_data.h"
 
 #include <iostream> // DEBUG
 
@@ -37,17 +38,17 @@ void GameState::internalUpdate() {
 
 // ------------------------------------------------------------
 
-void GameState::externalUpdate(unsigned int type, void *event_data) {
+void GameState::externalUpdate(DataPacket packet) {
 
   // Check event type
-  switch(type) {
+  switch(packet.getType()) {
 
     // Initialize
     case initialize:
       {
-        EventData_Initialize *data
-        = static_cast<EventData_Initialize *>(event_data);
-        if(data->initialize) {
+        EventData_Initialize *event_data
+        = static_cast<EventData_Initialize *>(packet.getData());
+        if(event_data->initialize) {
           this->characters.clear();
           this->characters.push_back(Character(&(this->board), 0.5, 0.5,
           0.003));
@@ -59,58 +60,59 @@ void GameState::externalUpdate(unsigned int type, void *event_data) {
     case placeBomb:
       {
         // Parse event
-        EventData_PlaceBomb *data
-        = static_cast<EventData_PlaceBomb *>(event_data);
+        EventData_PlaceBomb *event_data
+        = static_cast<EventData_PlaceBomb *>(packet.getData());
         // Add bomb
-        this->bombs.push_back(Bomb(data->y, data->x, data->tick_detonate,
-        data->range));
+        this->bombs.push_back(Bomb(event_data->y, event_data->x,
+        event_data->tick_detonate, event_data->range));
         // Log
-        std::cerr << "Bomb placed at: (" + std::to_string(data->y) + ", "
-        + std::to_string(data->x) + ")\n";
+        std::cerr << "Bomb placed at: (" + std::to_string(event_data->y) + ", "
+        + std::to_string(event_data->x) + ")\n";
       }
       break;
 
     // Stop moving
     case moveStop:
       {
-        EventData_MoveStop *data
-        = static_cast<EventData_MoveStop *>(event_data);
-        this->characters.at(data->character_id).setDirMove(stop);
+        EventData_MoveStop *event_data
+        = static_cast<EventData_MoveStop *>(packet.getData());
+        this->characters.at(event_data->character_id).setDirMove(stop);
       }
       break;
 
     // Move up
     case moveUp:
       {
-        EventData_MoveUp *data = static_cast<EventData_MoveUp *>(event_data);
-        this->characters.at(data->character_id).setDirMove(up);
+        EventData_MoveUp *event_data
+        = static_cast<EventData_MoveUp *>(packet.getData());
+        this->characters.at(event_data->character_id).setDirMove(up);
       }
       break;
 
     // Move right
     case moveRight:
       {
-        EventData_MoveRight *data
-        = static_cast<EventData_MoveRight *>(event_data);
-        this->characters.at(data->character_id).setDirMove(right);
+        EventData_MoveRight *event_data
+        = static_cast<EventData_MoveRight *>(packet.getData());
+        this->characters.at(event_data->character_id).setDirMove(right);
       }
       break;
 
     // Move down
     case moveDown:
       {
-        EventData_MoveDown *data
-        = static_cast<EventData_MoveDown *>(event_data);
-        this->characters.at(data->character_id).setDirMove(down);
+        EventData_MoveDown *event_data
+        = static_cast<EventData_MoveDown *>(packet.getData());
+        this->characters.at(event_data->character_id).setDirMove(down);
       }
       break;
 
     // Move left
     case moveLeft:
       {
-        EventData_MoveLeft *data
-        = static_cast<EventData_MoveLeft *>(event_data);
-        this->characters.at(data->character_id).setDirMove(left);
+        EventData_MoveLeft *event_data
+        = static_cast<EventData_MoveLeft *>(packet.getData());
+        this->characters.at(event_data->character_id).setDirMove(left);
       }
       break;
 
@@ -120,7 +122,30 @@ void GameState::externalUpdate(unsigned int type, void *event_data) {
 
 // ------------------------------------------------------------
 
-void GameState::drawState() {
+DataPacket GameState::readState() {
+
+  DataPacket packet;
+  StateData state_data;
+
+  // TEST
+  if(characters.empty()) {
+    state_data.character_y = 0;
+    state_data.character_x = 0;
+  } else {
+    state_data.character_y = this->characters.at(0).getY();
+    state_data.character_x = this->characters.at(0).getX();
+  }
+  // TEST
+
+  packet.setData(&state_data, sizeof(StateData));
+
+  return packet;
+
+}
+
+// ------------------------------------------------------------
+
+void GameState::drawState() { // TODO: Remove
 
   std::cerr << "\n  ";
   for(unsigned int x = 0; x < this->board.getWidth(); x++) {

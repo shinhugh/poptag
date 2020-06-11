@@ -21,11 +21,9 @@ int main() {
   std::thread thread_core(threadRoutine_Core, std::ref(game));
   std::cerr << "Thread initialized: Game core\n";
 
-  /*
   // Initialize display thread
   std::thread thread_display(threadRoutine_Display, std::ref(game));
   std::cerr << "Thread initialized: Game state display\n";
-  */
 
   // Initialize user input thread
   std::thread thread_input(threadRoutine_Input, std::ref(game));
@@ -33,7 +31,7 @@ int main() {
 
   // Wait until all threads exit
   thread_core.join();
-  // thread_display.join();
+  thread_display.join();
   thread_input.join();
 
   return 0;

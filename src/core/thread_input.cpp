@@ -20,75 +20,75 @@ void threadRoutine_Input(Game& game) {
 
     // Initialize
     else if(input == "i") {
-      DataPacket event;
+      DataPacket packet;
       EventData_Initialize event_data;
       event_data.initialize = true;
-      event.setType(initialize);
-      event.setData(&event_data, sizeof(EventData_Initialize));
-      game.queueEvent(event);
+      packet.setType(initialize);
+      packet.setData(&event_data, sizeof(EventData_Initialize));
+      game.queueEvent(packet);
     }
 
     // Place bomb
     else if(input.substr(0, input.find(" ")) == "b") {
-      DataPacket event;
+      DataPacket packet;
       EventData_PlaceBomb event_data;
       event_data.y = std::stoi(input.substr(2, 1));
       event_data.x = std::stoi(input.substr(4, 1));
       event_data.tick_detonate = 3000;
       event_data.range = 1;
-      event.setType(placeBomb);
-      event.setData(&event_data, sizeof(EventData_PlaceBomb));
-      game.queueEvent(event);
+      packet.setType(placeBomb);
+      packet.setData(&event_data, sizeof(EventData_PlaceBomb));
+      game.queueEvent(packet);
     }
 
     // Stop moving
     else if(input == "e") {
-      DataPacket event;
+      DataPacket packet;
       EventData_MoveStop event_data;
       event_data.character_id = 0;
-      event.setType(moveStop);
-      event.setData(&event_data, sizeof(EventData_MoveStop));
-      game.queueEvent(event);
+      packet.setType(moveStop);
+      packet.setData(&event_data, sizeof(EventData_MoveStop));
+      game.queueEvent(packet);
     }
 
     // Move up
     else if(input == "w") {
-      DataPacket event;
+      DataPacket packet;
       EventData_MoveUp event_data;
       event_data.character_id = 0;
-      event.setType(moveUp);
-      event.setData(&event_data, sizeof(EventData_MoveUp));
-      game.queueEvent(event);
+      packet.setType(moveUp);
+      packet.setData(&event_data, sizeof(EventData_MoveUp));
+      game.queueEvent(packet);
     }
 
     // Move right
     else if(input == "d") {
-      DataPacket event;
+      DataPacket packet;
       EventData_MoveRight event_data;
       event_data.character_id = 0;
-      event.setType(moveRight);
-      event.setData(&event_data, sizeof(EventData_MoveRight));
-      game.queueEvent(event);
+      packet.setType(moveRight);
+      packet.setData(&event_data, sizeof(EventData_MoveRight));
+      game.queueEvent(packet);
     }
 
     // Move down
     else if(input == "s") {
-      DataPacket event;
+      DataPacket packet;
       EventData_MoveDown event_data;
       event_data.character_id = 0;
-      event.setType(moveDown);
-      event.setData(&event_data, sizeof(EventData_MoveDown));
-      game.queueEvent(event);
+      packet.setType(moveDown);
+      packet.setData(&event_data, sizeof(EventData_MoveDown));
+      game.queueEvent(packet);
     }
 
     // Move left
     else if(input == "a") {
-      DataPacket event;
+      DataPacket packet;
       EventData_MoveLeft event_data;
       event_data.character_id = 0;
-      event.setType(moveLeft);
-      event.setData(&event_data, sizeof(EventData_MoveLeft));
-      game.queueEvent(event);
+      packet.setType(moveLeft);
+      packet.setData(&event_data, sizeof(EventData_MoveLeft));
+      game.queueEvent(packet);
     }
 
   }

@@ -4,6 +4,7 @@
 #define GAME_STATE_H
 
 #include <vector>
+#include "data_packet.h"
 #include "board.h"
 #include "character.h"
 #include "bomb.h"
@@ -20,8 +21,10 @@ private:
 public:
   GameState();
   void internalUpdate();
-  void externalUpdate(unsigned int, void *);
-  void drawState();
+  void externalUpdate(DataPacket);
+  DataPacket readState();
+
+  void drawState(); // TODO: Remove
 
 };
 

@@ -5,8 +5,6 @@
 
 #include "game.h"
 
-/*
-
 // ------------------------------------------------------------
 
 // Top-level routine for displaying game state
@@ -14,7 +12,5 @@
 void threadRoutine_Display(Game&);
 
 // ------------------------------------------------------------
-
-*/
 
 #endif

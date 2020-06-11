@@ -20,6 +20,7 @@ private:
   std::queue<DataPacket> event_queue;
   std::mutex event_queue_mutex;
   bool exit_flag;
+  std::mutex exit_flag_mutex;
   unsigned int tick_duration;
 
 public:

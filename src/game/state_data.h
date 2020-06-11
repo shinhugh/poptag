@@ -7,7 +7,11 @@
 
 struct StateData {
 
-  // TODO
+  // TODO: Game state specification
+
+  // TEST
+  float character_y, character_x;
+  // TEST
 
 };
 
