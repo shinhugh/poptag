@@ -52,6 +52,11 @@ $(PATH_GAME)/bomb.o \
 	@echo "Complete."
 
 # --------------------------------------------------
+# Targets aren't specified for individual object files
+# Modifications in header files will not cause object files to be rebuilt
+# Run 'make clean' and rebuild if a header file is modified
+
+# --------------------------------------------------
 # Build object file (.cpp)
 
 %.o: %.cpp

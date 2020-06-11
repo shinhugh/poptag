@@ -7,7 +7,11 @@
 // ------------------------------------------------------------
 
 GameState::GameState() :
-board(BOARD_HEIGHT, BOARD_WIDTH) {}
+board(BOARD_HEIGHT, BOARD_WIDTH) {
+
+  this->characters.push_back(Character(&(this->board), 0.5, 0.5, 0.003));
+
+}
 
 // ------------------------------------------------------------
 
@@ -49,6 +53,7 @@ void GameState::externalUpdate(DataPacket packet) {
         EventData_Initialize *event_data
         = static_cast<EventData_Initialize *>(packet.getData());
         if(event_data->initialize) {
+          // Reset
           this->characters.clear();
           this->characters.push_back(Character(&(this->board), 0.5, 0.5,
           0.003));
