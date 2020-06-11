@@ -1,8 +1,11 @@
 #include <iostream>
-#include "input.h"
-#include "event_types.h"
+#include "thread_input.h"
+#include "data_packet.h"
+#include "event_data.h"
 
-void input_ThreadRoutine(Game& game) {
+// ------------------------------------------------------------
+
+void threadRoutine_Input(Game& game) {
 
   // Take input from console
   while(1) {
@@ -10,24 +13,14 @@ void input_ThreadRoutine(Game& game) {
     std::getline(std::cin, input);
 
     // Quit
-    if(input == "quit") {
+    if(input == "q") {
       game.exit();
       break;
     }
 
-    // Test
-    else if(input == "test") {
-      EventData event;
-      EventData_Test event_data;
-      event_data.message = "Hello world!";
-      event.setType(test);
-      event.setData(&event_data, sizeof(EventData_Test));
-      game.queueEvent(event);
-    }
-
     // Initialize
     else if(input == "i") {
-      EventData event;
+      DataPacket event;
       EventData_Initialize event_data;
       event_data.initialize = true;
       event.setType(initialize);
@@ -37,7 +30,7 @@ void input_ThreadRoutine(Game& game) {
 
     // Place bomb
     else if(input.substr(0, input.find(" ")) == "b") {
-      EventData event;
+      DataPacket event;
       EventData_PlaceBomb event_data;
       event_data.y = std::stoi(input.substr(2, 1));
       event_data.x = std::stoi(input.substr(4, 1));
@@ -50,7 +43,7 @@ void input_ThreadRoutine(Game& game) {
 
     // Stop moving
     else if(input == "e") {
-      EventData event;
+      DataPacket event;
       EventData_MoveStop event_data;
       event_data.character_id = 0;
       event.setType(moveStop);
@@ -60,7 +53,7 @@ void input_ThreadRoutine(Game& game) {
 
     // Move up
     else if(input == "w") {
-      EventData event;
+      DataPacket event;
       EventData_MoveUp event_data;
       event_data.character_id = 0;
       event.setType(moveUp);
@@ -70,7 +63,7 @@ void input_ThreadRoutine(Game& game) {
 
     // Move right
     else if(input == "d") {
-      EventData event;
+      DataPacket event;
       EventData_MoveRight event_data;
       event_data.character_id = 0;
       event.setType(moveRight);
@@ -80,7 +73,7 @@ void input_ThreadRoutine(Game& game) {
 
     // Move down
     else if(input == "s") {
-      EventData event;
+      DataPacket event;
       EventData_MoveDown event_data;
       event_data.character_id = 0;
       event.setType(moveDown);
@@ -90,7 +83,7 @@ void input_ThreadRoutine(Game& game) {
 
     // Move left
     else if(input == "a") {
-      EventData event;
+      DataPacket event;
       EventData_MoveLeft event_data;
       event_data.character_id = 0;
       event.setType(moveLeft);

@@ -1,14 +1,14 @@
 #include <cstring>
-#include "event_data.h"
+#include "data_packet.h"
 
 // ------------------------------------------------------------
 
-EventData::EventData() :
+DataPacket::DataPacket() :
 type(0), data(0), data_size(0) {}
 
 // ------------------------------------------------------------
 
-EventData::EventData(const EventData& src) :
+DataPacket::DataPacket(const DataPacket& src) :
 type(src.type), data_size(src.data_size) {
 
   if(src.data) {
@@ -22,7 +22,7 @@ type(src.type), data_size(src.data_size) {
 
 // ------------------------------------------------------------
 
-EventData& EventData::operator=(const EventData& src) {
+DataPacket& DataPacket::operator=(const DataPacket& src) {
 
   this->type = src.type;
   this->data_size = src.data_size;
@@ -42,7 +42,7 @@ EventData& EventData::operator=(const EventData& src) {
 
 // ------------------------------------------------------------
 
-EventData::~EventData() {
+DataPacket::~DataPacket() {
 
   if(this->data) {
     delete[] this->data;
@@ -52,7 +52,7 @@ EventData::~EventData() {
 
 // ------------------------------------------------------------
 
-unsigned int EventData::getType() {
+unsigned int DataPacket::getType() {
 
   return this->type;
 
@@ -60,7 +60,7 @@ unsigned int EventData::getType() {
 
 // ------------------------------------------------------------
 
-void EventData::setType(unsigned int type) {
+void DataPacket::setType(unsigned int type) {
 
   this->type = type;
 
@@ -68,7 +68,7 @@ void EventData::setType(unsigned int type) {
 
 // ------------------------------------------------------------
 
-void * EventData::getData() {
+void * DataPacket::getData() {
 
   return this->data;
 
@@ -76,7 +76,7 @@ void * EventData::getData() {
 
 // ------------------------------------------------------------
 
-void EventData::setData(void * data, unsigned int data_size) {
+void DataPacket::setData(void * data, unsigned int data_size) {
 
   if(this->data) {
     delete[] this->data;
@@ -89,7 +89,7 @@ void EventData::setData(void * data, unsigned int data_size) {
 
 // ------------------------------------------------------------
 
-unsigned int EventData::getDataSize() {
+unsigned int DataPacket::getDataSize() {
 
   return this->data_size;
 

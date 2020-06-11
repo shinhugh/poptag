@@ -4,7 +4,6 @@
 #define GAME_STATE_H
 
 #include <vector>
-
 #include "board.h"
 #include "character.h"
 #include "bomb.h"

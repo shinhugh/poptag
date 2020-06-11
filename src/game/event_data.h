@@ -1,20 +1,15 @@
-// Various events an external module can pass into the game state module
+// Various events an external module can pass into the game state module to
+// trigger state changes
 
-#ifndef EVENT_TYPES_H
-#define EVENT_TYPES_H
-
-#include <string>
+#ifndef EVENT_DATA_H
+#define EVENT_DATA_H
 
 // ------------------------------------------------------------
 
 enum EventType {test, initialize, placeBomb, moveStop, moveUp, moveRight,
 moveDown, moveLeft};
 
-struct EventData_Test {
-
-  std::string message;
-
-};
+// ------------------------------------------------------------
 
 struct EventData_Initialize {
 

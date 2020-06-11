@@ -1,5 +1,5 @@
 #include "game_state.h"
-#include "event_types.h"
+#include "event_data.h"
 
 #include <iostream> // DEBUG
 
@@ -42,21 +42,16 @@ void GameState::externalUpdate(unsigned int type, void *event_data) {
   // Check event type
   switch(type) {
 
-    // Test
-    case test:
-      {
-        EventData_Test *data = static_cast<EventData_Test *>(event_data);
-        std::cerr << "Test: " + data->message + "\n";
-      }
-      break;
-
     // Initialize
     case initialize:
       {
         EventData_Initialize *data
         = static_cast<EventData_Initialize *>(event_data);
-        this->characters.clear();
-        this->characters.push_back(Character(&(this->board), 0.5, 0.5, 0.003));
+        if(data->initialize) {
+          this->characters.clear();
+          this->characters.push_back(Character(&(this->board), 0.5, 0.5,
+          0.003));
+        }
       }
       break;
 
