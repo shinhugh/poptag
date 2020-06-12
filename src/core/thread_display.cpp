@@ -61,7 +61,7 @@ void threadRoutine_Display(Game& game) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
   // Create OpenGl context and containing window
-  GLFWwindow* window = glfwCreateWindow(640, 480, "Test", NULL, NULL);
+  GLFWwindow* window = glfwCreateWindow(720, 720, "Test", NULL, NULL);
   if (!window)
   {
     // Window or OpenGL context creation failed
