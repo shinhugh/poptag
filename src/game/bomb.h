@@ -5,6 +5,8 @@
 
 #include "board.h"
 
+#define TICK_DETONATE 2000
+
 // ------------------------------------------------------------
 
 class Bomb {

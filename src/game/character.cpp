@@ -210,8 +210,10 @@ void Character::moveLeft() {
 
 // ------------------------------------------------------------
 
-Character::Character(Board *board, float y, float x, float speed) :
-board(board), y(y), x(x), speed(speed), dir_move(stop), dir_face(down) {}
+Character::Character(float y, float x, float speed, Board *board,
+unsigned int bomb_range) :
+y(y), x(x), speed(speed), dir_move(stop), dir_face(down), board(board),
+bomb_range(bomb_range) {}
 
 // ------------------------------------------------------------
 
@@ -226,6 +228,22 @@ float Character::getY() {
 float Character::getX() {
 
   return this->x;
+
+}
+
+// ------------------------------------------------------------
+
+Direction Character::getDirFace() {
+
+  return this->dir_face;
+
+}
+
+// ------------------------------------------------------------
+
+unsigned int Character::getBombRange() {
+
+  return this->bomb_range;
 
 }
 

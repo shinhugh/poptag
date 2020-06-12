@@ -19,9 +19,7 @@ struct EventData_Initialize {
 
 struct EventData_PlaceBomb {
 
-  unsigned int y, x;
-  unsigned int tick_detonate;
-  unsigned int range;
+  unsigned int character_id;
 
 };
 

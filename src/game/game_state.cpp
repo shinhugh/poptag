@@ -9,7 +9,7 @@
 GameState::GameState() :
 board(BOARD_HEIGHT, BOARD_WIDTH) {
 
-  this->characters.push_back(Character(&(this->board), 0.5, 0.5, 0.01));
+  this->characters.push_back(Character(0.5, 0.5, 0.01, &(this->board), 2));
 
 }
 
@@ -55,8 +55,8 @@ void GameState::externalUpdate(DataPacket packet) {
         if(event_data->initialize) {
           // Reset
           this->characters.clear();
-          this->characters.push_back(Character(&(this->board), 0.5, 0.5,
-          0.01));
+          this->characters.push_back(Character(0.5, 0.5, 0.01, &(this->board),
+          2));
         }
       }
       break;
@@ -67,9 +67,16 @@ void GameState::externalUpdate(DataPacket packet) {
         // Parse event
         EventData_PlaceBomb *event_data
         = static_cast<EventData_PlaceBomb *>(packet.getData());
-        // Add bomb
-        this->bombs.push_back(Bomb(event_data->y, event_data->x,
-        event_data->tick_detonate, event_data->range));
+        // Get character's bomb traits
+        float character_y
+        = this->characters.at(event_data->character_id).getY();
+        float character_x
+        = this->characters.at(event_data->character_id).getX();
+        unsigned int bomb_range
+        = this->characters.at(event_data->character_id).getBombRange();
+        // Place bomb at whichever square character's center lies in
+        this->bombs.push_back(Bomb(static_cast<unsigned int>(character_y),
+        static_cast<unsigned int>(character_x), TICK_DETONATE, bomb_range));
       }
       break;
 

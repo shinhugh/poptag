@@ -211,7 +211,6 @@ int mods) {
 
   // W, pressed
   else if(key == GLFW_KEY_W && action == GLFW_PRESS) {
-    // std::cerr << "Character is moving up.\n";
     current_direction = 1;
     DataPacket packet;
     EventData_MoveUp event_data;
@@ -224,7 +223,6 @@ int mods) {
   // W, released
   else if(key == GLFW_KEY_W && action == GLFW_RELEASE) {
     if(current_direction == 1) {
-      // std::cerr << "Character is not moving.\n";
       current_direction = 0;
       DataPacket packet;
       EventData_MoveStop event_data;
@@ -237,7 +235,6 @@ int mods) {
 
   // D, pressed
   else if(key == GLFW_KEY_D && action == GLFW_PRESS) {
-    // std::cerr << "Character is moving right.\n";
     current_direction = 2;
     DataPacket packet;
     EventData_MoveRight event_data;
@@ -250,7 +247,6 @@ int mods) {
   // D, released
   else if(key == GLFW_KEY_D && action == GLFW_RELEASE) {
     if(current_direction == 2) {
-      // std::cerr << "Character is not moving.\n";
       current_direction = 0;
       DataPacket packet;
       EventData_MoveStop event_data;
@@ -263,7 +259,6 @@ int mods) {
 
   // S, pressed
   else if(key == GLFW_KEY_S && action == GLFW_PRESS) {
-    // std::cerr << "Character is moving down.\n";
     current_direction = 3;
     DataPacket packet;
     EventData_MoveDown event_data;
@@ -276,7 +271,6 @@ int mods) {
   // S, released
   else if(key == GLFW_KEY_S && action == GLFW_RELEASE) {
     if(current_direction == 3) {
-      // std::cerr << "Character is not moving.\n";
       current_direction = 0;
       DataPacket packet;
       EventData_MoveStop event_data;
@@ -289,7 +283,6 @@ int mods) {
 
   // A, pressed
   else if(key == GLFW_KEY_A && action == GLFW_PRESS) {
-    // std::cerr << "Character is moving left.\n";
     current_direction = 4;
     DataPacket packet;
     EventData_MoveLeft event_data;
@@ -302,7 +295,6 @@ int mods) {
   // A, released
   else if(key == GLFW_KEY_A && action == GLFW_RELEASE) {
     if(current_direction == 4) {
-      // std::cerr << "Character is not moving.\n";
       current_direction = 0;
       DataPacket packet;
       EventData_MoveStop event_data;
@@ -311,6 +303,16 @@ int mods) {
       packet.setData(&event_data, sizeof(EventData_MoveStop));
       game_instance->queueEvent(packet);
     }
+  }
+
+  // Space, pressed
+  else if(key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+    DataPacket packet;
+    EventData_PlaceBomb event_data;
+    event_data.character_id = 0;
+    packet.setType(placeBomb);
+    packet.setData(&event_data, sizeof(EventData_PlaceBomb));
+    game_instance->queueEvent(packet);
   }
 
 }
