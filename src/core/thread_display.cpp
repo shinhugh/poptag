@@ -16,6 +16,20 @@
 // Game instance being rendered; pointer is updated when thread is initialized
 static Game* game_instance;
 
+// Vertex shader
+const char *vertex_shader_src = "#version 330 core\n"
+"layout (location = 0) in vec3 a_pos;\n"
+"void main() {\n"
+"  gl_Position = vec4(a_pos.x, a_pos.y, a_pos.z, 1.0);\n"
+"}\0";
+
+// Fragment shader
+const char *fragment_shader_src = "#version 330 core\n"
+"out vec4 frag_color\n"
+"void main() {\n"
+"  frag_color = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\0";
+
 // ------------------------------------------------------------
 
 static void error_callback(int, const char*);
@@ -30,8 +44,6 @@ void threadRoutine_Display(Game& game) {
 
   // Update game instance pointer
   game_instance = &game;
-
-  GLuint program;
 
   // Initialize GLFW
   if (!glfwInit())
@@ -76,11 +88,43 @@ void threadRoutine_Display(Game& game) {
   // Set to > 0 to avoid tearing
   glfwSwapInterval(1);
 
-  // OpenGL code
-  program = glCreateProgram();
+
+
+  unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+  glShaderSource(vertex_shader, 1, &vertex_shader_src, 0);
+  glCompileShader(vertex_shader);
+
+  unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+  glShaderSource(fragment_shader, 1, &fragment_shader_src, 0);
+  glCompileShader(fragment_shader);
+
+  unsigned int shader_program = glCreateProgram();
+  glAttachShader(shader_program, vertex_shader);
+  glAttachShader(shader_program, fragment_shader);
+  glLinkProgram(shader_program);
+
+  glDeleteShader(vertex_shader);
+  glDeleteShader(fragment_shader);
+
+  float vertices[] = {
+    -0.5f, -0.5f, 0.0f,
+    0.5f, -0.5f, 0.0f,
+    0.0f, 0.5f, 0.0f
+  };
+
+  unsigned int vertex_buffer_obj;
+  glGenBuffers(1, &vertex_buffer_obj);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+  (void *) 0);
+  glEnableVertexAttribArray(0);
+
+
 
   // While game is ongoing
-  while (!(game.isExit()))
+  while (!(game.isExit()) && !glfwWindowShouldClose(window))
   {
 
     // Print state
@@ -90,24 +134,34 @@ void threadRoutine_Display(Game& game) {
     // function). Call 'game.readState()' to fetch the game state data, and
     // paint a representation of it using OpenGL here.
 
-    // Get frame dimensions
+    // Get frame dimensions and specify viewport
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-
     glViewport(0, 0, width, height);
+
+    // Clear display
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(program);
+    glUseProgram(shader_program);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 
     // Swap front/back buffers (to display new render)
     glfwSwapBuffers(window);
+
     // Handle input events in queue
     glfwPollEvents();
 
   }
 
+  // If window close wasn't triggered by in-game exit, trigger in-game exit too
+  game.exit();
+
   // Close window
   glfwDestroyWindow(window);
+
+  // Free resources used by OpenGL
+  glDeleteBuffers(1, &vertex_buffer_obj);
+  glDeleteProgram(shader_program);
 
   // Free resources used by GLFW
   glfwTerminate();
