@@ -26,12 +26,11 @@ target_link_libraries(game Threads::Threads)
 find_library(LIB_GLFW3 NAMES glfw3 HINTS lib)
 target_link_libraries(game ${LIB_GLFW3})
 
-# Windows
-# if(WIN32)
-#  SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
-#  target_compile_options(game PUBLIC /MT)
-#  target_link_options(game PUBLIC /INCREMENTAL:NO /NODEFAULTLIB:MSVCRT)
-# endif(WIN32)
+# Visual Studio
+if(MSVC)
+  set_property(TARGET game PROPERTY MSVC_RUNTIME_LIBRARY
+  "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif(MSVC)
 
 if(UNIX)
   target_link_libraries(game dl)
