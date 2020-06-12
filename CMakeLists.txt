@@ -28,10 +28,10 @@ target_link_libraries(game ${LIB_GLFW3})
 
 # Windows
 # if(WIN32)
-#   SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
-#   target_compile_options(game PUBLIC /MT)
-#   target_link_options(game PUBLIC /INCREMENTAL:NO /NODEFAULTLIB:MSVCRT)
-# endif(MSVC)
+#  SET(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
+#  target_compile_options(game PUBLIC /MT)
+#  target_link_options(game PUBLIC /INCREMENTAL:NO /NODEFAULTLIB:MSVCRT)
+# endif(WIN32)
 
 if(UNIX)
   target_link_libraries(game dl)

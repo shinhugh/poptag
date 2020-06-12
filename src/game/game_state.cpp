@@ -9,7 +9,7 @@
 GameState::GameState() :
 board(BOARD_HEIGHT, BOARD_WIDTH) {
 
-  this->characters.push_back(Character(&(this->board), 0.5, 0.5, 0.003));
+  this->characters.push_back(Character(&(this->board), 0.5, 0.5, 0.01));
 
 }
 
@@ -56,7 +56,7 @@ void GameState::externalUpdate(DataPacket packet) {
           // Reset
           this->characters.clear();
           this->characters.push_back(Character(&(this->board), 0.5, 0.5,
-          0.003));
+          0.01));
         }
       }
       break;
