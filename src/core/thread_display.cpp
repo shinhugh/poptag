@@ -107,15 +107,16 @@ void threadRoutine_Display(Game& game) {
   glDeleteShader(fragment_shader);
 
   float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
+    0.5f, 0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
-    0.0f, 0.5f, 0.0f
+    -0.5f, 0.5f, 0.0f,
+    -0.5f, -0.5f, 0.0f
   };
 
   unsigned int vertex_buffer_obj;
   glGenBuffers(1, &vertex_buffer_obj);
   glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
   (void *) 0);
@@ -127,12 +128,23 @@ void threadRoutine_Display(Game& game) {
   while (!(game.isExit()) && !glfwWindowShouldClose(window))
   {
 
-    // Print state
-    printState(game); // THIS IS A TEMPORARY REPLACEMENT FOR GRAPHICS
+    // Print state - THIS IS A TEMPORARY REPLACEMENT FOR GRAPHICS
+    // printState(game);
 
-    // TODO: You have access to the game variable here (as an argument into this
-    // function). Call 'game.readState()' to fetch the game state data, and
-    // paint a representation of it using OpenGL here.
+    // Read game state
+    DataPacket packet = game.readState();
+    StateData *state_data = static_cast<StateData *>(packet.getData());
+
+    // Update location of square
+    vertices[0] = -1 + ((state_data->character_x + 0.5) / 5);
+    vertices[1] = 1 - ((state_data->character_y - 0.5) / 5);
+    vertices[3] = -1 + ((state_data->character_x + 0.5) / 5);
+    vertices[4] = 1 - ((state_data->character_y + 0.5) / 5);
+    vertices[6] = -1 + ((state_data->character_x - 0.5) / 5);
+    vertices[7] = 1 - ((state_data->character_y - 0.5) / 5);
+    vertices[9] = -1 + ((state_data->character_x - 0.5) / 5);
+    vertices[10] = 1 - ((state_data->character_y + 0.5) / 5);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
 
     // Get frame dimensions and specify viewport
     int width, height;
@@ -142,8 +154,10 @@ void threadRoutine_Display(Game& game) {
     // Clear display
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Draw
     glUseProgram(shader_program);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 1, 4);
 
     // Swap front/back buffers (to display new render)
     glfwSwapBuffers(window);
