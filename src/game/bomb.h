@@ -3,6 +3,7 @@
 #ifndef BOMB_H
 #define BOMB_H
 
+#include <chrono>
 #include "board.h"
 
 #define TICK_DETONATE 2000
@@ -25,7 +26,7 @@ public:
   unsigned int getTickAge() const;
   unsigned int getRange() const;
   void setRange(unsigned int);
-  void tick(std::chrono::microseconds elapsed_time);
+  void update(std::chrono::microseconds elapsed_time);
 
 };
 

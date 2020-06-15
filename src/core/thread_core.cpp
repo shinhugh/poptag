@@ -3,47 +3,40 @@
 #include "thread_core.h"
 
 #include <iostream> // DEBUG
-#include <iomanip> // DEBUG
-#include <ctime> // DEBUG
+#include <string> // DEBUG
 
 // ------------------------------------------------------------
 
 void threadRoutine_Core(Game& game) {
 
-  // Sleep for 1 tick
-  auto wakeup_time = std::chrono::system_clock::now()
-  + (game.getTickDuration() * std::chrono::microseconds(1));
-  std::this_thread::sleep_until(wakeup_time);
-
-  // Wake up and calculate when to wake up next
-  wakeup_time = std::chrono::system_clock::now()
-  + (game.getTickDuration() * std::chrono::microseconds(1));
-
-  // DEBUG
-  unsigned int count = 0;
-  // DEBUG
+  // Timing
+  auto time_start = std::chrono::system_clock::now();
+  auto time_end = time_start;
 
   while(!game.isExit()) {
 
-    // Update state, reflecting passage of 1 tick
-    game.tickUpdate();
+    // Capture end of time window
+    time_end = std::chrono::system_clock::now();
 
-    // Sleep for 1 tick
-    std::this_thread::sleep_until(wakeup_time);
+    // Get elapsed time duration
+    std::chrono::microseconds elapsed_time
+    = std::chrono::duration_cast<std::chrono::microseconds>
+    (time_end - time_start);
 
-    // Wake up and calculate when to wake up next
-    wakeup_time = std::chrono::system_clock::now()
-    + (game.getTickDuration() * std::chrono::microseconds(1));
-
-    // DEBUG
     /*
-    auto time_point = std::chrono::system_clock::now();
-    std::time_t ttp = std::chrono::system_clock::to_time_t(time_point);
-    std::cerr << "time: " << std::ctime(&ttp) << "\n";
-    std::cerr << count << "\n";
-    count++;
-    */
     // DEBUG
+    std::cerr << std::string("Elapsed time: ") << elapsed_time.count() << '\n';
+    // DEBUG
+    */
+
+    // Update state according to elapsed time
+    game.updateState(elapsed_time);
+
+    // End of current time window becomes start of next time window
+    time_start = time_end;
+
+    // Sleep thread briefly
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
   }
 

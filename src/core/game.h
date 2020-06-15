@@ -4,6 +4,7 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <chrono>
 #include <mutex>
 #include <queue>
 #include "game_state.h"
@@ -22,14 +23,12 @@ private:
   std::mutex event_queue_mutex;
   bool exit_flag;
   std::mutex exit_flag_mutex;
-  unsigned int tick_duration;
 
 public:
-  Game(unsigned int);
+  Game();
   void exit();
   bool isExit();
-  unsigned int getTickDuration();
-  void tickUpdate();
+  void updateState(std::chrono::microseconds);
   void queueEvent(const DataPacket&);
   GameState stateSnapshot();
 

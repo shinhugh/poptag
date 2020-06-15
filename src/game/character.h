@@ -3,6 +3,7 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
+#include <chrono>
 #include "board.h"
 
 // ------------------------------------------------------------
@@ -19,10 +20,10 @@ private:
   enum Direction dir_move;
   enum Direction dir_face;
   unsigned int bomb_range;
-  void moveUp(Board *);
-  void moveRight(Board *);
-  void moveDown(Board *);
-  void moveLeft(Board *);
+  void moveUp(Board *, std::chrono::microseconds);
+  void moveRight(Board *, std::chrono::microseconds);
+  void moveDown(Board *, std::chrono::microseconds);
+  void moveLeft(Board *, std::chrono::microseconds);
 
 public:
   Character(float, float, float, unsigned int);
@@ -31,7 +32,7 @@ public:
   Direction getDirFace() const;
   unsigned int getBombRange() const;
   void setDirMove(Direction);
-  void tick(Board *, std::chrono::microseconds);
+  void update(Board *, std::chrono::microseconds);
 
 };
 

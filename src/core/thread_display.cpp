@@ -9,8 +9,6 @@
 #include "data_packet.h"
 #include "event_data.h"
 
-#define FRAMES_PER_SEC 5
-
 // ------------------------------------------------------------
 
 // Game instance being rendered; pointer is updated when thread is initialized
@@ -130,15 +128,13 @@ void threadRoutine_Display(Game& game) {
     GameState game_state = game.stateSnapshot();
 
     // TODO: Paint representation of game state
-    /*
     std::cerr <<
-    "Characters:\n"
-    + "("
+    std::string("Characters:\n")
+    + std::string("(")
     + std::to_string(game_state.getCharacters()->at(0).getX())
-    + ", "
+    + std::string(", ")
     + std::to_string(game_state.getCharacters()->at(0).getY())
-    + ")\n";
-    */
+    + std::string(")\n");
 
     // Get frame dimensions and specify viewport
     int width, height;

@@ -8,7 +8,7 @@
 GameState::GameState() :
 board(BOARD_HEIGHT, BOARD_WIDTH) {
 
-  this->characters.push_back(Character(0.5, 0.5, 0.01, 2));
+  this->characters.push_back(Character(0.5, 0.5, 1, 2));
 
 }
 
@@ -18,8 +18,10 @@ void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
 
   // Update positions of all characters
   for(unsigned int i = 0; i < this->characters.size(); i++) {
-    this->characters.at(i).tick(&(this->board));
+    this->characters.at(i).update(&(this->board), elapsed_time);
   }
+
+  /*
 
   // Update ticks on all bombs
   for(unsigned int i = 0; i < this->bombs.size(); i++) {
@@ -36,6 +38,8 @@ void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
       i++;
     }
   }
+
+  */
 
 }
 
@@ -54,7 +58,7 @@ void GameState::externalUpdate(DataPacket packet) {
         if(event_data->initialize) {
           // Reset
           this->characters.clear();
-          this->characters.push_back(Character(0.5, 0.5, 0.01, 2));
+          this->characters.push_back(Character(0.5, 0.5, 1, 2));
         }
       }
       break;

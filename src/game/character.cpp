@@ -2,10 +2,13 @@
 
 // ------------------------------------------------------------
 
-void Character::moveUp(Board *board) {
+void Character::moveUp(Board *board, std::chrono::microseconds elapsed_time) {
 
   // Face up
   this->dir_face = up;
+
+  // Distance traveled
+  float distance = elapsed_time.count() * this->speed / 1000000;
 
   // Allow move if character's outer width doesn't overrun a block boundary
 
@@ -18,7 +21,7 @@ void Character::moveUp(Board *board) {
   top_right[1] = this->x + 0.5;
 
   // Movement should not take the character off the board
-  if(top_left[0] <= this->speed) {
+  if(top_left[0] <= distance) {
     // Place farthest up without going off the board
     this->y = 0.5;
     return;
@@ -28,9 +31,9 @@ void Character::moveUp(Board *board) {
   // freely
   unsigned int top_left_dest[2];
   unsigned int top_right_dest[2];
-  top_left_dest[0] = static_cast<unsigned int>(top_left[0] - this->speed);
+  top_left_dest[0] = static_cast<unsigned int>(top_left[0] - distance);
   top_left_dest[1] = static_cast<unsigned int>(top_left[1]);
-  top_right_dest[0] = static_cast<unsigned int>(top_right[0] - this->speed);
+  top_right_dest[0] = static_cast<unsigned int>(top_right[0] - distance);
   top_right_dest[1] = static_cast<unsigned int>(top_right[1]);
 
   // Correct potential errors
@@ -42,7 +45,7 @@ void Character::moveUp(Board *board) {
   if(board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground
   && board->getTerrain(top_right_dest[0], top_right_dest[1]) == ground) {
     // Can move freely
-    this->y -= this->speed;
+    this->y -= distance;
   } else {
     // Can't move freely; vertically center character within current space
     this->y = static_cast<unsigned int>(this->y) + 0.5;
@@ -52,10 +55,14 @@ void Character::moveUp(Board *board) {
 
 // ------------------------------------------------------------
 
-void Character::moveRight(Board *board) {
+void Character::moveRight(Board *board, std::chrono::microseconds elapsed_time)
+{
 
   // Face right
   this->dir_face = right;
+
+  // Distance traveled
+  float distance = elapsed_time.count() * this->speed / 1000000;
 
   // Allow move if character's outer width doesn't overrun a block boundary
 
@@ -68,7 +75,7 @@ void Character::moveRight(Board *board) {
   bottom_right[1] = this->x + 0.5;
 
   // Movement should not take the character off the board
-  if(top_right[1] + this->speed >= board->getWidth()) {
+  if(top_right[1] + distance >= board->getWidth()) {
     // Place farthest right without going off the board
     this->x = board->getWidth() - 0.5;
     return;
@@ -79,10 +86,10 @@ void Character::moveRight(Board *board) {
   unsigned int top_right_dest[2];
   unsigned int bottom_right_dest[2];
   top_right_dest[0] = static_cast<unsigned int>(top_right[0]);
-  top_right_dest[1] = static_cast<unsigned int>(top_right[1] + this->speed);
+  top_right_dest[1] = static_cast<unsigned int>(top_right[1] + distance);
   bottom_right_dest[0] = static_cast<unsigned int>(bottom_right[0]);
   bottom_right_dest[1] = static_cast<unsigned int>(bottom_right[1]
-  + this->speed);
+  + distance);
 
   // Correct potential errors
   if(bottom_right_dest[0] >= board->getHeight()) {
@@ -94,7 +101,7 @@ void Character::moveRight(Board *board) {
   && board->getTerrain(bottom_right_dest[0], bottom_right_dest[1])
   == ground) {
     // Can move freely
-    this->x += this->speed;
+    this->x += distance;
   } else {
     // Can't move freely; horizontally center character within current space
     this->x = static_cast<unsigned int>(this->x) + 0.5;
@@ -104,10 +111,13 @@ void Character::moveRight(Board *board) {
 
 // ------------------------------------------------------------
 
-void Character::moveDown(Board *board) {
+void Character::moveDown(Board *board, std::chrono::microseconds elapsed_time) {
 
   // Face down
   this->dir_face = down;
+
+  // Distance traveled
+  float distance = elapsed_time.count() * this->speed / 1000000;
 
   // Allow move if character's outer width doesn't overrun a block boundary
 
@@ -120,7 +130,7 @@ void Character::moveDown(Board *board) {
   bottom_left[1] = this->x > 0.5 ? this->x - 0.5 : 0;
 
   // Movement should not take the character off the board
-  if(bottom_right[0] + this->speed >= board->getHeight()) {
+  if(bottom_right[0] + distance >= board->getHeight()) {
     // Place farthest down without going off the board
     this->y = board->getHeight() - 0.5;
     return;
@@ -131,10 +141,10 @@ void Character::moveDown(Board *board) {
   unsigned int bottom_right_dest[2];
   unsigned int bottom_left_dest[2];
   bottom_right_dest[0] = static_cast<unsigned int>(bottom_right[0]
-  + this->speed);
+  + distance);
   bottom_right_dest[1] = static_cast<unsigned int>(bottom_right[1]);
   bottom_left_dest[0] = static_cast<unsigned int>(bottom_left[0]
-  + this->speed);
+  + distance);
   bottom_left_dest[1] = static_cast<unsigned int>(bottom_left[1]);
 
   // Correct potential errors
@@ -148,7 +158,7 @@ void Character::moveDown(Board *board) {
   && board->getTerrain(bottom_left_dest[0], bottom_left_dest[1])
   == ground) {
     // Can move freely
-    this->y += this->speed;
+    this->y += distance;
   } else {
     // Can't move freely; vertically center character within current space
     this->y = static_cast<unsigned int>(this->y) + 0.5;
@@ -158,10 +168,13 @@ void Character::moveDown(Board *board) {
 
 // ------------------------------------------------------------
 
-void Character::moveLeft(Board *board) {
+void Character::moveLeft(Board *board, std::chrono::microseconds elapsed_time) {
 
   // Face left
   this->dir_face = left;
+
+  // Distance traveled
+  float distance = elapsed_time.count() * this->speed / 1000000;
 
   // Allow move if character's outer width doesn't overrun a block boundary
 
@@ -174,7 +187,7 @@ void Character::moveLeft(Board *board) {
   top_left[1] = this->x > 0.5 ? this->x - 0.5 : 0;
 
   // Movement should not take the character off the board
-  if(bottom_left[1] <= this->speed) {
+  if(bottom_left[1] <= distance) {
     // Place farthest left without going off the board
     this->x = 0.5;
     return;
@@ -185,9 +198,9 @@ void Character::moveLeft(Board *board) {
   unsigned int bottom_left_dest[2];
   unsigned int top_left_dest[2];
   bottom_left_dest[0] = static_cast<unsigned int>(bottom_left[0]);
-  bottom_left_dest[1] = static_cast<unsigned int>(bottom_left[1] - this->speed);
+  bottom_left_dest[1] = static_cast<unsigned int>(bottom_left[1] - distance);
   top_left_dest[0] = static_cast<unsigned int>(top_left[0]);
-  top_left_dest[1] = static_cast<unsigned int>(top_left[1] - this->speed);
+  top_left_dest[1] = static_cast<unsigned int>(top_left[1] - distance);
 
   // Correct potential errors
   if(bottom_left_dest[0] >= board->getHeight()) {
@@ -198,7 +211,7 @@ void Character::moveLeft(Board *board) {
   if(board->getTerrain(bottom_left_dest[0], bottom_left_dest[1]) == ground
   && board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground) {
     // Can move freely
-    this->x -= this->speed;
+    this->x -= distance;
   } else {
     // Can't move freely; horizontally center character within current space
     this->x = static_cast<unsigned int>(this->x) + 0.5;
@@ -254,31 +267,31 @@ void Character::setDirMove(Direction dir_move) {
 
 // ------------------------------------------------------------
 
-void Character::tick(Board *board, std::chrono::microseconds elapsed_time) {
+void Character::update(Board *board, std::chrono::microseconds elapsed_time) {
 
   switch(this->dir_move) {
     // Move up
     case up:
       {
-        this->moveUp(board);
+        this->moveUp(board, elapsed_time);
       }
       break;
     // Move right
     case right:
       {
-        this->moveRight(board);
+        this->moveRight(board, elapsed_time);
       }
       break;
     // Move down
     case down:
       {
-        this->moveDown(board);
+        this->moveDown(board, elapsed_time);
       }
       break;
     // Move left
     case left:
       {
-        this->moveLeft(board);
+        this->moveLeft(board, elapsed_time);
       }
       break;
     default:

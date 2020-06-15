@@ -5,8 +5,7 @@
 
 // ------------------------------------------------------------
 
-Game::Game(unsigned int tick_duration) :
-exit_flag(false), tick_duration(tick_duration) {}
+Game::Game() : exit_flag(false) {}
 
 // ------------------------------------------------------------
 
@@ -38,15 +37,7 @@ bool Game::isExit() {
 
 // ------------------------------------------------------------
 
-unsigned int Game::getTickDuration() {
-
-  return this->tick_duration;
-
-}
-
-// ------------------------------------------------------------
-
-void Game::tickUpdate() {
+void Game::updateState(std::chrono::microseconds elapsed_time) {
 
   // Update state with respect to external events
 
@@ -85,8 +76,8 @@ void Game::tickUpdate() {
     // Acquire mutex protecting game state
     std::lock_guard<std::mutex> lock(this->state_mutex);
 
-    // Update state according to passage of time (1 tick)
-    this->state.internalUpdate();
+    // Update state according to passage of time
+    this->state.internalUpdate(elapsed_time);
 
     // Release mutex by letting lock go out of scope
   }
@@ -115,7 +106,8 @@ GameState Game::stateSnapshot() {
   std::lock_guard<std::mutex> lock(this->state_mutex);
 
   // Return copy of current state
-  return this->state;
+  GameState copy = this->state;
+  return copy;
 
   // Release mutex by letting lock go out of scope
 

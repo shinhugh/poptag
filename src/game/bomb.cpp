@@ -56,7 +56,7 @@ void Bomb::setRange(unsigned int range) {
 
 // ------------------------------------------------------------
 
-void Bomb::tick(std::chrono::microseconds elapsed_time) {
+void Bomb::update(std::chrono::microseconds elapsed_time) {
 
   this->tick_age++;
 
