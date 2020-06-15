@@ -18,21 +18,20 @@ private:
   float speed;
   enum Direction dir_move;
   enum Direction dir_face;
-  Board *board;
   unsigned int bomb_range;
-  void moveUp();
-  void moveRight();
-  void moveDown();
-  void moveLeft();
+  void moveUp(Board *);
+  void moveRight(Board *);
+  void moveDown(Board *);
+  void moveLeft(Board *);
 
 public:
-  Character(float, float, float, Board *, unsigned int);
-  float getY();
-  float getX();
-  Direction getDirFace();
-  unsigned int getBombRange();
+  Character(float, float, float, unsigned int);
+  float getY() const;
+  float getX() const;
+  Direction getDirFace() const;
+  unsigned int getBombRange() const;
   void setDirMove(Direction);
-  void tick();
+  void tick(Board *, std::chrono::microseconds);
 
 };
 

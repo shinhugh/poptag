@@ -1,4 +1,5 @@
-// Top-level class Game and top-level routine for game core thread
+// Wrapper around game state that moderates multi-threaded access and provides
+// a succinct interface for threads to use
 
 #ifndef GAME_H
 #define GAME_H
@@ -30,7 +31,7 @@ public:
   unsigned int getTickDuration();
   void tickUpdate();
   void queueEvent(const DataPacket&);
-  DataPacket readState();
+  GameState stateSnapshot();
 
 };
 

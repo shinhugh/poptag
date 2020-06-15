@@ -1,6 +1,5 @@
 #include "game_state.h"
 #include "event_data.h"
-#include "state_data.h"
 
 #include <iostream> // DEBUG
 
@@ -9,17 +8,17 @@
 GameState::GameState() :
 board(BOARD_HEIGHT, BOARD_WIDTH) {
 
-  this->characters.push_back(Character(0.5, 0.5, 0.01, &(this->board), 2));
+  this->characters.push_back(Character(0.5, 0.5, 0.01, 2));
 
 }
 
 // ------------------------------------------------------------
 
-void GameState::internalUpdate() {
+void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
 
   // Update positions of all characters
   for(unsigned int i = 0; i < this->characters.size(); i++) {
-    this->characters.at(i).tick();
+    this->characters.at(i).tick(&(this->board));
   }
 
   // Update ticks on all bombs
@@ -55,8 +54,7 @@ void GameState::externalUpdate(DataPacket packet) {
         if(event_data->initialize) {
           // Reset
           this->characters.clear();
-          this->characters.push_back(Character(0.5, 0.5, 0.01, &(this->board),
-          2));
+          this->characters.push_back(Character(0.5, 0.5, 0.01, 2));
         }
       }
       break;
@@ -131,24 +129,25 @@ void GameState::externalUpdate(DataPacket packet) {
 
 // ------------------------------------------------------------
 
-DataPacket GameState::readState() {
+const Board * GameState::getBoard() {
 
-  DataPacket packet;
-  StateData state_data;
+  return &(this->board);
 
-  // TEST
-  if(characters.empty()) {
-    state_data.character_y = 0;
-    state_data.character_x = 0;
-  } else {
-    state_data.character_y = this->characters.at(0).getY();
-    state_data.character_x = this->characters.at(0).getX();
-  }
-  // TEST
+}
 
-  packet.setData(&state_data, sizeof(StateData));
+// ------------------------------------------------------------
 
-  return packet;
+const std::vector<Character> * GameState::getCharacters() {
+
+  return &(this->characters);
+
+}
+
+// ------------------------------------------------------------
+
+const std::vector<Bomb> * GameState::getBombs() {
+
+  return &(this->bombs);
 
 }
 

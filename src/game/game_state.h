@@ -1,9 +1,12 @@
-// Ongoing state for a game instance
+// Data on the immediate state of a game instance
+// Has no control over the flow of time; requires an external/wrapper module
+// to moderate timing
 
 #ifndef GAME_STATE_H
 #define GAME_STATE_H
 
 #include <vector>
+#include <chrono>
 #include "data_packet.h"
 #include "board.h"
 #include "character.h"
@@ -20,11 +23,11 @@ private:
 
 public:
   GameState();
-  void internalUpdate();
+  void internalUpdate(std::chrono::microseconds);
   void externalUpdate(DataPacket);
-  DataPacket readState();
-
-  // void drawState(); // TODO: Remove
+  const Board * getBoard();
+  const std::vector<Character> * getCharacters();
+  const std::vector<Bomb> * getBombs();
 
 };
 

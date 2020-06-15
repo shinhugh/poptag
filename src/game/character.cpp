@@ -1,10 +1,8 @@
 #include "character.h"
 
-#define CHARACTER_WIDTH 0.8
-
 // ------------------------------------------------------------
 
-void Character::moveUp() {
+void Character::moveUp(Board *board) {
 
   // Face up
   this->dir_face = up;
@@ -36,13 +34,13 @@ void Character::moveUp() {
   top_right_dest[1] = static_cast<unsigned int>(top_right[1]);
 
   // Correct potential errors
-  if(top_right_dest[1] >= this->board->getWidth()) {
-    top_right_dest[1] = this->board->getWidth() - 1;
+  if(top_right_dest[1] >= board->getWidth()) {
+    top_right_dest[1] = board->getWidth() - 1;
   }
 
   // Check board terrain
-  if(this->board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground
-  && this->board->getTerrain(top_right_dest[0], top_right_dest[1]) == ground) {
+  if(board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground
+  && board->getTerrain(top_right_dest[0], top_right_dest[1]) == ground) {
     // Can move freely
     this->y -= this->speed;
   } else {
@@ -54,7 +52,7 @@ void Character::moveUp() {
 
 // ------------------------------------------------------------
 
-void Character::moveRight() {
+void Character::moveRight(Board *board) {
 
   // Face right
   this->dir_face = right;
@@ -70,9 +68,9 @@ void Character::moveRight() {
   bottom_right[1] = this->x + 0.5;
 
   // Movement should not take the character off the board
-  if(top_right[1] + this->speed >= this->board->getWidth()) {
+  if(top_right[1] + this->speed >= board->getWidth()) {
     // Place farthest right without going off the board
-    this->x = this->board->getWidth() - 0.5;
+    this->x = board->getWidth() - 0.5;
     return;
   }
 
@@ -87,13 +85,13 @@ void Character::moveRight() {
   + this->speed);
 
   // Correct potential errors
-  if(bottom_right_dest[0] >= this->board->getHeight()) {
-    bottom_right_dest[0] = this->board->getHeight() - 1;
+  if(bottom_right_dest[0] >= board->getHeight()) {
+    bottom_right_dest[0] = board->getHeight() - 1;
   }
 
   // Check board terrain
-  if(this->board->getTerrain(top_right_dest[0], top_right_dest[1]) == ground
-  && this->board->getTerrain(bottom_right_dest[0], bottom_right_dest[1])
+  if(board->getTerrain(top_right_dest[0], top_right_dest[1]) == ground
+  && board->getTerrain(bottom_right_dest[0], bottom_right_dest[1])
   == ground) {
     // Can move freely
     this->x += this->speed;
@@ -106,7 +104,7 @@ void Character::moveRight() {
 
 // ------------------------------------------------------------
 
-void Character::moveDown() {
+void Character::moveDown(Board *board) {
 
   // Face down
   this->dir_face = down;
@@ -122,9 +120,9 @@ void Character::moveDown() {
   bottom_left[1] = this->x > 0.5 ? this->x - 0.5 : 0;
 
   // Movement should not take the character off the board
-  if(bottom_right[0] + this->speed >= this->board->getHeight()) {
+  if(bottom_right[0] + this->speed >= board->getHeight()) {
     // Place farthest down without going off the board
-    this->y = this->board->getHeight() - 0.5;
+    this->y = board->getHeight() - 0.5;
     return;
   }
 
@@ -140,14 +138,14 @@ void Character::moveDown() {
   bottom_left_dest[1] = static_cast<unsigned int>(bottom_left[1]);
 
   // Correct potential errors
-  if(bottom_right_dest[1] >= this->board->getWidth()) {
-    bottom_right_dest[1] = this->board->getWidth() - 1;
+  if(bottom_right_dest[1] >= board->getWidth()) {
+    bottom_right_dest[1] = board->getWidth() - 1;
   }
 
   // Check board terrain
-  if(this->board->getTerrain(bottom_right_dest[0], bottom_right_dest[1])
+  if(board->getTerrain(bottom_right_dest[0], bottom_right_dest[1])
   == ground
-  && this->board->getTerrain(bottom_left_dest[0], bottom_left_dest[1])
+  && board->getTerrain(bottom_left_dest[0], bottom_left_dest[1])
   == ground) {
     // Can move freely
     this->y += this->speed;
@@ -160,7 +158,7 @@ void Character::moveDown() {
 
 // ------------------------------------------------------------
 
-void Character::moveLeft() {
+void Character::moveLeft(Board *board) {
 
   // Face left
   this->dir_face = left;
@@ -192,13 +190,13 @@ void Character::moveLeft() {
   top_left_dest[1] = static_cast<unsigned int>(top_left[1] - this->speed);
 
   // Correct potential errors
-  if(bottom_left_dest[0] >= this->board->getHeight()) {
-    bottom_left_dest[0] = this->board->getHeight() - 1;
+  if(bottom_left_dest[0] >= board->getHeight()) {
+    bottom_left_dest[0] = board->getHeight() - 1;
   }
 
   // Check board terrain
-  if(this->board->getTerrain(bottom_left_dest[0], bottom_left_dest[1]) == ground
-  && this->board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground) {
+  if(board->getTerrain(bottom_left_dest[0], bottom_left_dest[1]) == ground
+  && board->getTerrain(top_left_dest[0], top_left_dest[1]) == ground) {
     // Can move freely
     this->x -= this->speed;
   } else {
@@ -210,14 +208,13 @@ void Character::moveLeft() {
 
 // ------------------------------------------------------------
 
-Character::Character(float y, float x, float speed, Board *board,
-unsigned int bomb_range) :
-y(y), x(x), speed(speed), dir_move(stop), dir_face(down), board(board),
+Character::Character(float y, float x, float speed, unsigned int bomb_range) :
+y(y), x(x), speed(speed), dir_move(stop), dir_face(down),
 bomb_range(bomb_range) {}
 
 // ------------------------------------------------------------
 
-float Character::getY() {
+float Character::getY() const {
 
   return this->y;
 
@@ -225,7 +222,7 @@ float Character::getY() {
 
 // ------------------------------------------------------------
 
-float Character::getX() {
+float Character::getX() const {
 
   return this->x;
 
@@ -233,7 +230,7 @@ float Character::getX() {
 
 // ------------------------------------------------------------
 
-Direction Character::getDirFace() {
+Direction Character::getDirFace() const {
 
   return this->dir_face;
 
@@ -241,7 +238,7 @@ Direction Character::getDirFace() {
 
 // ------------------------------------------------------------
 
-unsigned int Character::getBombRange() {
+unsigned int Character::getBombRange() const {
 
   return this->bomb_range;
 
@@ -257,31 +254,31 @@ void Character::setDirMove(Direction dir_move) {
 
 // ------------------------------------------------------------
 
-void Character::tick() {
+void Character::tick(Board *board, std::chrono::microseconds elapsed_time) {
 
   switch(this->dir_move) {
     // Move up
     case up:
       {
-        this->moveUp();
+        this->moveUp(board);
       }
       break;
     // Move right
     case right:
       {
-        this->moveRight();
+        this->moveRight(board);
       }
       break;
     // Move down
     case down:
       {
-        this->moveDown();
+        this->moveDown(board);
       }
       break;
     // Move left
     case left:
       {
-        this->moveLeft();
+        this->moveLeft(board);
       }
       break;
     default:

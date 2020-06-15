@@ -1,5 +1,8 @@
 #include "game.h"
 
+#include <iostream> // DEBUG
+#include <string> // DEBUG
+
 // ------------------------------------------------------------
 
 Game::Game(unsigned int tick_duration) :
@@ -106,13 +109,13 @@ void Game::queueEvent(const DataPacket& packet) {
 
 // ------------------------------------------------------------
 
-DataPacket Game::readState() {
+GameState Game::stateSnapshot() {
 
   // Acquire mutex protecting game state
   std::lock_guard<std::mutex> lock(this->state_mutex);
 
-  // Return state
-  return this->state.readState();
+  // Return copy of current state
+  return this->state;
 
   // Release mutex by letting lock go out of scope
 

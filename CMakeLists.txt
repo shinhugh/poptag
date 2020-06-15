@@ -8,7 +8,7 @@ project(Poptag)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # Target for executable game
-add_executable(game glad/glad.c src/core/main.cpp src/core/thread_core.cpp
+add_executable(game lib/glad.c src/core/main.cpp src/core/thread_core.cpp
 src/core/thread_display.cpp src/core/game.cpp src/core/data_packet.cpp
 src/game/game_state.cpp src/game/board.cpp src/game/character.cpp
 src/game/bomb.cpp)
@@ -32,6 +32,7 @@ if(MSVC)
   "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif(MSVC)
 
+# Linux
 if(UNIX)
   target_link_libraries(game dl)
   target_link_libraries(game X11)

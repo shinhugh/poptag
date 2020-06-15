@@ -8,7 +8,7 @@ y(y), x(x), tick_detonate(tick_detonate), tick_age(0), range(range) {}
 
 // ------------------------------------------------------------
 
-unsigned int Bomb::getY() {
+unsigned int Bomb::getY() const {
 
   return this->y;
 
@@ -16,7 +16,7 @@ unsigned int Bomb::getY() {
 
 // ------------------------------------------------------------
 
-unsigned int Bomb::getX() {
+unsigned int Bomb::getX() const {
 
   return this->x;
 
@@ -24,7 +24,7 @@ unsigned int Bomb::getX() {
 
 // ------------------------------------------------------------
 
-unsigned int Bomb::getTickDetonate() {
+unsigned int Bomb::getTickDetonate() const {
 
   return this->tick_detonate;
 
@@ -32,7 +32,7 @@ unsigned int Bomb::getTickDetonate() {
 
 // ------------------------------------------------------------
 
-unsigned int Bomb::getTickAge() {
+unsigned int Bomb::getTickAge() const {
 
   return this->tick_age;
 
@@ -40,7 +40,7 @@ unsigned int Bomb::getTickAge() {
 
 // ------------------------------------------------------------
 
-unsigned int Bomb::getRange() {
+unsigned int Bomb::getRange() const {
 
   return this->range;
 
@@ -56,7 +56,7 @@ void Bomb::setRange(unsigned int range) {
 
 // ------------------------------------------------------------
 
-void Bomb::tick() {
+void Bomb::tick(std::chrono::microseconds elapsed_time) {
 
   this->tick_age++;
 

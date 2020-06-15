@@ -19,13 +19,13 @@ private:
 
 public:
   Bomb(unsigned int, unsigned int, unsigned int, unsigned int);
-  unsigned int getY();
-  unsigned int getX();
-  unsigned int getTickDetonate();
-  unsigned int getTickAge();
-  unsigned int getRange();
+  unsigned int getY() const;
+  unsigned int getX() const;
+  unsigned int getTickDetonate() const;
+  unsigned int getTickAge() const;
+  unsigned int getRange() const;
   void setRange(unsigned int);
-  void tick();
+  void tick(std::chrono::microseconds elapsed_time);
 
 };
 

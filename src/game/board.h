@@ -23,9 +23,9 @@ public:
   Board(const Board&);
   Board& operator=(const Board&);
   ~Board();
-  unsigned int getHeight();
-  unsigned int getWidth();
-  Terrain getTerrain(unsigned int, unsigned int);
+  unsigned int getHeight() const;
+  unsigned int getWidth() const;
+  Terrain getTerrain(unsigned int, unsigned int) const;
   void detonateBomb(unsigned int, unsigned int, unsigned int);
 
 };

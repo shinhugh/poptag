@@ -5,9 +5,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "thread_display.h"
+#include "game_state.h"
 #include "data_packet.h"
 #include "event_data.h"
-#include "state_data.h"
 
 #define FRAMES_PER_SEC 5
 
@@ -35,8 +35,6 @@ const char *fragment_shader_src = "#version 330 core\n"
 static void error_callback(int, const char*);
 
 static void key_callback(GLFWwindow *, int, int, int, int);
-
-static void printState(Game&);
 
 // ------------------------------------------------------------
 
@@ -128,23 +126,19 @@ void threadRoutine_Display(Game& game) {
   while (!(game.isExit()) && !glfwWindowShouldClose(window))
   {
 
-    // Print state - THIS IS A TEMPORARY REPLACEMENT FOR GRAPHICS
-    // printState(game);
-
     // Read game state
-    DataPacket packet = game.readState();
-    StateData *state_data = static_cast<StateData *>(packet.getData());
+    GameState game_state = game.stateSnapshot();
 
-    // Update location of square
-    vertices[0] = -1 + ((state_data->character_x + 0.5) / 5);
-    vertices[1] = 1 - ((state_data->character_y - 0.5) / 5);
-    vertices[3] = -1 + ((state_data->character_x + 0.5) / 5);
-    vertices[4] = 1 - ((state_data->character_y + 0.5) / 5);
-    vertices[6] = -1 + ((state_data->character_x - 0.5) / 5);
-    vertices[7] = 1 - ((state_data->character_y - 0.5) / 5);
-    vertices[9] = -1 + ((state_data->character_x - 0.5) / 5);
-    vertices[10] = 1 - ((state_data->character_y + 0.5) / 5);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+    // TODO: Paint representation of game state
+    /*
+    std::cerr <<
+    "Characters:\n"
+    + "("
+    + std::to_string(game_state.getCharacters()->at(0).getX())
+    + ", "
+    + std::to_string(game_state.getCharacters()->at(0).getY())
+    + ")\n";
+    */
 
     // Get frame dimensions and specify viewport
     int width, height;
@@ -314,17 +308,5 @@ int mods) {
     packet.setData(&event_data, sizeof(EventData_PlaceBomb));
     game_instance->queueEvent(packet);
   }
-
-}
-
-// ------------------------------------------------------------
-
-static void printState(Game& game) {
-
-  DataPacket packet = game.readState();
-  StateData *state_data = static_cast<StateData *>(packet.getData());
-
-  std::cerr << "Character: (" + std::to_string(state_data->character_y) + ", "
-  + std::to_string(state_data->character_x) + ")\n";
 
 }

@@ -73,7 +73,7 @@ Board::~Board() {
 
 // ------------------------------------------------------------
 
-unsigned int Board::getHeight() {
+unsigned int Board::getHeight() const {
 
   return this->height;
 
@@ -81,7 +81,7 @@ unsigned int Board::getHeight() {
 
 // ------------------------------------------------------------
 
-unsigned int Board::getWidth() {
+unsigned int Board::getWidth() const {
 
   return this->width;
 
@@ -89,7 +89,7 @@ unsigned int Board::getWidth() {
 
 // ------------------------------------------------------------
 
-Terrain Board::getTerrain(unsigned int y, unsigned int x) {
+Terrain Board::getTerrain(unsigned int y, unsigned int x) const {
 
   return this->terrain[y][x];
 
