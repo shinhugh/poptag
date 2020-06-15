@@ -131,9 +131,9 @@ void threadRoutine_Display(Game& game) {
     std::cerr <<
     std::string("Characters:\n")
     + std::string("(")
-    + std::to_string(game_state.getCharacters()->at(0).getX())
-    + std::string(", ")
     + std::to_string(game_state.getCharacters()->at(0).getY())
+    + std::string(", ")
+    + std::to_string(game_state.getCharacters()->at(0).getX())
     + std::string(")\n");
 
     // Get frame dimensions and specify viewport
