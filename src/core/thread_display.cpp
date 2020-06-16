@@ -136,14 +136,16 @@ void threadRoutine_Display(Game& game) {
     // TODO: Paint representation of game state
 
     // DEBUG START
-    std::cerr <<
-    std::string("Character: (")
-    + std::to_string(game_state.getCharacters()->at(0).getHitbox()
-    ->getCenterY())
-    + std::string(", ")
-    + std::to_string(game_state.getCharacters()->at(0).getHitbox()
-    ->getCenterX())
-    + std::string(")\n");
+    if(!game_state.getCharacters()->empty()) {
+      std::cerr <<
+      std::string("Character: (")
+      + std::to_string(game_state.getCharacters()->at(0).getHitbox()
+      ->getCenterY())
+      + std::string(", ")
+      + std::to_string(game_state.getCharacters()->at(0).getHitbox()
+      ->getCenterX())
+      + std::string(")\n");
+    }
     /*
     for(unsigned int y = 0; y < game_state.getBoard()->getHeight(); y++) {
       for(unsigned int x = 0; x < game_state.getBoard()->getWidth(); x++) {
@@ -219,7 +221,7 @@ int mods) {
 
   static unsigned int current_direction = 0;
 
-  // Escape
+  // Escape, pressed
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
     game_instance->exit();

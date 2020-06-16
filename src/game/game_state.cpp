@@ -33,7 +33,8 @@ board_height(BOARD_HEIGHT), board_width(BOARD_WIDTH) {
 // ------------------------------------------------------------
 
 GameState::GameState(const GameState& src) :
-board_height(src.board_height), board_width(src.board_width) {
+board_height(src.board_height), board_width(src.board_width),
+characters(src.characters) {
 
   // Allocate memory
   this->bombs = new Bomb *[this->board_height];
@@ -80,9 +81,10 @@ GameState& GameState::operator=(const GameState& src) {
   delete[] this->blocks;
   delete[] this->blocks_exist;
 
-  // Copy width and height from source
+  // Copy from source
   this->board_height = src.board_height;
   this->board_width = src.board_width;
+  this->characters = src.characters;
 
   // Allocate memory
   this->bombs = new Bomb *[this->board_height];
