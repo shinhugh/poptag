@@ -10,7 +10,7 @@ height(height), width(width) {
   this->blocks_exist = new bool *[this->height];
   for(unsigned int y = 0; y < this->height; y++) {
     this->blocks[y] = new BoardBlock[this->width];
-    this->blocks_exist[y] = new BoardBlock[this->width];
+    this->blocks_exist[y] = new bool[this->width];
     // Unset all flags
     for(unsigned int x = 0; x < this->width; x++) {
       this->blocks_exist[y][x] = false;
@@ -29,7 +29,7 @@ height(src.height), width(src.width) {
   this->blocks_exist = new bool *[this->height];
   for(unsigned int y = 0; y < this->height; y++) {
     this->blocks[y] = new BoardBlock[this->width];
-    this->blocks_exist[y] = new BoardBlock[this->width];
+    this->blocks_exist[y] = new bool[this->width];
   }
 
   // Copy from source
@@ -63,7 +63,7 @@ Board& Board::operator=(const Board& src) {
   this->blocks_exist = new bool *[this->height];
   for(unsigned int y = 0; y < this->height; y++) {
     this->blocks[y] = new BoardBlock[this->width];
-    this->blocks_exist[y] = new BoardBlock[this->width];
+    this->blocks_exist[y] = new bool[this->width];
   }
 
   // Copy from source
@@ -121,6 +121,15 @@ bool Board::getBlockExist(unsigned int y, unsigned int x) const {
 const BoardBlock * Board::getBlock(unsigned int y, unsigned int x) const {
 
   return &(this->blocks[y][x]);
+
+}
+
+// ------------------------------------------------------------
+
+void Board::createBlock(unsigned int y, unsigned int x) {
+
+  this->blocks[y][x] = BoardBlock(y, x, unbreakable);
+  this->blocks_exist[y][x] = true;
 
 }
 

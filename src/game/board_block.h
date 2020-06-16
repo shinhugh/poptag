@@ -18,8 +18,9 @@ private:
   BlockType type;
 
 public:
+  BoardBlock();
   BoardBlock(unsigned int, unsigned int, BlockType);
-  const Hitbox * getHitbox();
+  const Hitbox * getHitbox() const;
 
 };
 

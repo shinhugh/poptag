@@ -26,6 +26,8 @@ public:
   unsigned int getWidth() const;
   bool getBlockExist(unsigned int, unsigned int) const;
   const BoardBlock * getBlock(unsigned int, unsigned int) const;
+  void createBlock(unsigned int, unsigned int);
+
   // void detonateBomb(unsigned int, unsigned int, unsigned int);
 
 };

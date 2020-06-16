@@ -86,8 +86,10 @@ float area_height, float area_width) {
       || (lower_bound <= corner_ul[1] && upper_bound >= corner_ur[1])) {
         // Collision may be possible, depending on distance traveled
         float threshold = neighbors->at(i)->center[0]
-        + (neighbors->at(i)->dimensions[0] / 2);
-        if(closest_threshold < threshold) {
+        + (neighbors->at(i)->dimensions[0] / 2) <= area_height
+        ? neighbors->at(i)->center[0] + (neighbors->at(i)->dimensions[0] / 2)
+        : area_height;
+        if(threshold <= corner_ul[0] && closest_threshold < threshold) {
           // Collision confirmed
           closest_threshold = threshold;
         }
@@ -106,7 +108,57 @@ void Hitbox::moveRight(float distance,
 const std::vector<const Hitbox *> *neighbors,
 float area_height, float area_width) {
 
+  // Two relevant corners
+  float corner_ur[2];
+  float corner_dr[2];
 
+  // Up right corner, y-coordinate
+  corner_ur[0] = this->center[0] > (dimensions[0] / 2)
+  ? this->center[0] - (dimensions[0] / 2) : 0;
+  // Up right corner, x-coordinate
+  corner_ur[1] = this->center[1] + (dimensions[1] / 2) <= area_width
+  ? this->center[1] + (dimensions[1] / 2) : area_width;
+  // Down right corner, y-coordinate
+  corner_dr[0] = this->center[0] + (dimensions[0] / 2) <= area_height
+  ? this->center[0] + (dimensions[0] / 2) : area_height;
+  // Down right corner, x-coordinate
+  corner_dr[1] = corner_ur[1];
+
+  // Farthest boundary the hitbox can touch
+  float closest_threshold
+  = corner_ur[1] + distance <= area_width ? corner_ur[1] + distance
+  : area_width;
+
+  // Check all neighbor hitboxes for potential collision
+  if(neighbors) {
+    for(unsigned int i = 0; i < neighbors->size(); i++) {
+      // Current neighbor's boundaries along y-axis
+      float lower_bound = neighbors->at(i)->center[0]
+      > (neighbors->at(i)->dimensions[0] / 2)
+      ? neighbors->at(i)->center[0] - (neighbors->at(i)->dimensions[0] / 2) : 0;
+      float upper_bound = neighbors->at(i)->center[0]
+      + (neighbors->at(i)->dimensions[0] / 2) <= area_height
+      ? neighbors->at(i)->center[0] + (neighbors->at(i)->dimensions[0] / 2)
+      : area_height;
+      // Check for possibility of collision
+      if((lower_bound >= corner_ur[0] && lower_bound < corner_dr[0])
+      || (upper_bound <= corner_dr[0] && upper_bound > corner_ur[0])
+      || (lower_bound <= corner_ur[0] && upper_bound >= corner_dr[0])) {
+        // Collision may be possible, depending on distance traveled
+        float threshold = neighbors->at(i)->center[1]
+        > (neighbors->at(i)->dimensions[1] / 2)
+        ? neighbors->at(i)->center[1] - (neighbors->at(i)->dimensions[1] / 2)
+        : 0;
+        if(threshold >= corner_ur[1] && closest_threshold > threshold) {
+          // Collision confirmed
+          closest_threshold = threshold;
+        }
+      }
+    }
+  }
+
+  // Move to closest collision (if at all)
+  this->center[1] = closest_threshold - (this->dimensions[1] / 2);
 
 }
 
@@ -116,7 +168,57 @@ void Hitbox::moveDown(float distance,
 const std::vector<const Hitbox *> *neighbors,
 float area_height, float area_width) {
 
+  // Two relevant corners
+  float corner_dl[2];
+  float corner_dr[2];
 
+  // Down left corner, y-coordinate
+  corner_dl[0] = this->center[0] + (dimensions[0] / 2) <= area_height
+  ? this->center[0] + (dimensions[0] / 2) : area_height;
+  // Down left corner, x-coordinate
+  corner_dl[1] = this->center[1] > (dimensions[1] / 2)
+  ? this->center[1] - (dimensions[1] / 2) : 0;
+  // Down right corner, y-coordinate
+  corner_dr[0] = corner_dl[0];
+  // Down right corner, x-coordinate
+  corner_dr[1] = this->center[1] + (dimensions[1] / 2) <= area_width
+  ? this->center[1] + (dimensions[1] / 2) : area_width;
+
+  // Farthest boundary the hitbox can touch
+  float closest_threshold
+  = corner_dl[0] + distance <= area_height ? corner_dl[0] + distance
+  : area_height;
+
+  // Check all neighbor hitboxes for potential collision
+  if(neighbors) {
+    for(unsigned int i = 0; i < neighbors->size(); i++) {
+      // Current neighbor's boundaries along x-axis
+      float lower_bound = neighbors->at(i)->center[1]
+      > (neighbors->at(i)->dimensions[1] / 2)
+      ? neighbors->at(i)->center[1] - (neighbors->at(i)->dimensions[1] / 2) : 0;
+      float upper_bound = neighbors->at(i)->center[1]
+      + (neighbors->at(i)->dimensions[1] / 2) <= area_width
+      ? neighbors->at(i)->center[1] + (neighbors->at(i)->dimensions[1] / 2)
+      : area_width;
+      // Check for possibility of collision
+      if((lower_bound >= corner_dl[1] && lower_bound < corner_dr[1])
+      || (upper_bound <= corner_dr[1] && upper_bound > corner_dl[1])
+      || (lower_bound <= corner_dl[1] && upper_bound >= corner_dr[1])) {
+        // Collision may be possible, depending on distance traveled
+        float threshold = neighbors->at(i)->center[0]
+        > (neighbors->at(i)->dimensions[0] / 2)
+        ? neighbors->at(i)->center[0] - (neighbors->at(i)->dimensions[0] / 2)
+        : 0;
+        if(threshold >= corner_dl[0] && closest_threshold > threshold) {
+          // Collision confirmed
+          closest_threshold = threshold;
+        }
+      }
+    }
+  }
+
+  // Move to closest collision (if at all)
+  this->center[0] = closest_threshold - (this->dimensions[0] / 2);
 
 }
 
@@ -140,7 +242,7 @@ float area_height, float area_width) {
   corner_dl[0] = this->center[0] + (dimensions[0] / 2) <= area_height
   ? this->center[0] + (dimensions[0] / 2) : area_height;
   // Down left corner, x-coordinate
-  corner_dl[1] = corner_dl[1];
+  corner_dl[1] = corner_ul[1];
 
   // Farthest boundary the hitbox can touch
   float closest_threshold
@@ -163,8 +265,10 @@ float area_height, float area_width) {
       || (lower_bound <= corner_ul[0] && upper_bound >= corner_dl[0])) {
         // Collision may be possible, depending on distance traveled
         float threshold = neighbors->at(i)->center[1]
-        + (neighbors->at(i)->dimensions[1] / 2);
-        if(closest_threshold < threshold) {
+        + (neighbors->at(i)->dimensions[1] / 2) <= area_width
+        ? neighbors->at(i)->center[1] + (neighbors->at(i)->dimensions[1] / 2)
+        : area_width;
+        if(threshold <= corner_ul[1] && closest_threshold < threshold) {
           // Collision confirmed
           closest_threshold = threshold;
         }

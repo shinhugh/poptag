@@ -53,6 +53,9 @@ void GameState::externalUpdate(DataPacket packet) {
           // Reset
           this->characters.clear();
           this->characters.push_back(Character(0.5, 0.5, 1, 2));
+          // Create blocks
+          this->board.createBlock(2, 2);
+          this->board.createBlock(3, 2);
         }
       }
       break;
@@ -66,10 +69,12 @@ void GameState::externalUpdate(DataPacket packet) {
         // Get character's bomb traits
         unsigned int bomb_y
         = static_cast<unsigned int>
-        (this->characters.at(event_data->character_id).getY());
+        (this->characters.at(event_data->character_id).getHitbox()
+        ->getCenterY());
         unsigned int bomb_x
         = static_cast<unsigned int>
-        (this->characters.at(event_data->character_id).getX());
+        (this->characters.at(event_data->character_id).getHitbox()
+        ->getCenterX());
         unsigned int bomb_range
         = this->characters.at(event_data->character_id).getBombRange();
         unsigned int bomb_key = bomb_y * this->board.getWidth() + bomb_x;
@@ -132,7 +137,7 @@ void GameState::externalUpdate(DataPacket packet) {
 
 // ------------------------------------------------------------
 
-const Board * GameState::getBoard() {
+const Board * GameState::getBoard() const {
 
   return &(this->board);
 
@@ -140,7 +145,7 @@ const Board * GameState::getBoard() {
 
 // ------------------------------------------------------------
 
-const std::vector<Character> * GameState::getCharacters() {
+const std::vector<Character> * GameState::getCharacters() const {
 
   return &(this->characters);
 
@@ -148,7 +153,7 @@ const std::vector<Character> * GameState::getCharacters() {
 
 // ------------------------------------------------------------
 
-const std::map<unsigned int, Bomb> * GameState::getBombs() {
+const std::map<unsigned int, Bomb> * GameState::getBombs() const {
 
   return &(this->bombs);
 

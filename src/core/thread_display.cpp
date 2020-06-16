@@ -5,9 +5,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "thread_display.h"
-#include "game_state.h"
 #include "data_packet.h"
 #include "event_data.h"
+#include "game_state.h"
+#include "hitbox.h"
+#include "character.h"
 
 // ------------------------------------------------------------
 
@@ -128,15 +130,15 @@ void threadRoutine_Display(Game& game) {
     GameState game_state = game.stateSnapshot();
 
     // TODO: Paint representation of game state
-    /*
     std::cerr <<
     std::string("Characters:\n")
     + std::string("(")
-    + std::to_string(game_state.getCharacters()->at(0).getY())
+    + std::to_string(game_state.getCharacters()->at(0).getHitbox()
+    ->getCenterY())
     + std::string(", ")
-    + std::to_string(game_state.getCharacters()->at(0).getX())
+    + std::to_string(game_state.getCharacters()->at(0).getHitbox()
+    ->getCenterX())
     + std::string(")\n");
-    */
 
     // Get frame dimensions and specify viewport
     int width, height;
@@ -199,6 +201,16 @@ int mods) {
   if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
     game_instance->exit();
+  }
+
+  // I, pressed
+  else if(key == GLFW_KEY_I && action == GLFW_PRESS) {
+    DataPacket packet;
+    EventData_Initialize event_data;
+    event_data.initialize = true;
+    packet.setType(initialize);
+    packet.setData(&event_data, sizeof(EventData_Initialize));
+    game_instance->queueEvent(packet);
   }
 
   // W, pressed

@@ -29,7 +29,7 @@ public:
   Direction getDirFace() const;
   void setDirMove(Direction);
   unsigned int getBombRange() const;
-  void update(Board *, std::chrono::microseconds);
+  void update(const Board *, std::chrono::microseconds);
 
 };
 

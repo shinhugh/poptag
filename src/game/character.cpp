@@ -3,12 +3,8 @@
 // ------------------------------------------------------------
 
 Character::Character(float y, float x, float speed, unsigned int bomb_range) :
-speed(speed), dir_move(stop), dir_face(down),
-bomb_range(bomb_range) {
-
-  hitbox = Hitbox(y, x, 1, 1);
-
-}
+hitbox(y, x, 1, 1), speed(speed), dir_move(stop), dir_face(down),
+bomb_range(bomb_range) {}
 
 // ------------------------------------------------------------
 
@@ -44,34 +40,49 @@ void Character::setDirMove(Direction dir_move) {
 
 // ------------------------------------------------------------
 
-void Character::update(Board *board, std::chrono::microseconds elapsed_time) {
+void Character::update(const Board *board,
+std::chrono::microseconds elapsed_time) {
 
   // Distance traveled
   float distance = elapsed_time.count() * this->speed / 1000000;
+
+  // Blocks on board
+  std::vector<const Hitbox *> blocks;
+  for(unsigned int y = 0; y < board->getHeight(); y++) {
+    for(unsigned int x = 0; x < board->getWidth(); x++) {
+      if(board->getBlockExist(y, x)) {
+        blocks.push_back(board->getBlock(y, x)->getHitbox());
+      }
+    }
+  }
 
   switch(this->dir_move) {
     // Move up
     case up:
       {
-        this->hitbox.moveUp(distance, , board->getHeight(), board->getWidth());
+        this->hitbox.moveUp(distance, &blocks, board->getHeight(),
+        board->getWidth());
       }
       break;
     // Move right
     case right:
       {
-        this->moveRight(board, distance);
+        this->hitbox.moveRight(distance, &blocks, board->getHeight(),
+        board->getWidth());
       }
       break;
     // Move down
     case down:
       {
-        this->moveDown(board, distance);
+        this->hitbox.moveDown(distance, &blocks, board->getHeight(),
+        board->getWidth());
       }
       break;
     // Move left
     case left:
       {
-        this->moveLeft(board, distance);
+        this->hitbox.moveLeft(distance, &blocks, board->getHeight(),
+        board->getWidth());
       }
       break;
     default:

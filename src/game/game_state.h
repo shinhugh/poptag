@@ -26,9 +26,9 @@ public:
   GameState();
   void internalUpdate(std::chrono::microseconds);
   void externalUpdate(DataPacket);
-  const Board * getBoard();
-  const std::vector<Character> * getCharacters();
-  const std::map<unsigned int, Bomb> * getBombs();
+  const Board * getBoard() const;
+  const std::vector<Character> * getCharacters() const;
+  const std::map<unsigned int, Bomb> * getBombs() const;
 
 };
 
