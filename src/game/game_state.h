@@ -29,6 +29,7 @@ private:
   bool **blocks_exist;
 
   void createBlock(unsigned int, unsigned int);
+  void explodeBomb(unsigned int, unsigned int);
 
 public:
   GameState();

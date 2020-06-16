@@ -19,6 +19,41 @@ void GameState::createBlock(unsigned int y, unsigned int x) {
 
 // ------------------------------------------------------------
 
+void GameState::explodeBomb(unsigned int y, unsigned int x) {
+
+  if(!(this->bombs_exist[y][x])) {
+    return;
+  }
+
+  // Get coordintes the explosion reaches
+  std::vector<unsigned int> coordinates
+  = this->bombs[y][x].explosionCoordinates(this->board_height,
+  this->board_width);
+  // Remove bomb
+  this->bombs_exist[y][x] = false;
+  // Iterate through all coordinates the explosion reaches
+  for(unsigned int i = 0; i + 1 < coordinates.size(); i += 2) {
+    unsigned int coor_y = coordinates.at(i);
+    unsigned int coor_x = coordinates.at(i + 1);
+    // Destroy block if one exists
+    this->blocks_exist[coor_y][coor_x] = false;
+    // Detonate bomb if one exists
+    if(this->bombs_exist[coor_y][coor_x]) {
+      this->explodeBomb(coor_y, coor_x);
+    }
+    // Create explosion
+    if(this->explosions_exist[coor_y][coor_x]) {
+      this->explosions[coor_y][coor_x].resetTimeAge();
+    } else {
+      this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x);
+      this->explosions_exist[coor_y][coor_x] = true;
+    }
+  }
+
+}
+
+// ------------------------------------------------------------
+
 GameState::GameState() :
 board_height(BOARD_HEIGHT), board_width(BOARD_WIDTH) {
 
@@ -276,28 +311,7 @@ void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
         this->bombs[y][x].update(elapsed_time);
         if(this->bombs[y][x].getTimeAge()
         >= this->bombs[y][x].getTimeDetonate()) {
-          // Get coordintes the explosion reaches
-          std::vector<unsigned int> coordinates
-          = this->bombs[y][x].explosionCoordinates(this->board_height,
-          this->board_width);
-          // Remove bomb
-          this->bombs_exist[y][x] = false;
-          // Destroy blocks, detonate other bombs, and create explosions
-          for(unsigned int i = 0; i + 1 < coordinates.size(); i += 2) {
-            unsigned int coor_y = coordinates.at(i);
-            unsigned int coor_x = coordinates.at(i + 1);
-            // Destroy block
-            this->blocks_exist[coor_y][coor_x] = false;
-            // Detonate other bombs
-            // TODO
-            // Create explosion
-            if(this->explosions_exist[coor_y][coor_x]) {
-              this->explosions[coor_y][coor_x].resetTimeAge();
-            } else {
-              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x);
-              this->explosions_exist[coor_y][coor_x] = true;
-            }
-          }
+          this->explodeBomb(y, x);
         }
       }
     }
