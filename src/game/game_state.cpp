@@ -8,22 +8,38 @@
 
 // ------------------------------------------------------------
 
+void GameState::createBlock(unsigned int y, unsigned int x) {
+
+  if(!(this->blocks_exist[y][x])) {
+    this->blocks[y][x] = BoardBlock(y, x, unbreakable);
+    this->blocks_exist[y][x] = true;
+  }
+
+}
+
+// ------------------------------------------------------------
+
 GameState::GameState() :
 board_height(BOARD_HEIGHT), board_width(BOARD_WIDTH) {
 
   // Allocate memory
   this->bombs = new Bomb *[this->board_height];
   this->bombs_exist = new bool *[this->board_height];
+  this->explosions = new Explosion *[this->board_height];
+  this->explosions_exist = new bool *[this->board_height];
   this->blocks = new BoardBlock *[this->board_height];
   this->blocks_exist = new bool *[this->board_height];
   for(unsigned int y = 0; y < this->board_height; y++) {
     this->bombs[y] = new Bomb[this->board_width];
     this->bombs_exist[y] = new bool[this->board_width];
+    this->explosions[y] = new Explosion[this->board_width];
+    this->explosions_exist[y] = new bool[this->board_width];
     this->blocks[y] = new BoardBlock[this->board_width];
     this->blocks_exist[y] = new bool[this->board_width];
     // Unset all flags
     for(unsigned int x = 0; x < this->board_width; x++) {
       this->bombs_exist[y][x] = false;
+      this->explosions_exist[y][x] = false;
       this->blocks_exist[y][x] = false;
     }
   }
@@ -39,16 +55,21 @@ characters(src.characters) {
   // Allocate memory
   this->bombs = new Bomb *[this->board_height];
   this->bombs_exist = new bool *[this->board_height];
+  this->explosions = new Explosion *[this->board_height];
+  this->explosions_exist = new bool *[this->board_height];
   this->blocks = new BoardBlock *[this->board_height];
   this->blocks_exist = new bool *[this->board_height];
   for(unsigned int y = 0; y < this->board_height; y++) {
     this->bombs[y] = new Bomb[this->board_width];
     this->bombs_exist[y] = new bool[this->board_width];
+    this->explosions[y] = new Explosion[this->board_width];
+    this->explosions_exist[y] = new bool[this->board_width];
     this->blocks[y] = new BoardBlock[this->board_width];
     this->blocks_exist[y] = new bool[this->board_width];
     // Unset all flags
     for(unsigned int x = 0; x < this->board_width; x++) {
       this->bombs_exist[y][x] = false;
+      this->explosions_exist[y][x] = false;
       this->blocks_exist[y][x] = false;
     }
   }
@@ -58,6 +79,8 @@ characters(src.characters) {
     for(unsigned int x = 0; x < this->board_width; x++) {
       this->bombs[y][x] = src.bombs[y][x];
       this->bombs_exist[y][x] = src.bombs_exist[y][x];
+      this->explosions[y][x] = src.explosions[y][x];
+      this->explosions_exist[y][x] = src.explosions_exist[y][x];
       this->blocks[y][x] = src.blocks[y][x];
       this->blocks_exist[y][x] = src.blocks_exist[y][x];
     }
@@ -73,11 +96,15 @@ GameState& GameState::operator=(const GameState& src) {
   for(unsigned int y = 0; y < this->board_height; y++) {
     delete[] this->bombs[y];
     delete[] this->bombs_exist[y];
+    delete[] this->explosions[y];
+    delete[] this->explosions_exist[y];
     delete[] this->blocks[y];
     delete[] this->blocks_exist[y];
   }
   delete[] this->bombs;
   delete[] this->bombs_exist;
+  delete[] this->explosions;
+  delete[] this->explosions_exist;
   delete[] this->blocks;
   delete[] this->blocks_exist;
 
@@ -89,16 +116,21 @@ GameState& GameState::operator=(const GameState& src) {
   // Allocate memory
   this->bombs = new Bomb *[this->board_height];
   this->bombs_exist = new bool *[this->board_height];
+  this->explosions = new Explosion *[this->board_height];
+  this->explosions_exist = new bool *[this->board_height];
   this->blocks = new BoardBlock *[this->board_height];
   this->blocks_exist = new bool *[this->board_height];
   for(unsigned int y = 0; y < this->board_height; y++) {
     this->bombs[y] = new Bomb[this->board_width];
     this->bombs_exist[y] = new bool[this->board_width];
+    this->explosions[y] = new Explosion[this->board_width];
+    this->explosions_exist[y] = new bool[this->board_width];
     this->blocks[y] = new BoardBlock[this->board_width];
     this->blocks_exist[y] = new bool[this->board_width];
     // Unset all flags
     for(unsigned int x = 0; x < this->board_width; x++) {
       this->bombs_exist[y][x] = false;
+      this->explosions_exist[y][x] = false;
       this->blocks_exist[y][x] = false;
     }
   }
@@ -108,6 +140,8 @@ GameState& GameState::operator=(const GameState& src) {
     for(unsigned int x = 0; x < this->board_width; x++) {
       this->bombs[y][x] = src.bombs[y][x];
       this->bombs_exist[y][x] = src.bombs_exist[y][x];
+      this->explosions[y][x] = src.explosions[y][x];
+      this->explosions_exist[y][x] = src.explosions_exist[y][x];
       this->blocks[y][x] = src.blocks[y][x];
       this->blocks_exist[y][x] = src.blocks_exist[y][x];
     }
@@ -125,11 +159,15 @@ GameState::~GameState() {
   for(unsigned int y = 0; y < this->board_height; y++) {
     delete[] this->bombs[y];
     delete[] this->bombs_exist[y];
+    delete[] this->explosions[y];
+    delete[] this->explosions_exist[y];
     delete[] this->blocks[y];
     delete[] this->blocks_exist[y];
   }
   delete[] this->bombs;
   delete[] this->bombs_exist;
+  delete[] this->explosions;
+  delete[] this->explosions_exist;
   delete[] this->blocks;
   delete[] this->blocks_exist;
 
@@ -177,6 +215,23 @@ bool GameState::getBombExist(unsigned int y, unsigned int x) const {
 
 // ------------------------------------------------------------
 
+const Explosion * GameState::getExplosion(unsigned int y, unsigned int x) const
+{
+
+  return &(this->explosions[y][x]);
+
+}
+
+// ------------------------------------------------------------
+
+bool GameState::getExplosionExist(unsigned int y, unsigned int x) const {
+
+  return this->explosions_exist[y][x];
+
+}
+
+// ------------------------------------------------------------
+
 const BoardBlock * GameState::getBlock(unsigned int y, unsigned int x) const {
 
   return &(this->blocks[y][x]);
@@ -193,17 +248,6 @@ bool GameState::getBlockExist(unsigned int y, unsigned int x) const {
 
 // ------------------------------------------------------------
 
-void GameState::createBlock(unsigned int y, unsigned int x) {
-
-  if(!(this->blocks_exist[y][x])) {
-    this->blocks[y][x] = BoardBlock(y, x, unbreakable);
-    this->blocks_exist[y][x] = true;
-  }
-
-}
-
-// ------------------------------------------------------------
-
 void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
 
   // Update positions of all characters
@@ -211,16 +255,49 @@ void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
     this->characters.at(i).update(this, elapsed_time);
   }
 
-  // Update ticks on all bombs
+  // Update all explosions
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      if(this->explosions_exist[y][x]) {
+        this->explosions[y][x].update(elapsed_time);
+        if(this->explosions[y][x].getTimeAge()
+        >= this->explosions[y][x].getTimeDisappear()) {
+          // Remove explosion
+          this->explosions_exist[y][x] = false;
+        }
+      }
+    }
+  }
+
+  // Update all bombs
   for(unsigned int y = 0; y < this->board_height; y++) {
     for(unsigned int x = 0; x < this->board_width; x++) {
       if(this->bombs_exist[y][x]) {
         this->bombs[y][x].update(elapsed_time);
         if(this->bombs[y][x].getTimeAge()
         >= this->bombs[y][x].getTimeDetonate()) {
-          // Remove bomb from list
+          // Get coordintes the explosion reaches
+          std::vector<unsigned int> coordinates
+          = this->bombs[y][x].explosionCoordinates(this->board_height,
+          this->board_width);
+          // Remove bomb
           this->bombs_exist[y][x] = false;
-          std::cerr << "BOOM!\n";
+          // Destroy blocks, detonate other bombs, and create explosions
+          for(unsigned int i = 0; i + 1 < coordinates.size(); i += 2) {
+            unsigned int coor_y = coordinates.at(i);
+            unsigned int coor_x = coordinates.at(i + 1);
+            // Destroy block
+            this->blocks_exist[coor_y][coor_x] = false;
+            // Detonate other bombs
+            // TODO
+            // Create explosion
+            if(this->explosions_exist[coor_y][coor_x]) {
+              this->explosions[coor_y][coor_x].resetTimeAge();
+            } else {
+              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x);
+              this->explosions_exist[coor_y][coor_x] = true;
+            }
+          }
         }
       }
     }
@@ -243,7 +320,7 @@ void GameState::externalUpdate(DataPacket packet) {
         if(event_data->initialize) {
           // Reset
           this->characters.clear();
-          this->characters.push_back(Character(1.5, 1.5, 1, 2));
+          this->characters.push_back(Character(1.5, 1.5, 5, 2));
           // Create blocks
           this->createBlock(0, 0);
           this->createBlock(1, 0);

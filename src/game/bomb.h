@@ -4,6 +4,7 @@
 #define BOMB_H
 
 #include <chrono>
+#include <vector>
 #include "hitbox.h"
 
 // ------------------------------------------------------------
@@ -23,6 +24,8 @@ public:
   std::chrono::milliseconds getTimeDetonate() const;
   std::chrono::microseconds getTimeAge() const;
   unsigned int getRange() const;
+  std::vector<unsigned int> explosionCoordinates(unsigned int, unsigned int)
+  const;
   void update(std::chrono::microseconds elapsed_time);
 
 };

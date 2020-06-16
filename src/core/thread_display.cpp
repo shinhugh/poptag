@@ -36,6 +36,11 @@ static void error_callback(int, const char*);
 
 static void key_callback(GLFWwindow *, int, int, int, int);
 
+static float translateLocation(float, unsigned int, bool);
+
+static void generateVertices(float *, const Hitbox *, unsigned int,
+unsigned int);
+
 // ------------------------------------------------------------
 
 void threadRoutine_Display(Game& game) {
@@ -101,30 +106,14 @@ void threadRoutine_Display(Game& game) {
   glAttachShader(shader_program, vertex_shader);
   glAttachShader(shader_program, fragment_shader);
   glLinkProgram(shader_program);
+  glUseProgram(shader_program);
 
   // Delete shaders; already linked to shader program
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
 
-
-
-  float vertices[] = {
-    0.5f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, 0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f
-  };
-
-  unsigned int vertex_buffer_obj;
-  glGenBuffers(1, &vertex_buffer_obj);
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-  (void *) 0);
-  glEnableVertexAttribArray(0);
-
-
+  // Vertex index ordering to draw a square (quadrant order)
+  unsigned int square_indices[] = {0, 1, 2, 0, 2, 3};
 
   // While game is ongoing
   while (!(game.isExit()) && !glfwWindowShouldClose(window))
@@ -132,37 +121,6 @@ void threadRoutine_Display(Game& game) {
 
     // Read game state
     GameState game_state = game.stateSnapshot();
-
-    // TODO: Paint representation of game state
-
-    // DEBUG START
-    if(!game_state.getCharacters()->empty()) {
-      std::cerr <<
-      std::string("Character: (")
-      + std::to_string(game_state.getCharacters()->at(0).getHitbox()
-      ->getCenterY())
-      + std::string(", ")
-      + std::to_string(game_state.getCharacters()->at(0).getHitbox()
-      ->getCenterX())
-      + std::string(")\n");
-    }
-    /*
-    for(unsigned int y = 0; y < game_state.getBoard()->getHeight(); y++) {
-      for(unsigned int x = 0; x < game_state.getBoard()->getWidth(); x++) {
-        if(game_state.getBoard()->getBlockExist(y, x)) {
-          std::cerr <<
-          std::string("Block: (")
-          + std::to_string(game_state.getBoard()->getBlock(y, x)->getHitbox()
-          ->getCenterY())
-          + std::string(", ")
-          + std::to_string(game_state.getBoard()->getBlock(y, x)->getHitbox()
-          ->getCenterX())
-          + std::string(")\n");
-        }
-      }
-    }
-    */
-    // DEBUG FINISH
 
     // Get frame dimensions and specify viewport
     int width, height;
@@ -172,12 +130,215 @@ void threadRoutine_Display(Game& game) {
     // Clear display
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Draw
-    glUseProgram(shader_program);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawArrays(GL_TRIANGLES, 1, 4);
+    // Draw character
+    if(!game_state.getCharacters()->empty()) {
 
-    // Swap front/back buffers (to display new render)
+      // Vertices for hitbox (quadrant order)
+      float *vertices = new float[12];
+      generateVertices(vertices, game_state.getCharacters()->at(0).getHitbox(),
+      game_state.getBoardHeight(), game_state.getBoardWidth());
+
+      // Generate vertex array object
+      unsigned int vertex_array_obj;
+      glGenVertexArrays(1, &vertex_array_obj);
+      // Bind newly generated vertex array object
+      glBindVertexArray(vertex_array_obj);
+
+      // Generate vertex buffer object
+      unsigned int vertex_buffer_obj;
+      glGenBuffers(1, &vertex_buffer_obj);
+      // Bind newly generated buffer object
+      glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
+      // Copy vertex data into currently bound buffer
+      glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
+      GL_DYNAMIC_DRAW);
+
+      // Generate element buffer object
+      unsigned int element_buffer_obj;
+      glGenBuffers(1, &element_buffer_obj);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
+      square_indices, GL_DYNAMIC_DRAW);
+
+      // Free memory
+      delete[] vertices;
+
+      // Specify structure for currently bound buffer
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+      (void *) 0);
+      glEnableVertexAttribArray(0);
+
+      // Draw
+      glBindVertexArray(vertex_array_obj);
+      glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+      // Delete vertex array and buffers
+      glDeleteVertexArrays(1, &vertex_array_obj);
+      glDeleteBuffers(1, &vertex_buffer_obj);
+      glDeleteBuffers(1, &element_buffer_obj);
+
+    }
+
+    // Draw board blocks
+    for(unsigned int y = 0; y < game_state.getBoardHeight(); y++) {
+      for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
+        if(game_state.getBlockExist(y, x)) {
+
+          // Vertices for hitbox (quadrant order)
+          float *vertices = new float[12];
+          generateVertices(vertices, game_state.getBlock(y, x)->getHitbox(),
+          game_state.getBoardHeight(), game_state.getBoardWidth());
+
+          // Generate vertex array object
+          unsigned int vertex_array_obj;
+          glGenVertexArrays(1, &vertex_array_obj);
+          // Bind newly generated vertex array object
+          glBindVertexArray(vertex_array_obj);
+
+          // Generate vertex buffer object
+          unsigned int vertex_buffer_obj;
+          glGenBuffers(1, &vertex_buffer_obj);
+          // Bind newly generated buffer object
+          glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
+          // Copy vertex data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
+          GL_DYNAMIC_DRAW);
+
+          // Generate element buffer object
+          unsigned int element_buffer_obj;
+          glGenBuffers(1, &element_buffer_obj);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
+          glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
+          square_indices, GL_DYNAMIC_DRAW);
+
+          // Free memory
+          delete[] vertices;
+
+          // Specify structure for currently bound buffer
+          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+          (void *) 0);
+          glEnableVertexAttribArray(0);
+
+          // Draw
+          glBindVertexArray(vertex_array_obj);
+          glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+          // Delete vertex array and buffers
+          glDeleteVertexArrays(1, &vertex_array_obj);
+          glDeleteBuffers(1, &vertex_buffer_obj);
+          glDeleteBuffers(1, &element_buffer_obj);
+
+        }
+      }
+    }
+
+    // Draw bombs
+    for(unsigned int y = 0; y < game_state.getBoardHeight(); y++) {
+      for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
+        if(game_state.getBombExist(y, x)) {
+
+          // Vertices for hitbox (quadrant order)
+          float *vertices = new float[12];
+          generateVertices(vertices, game_state.getBomb(y, x)->getHitbox(),
+          game_state.getBoardHeight(), game_state.getBoardWidth());
+
+          // Generate vertex array object
+          unsigned int vertex_array_obj;
+          glGenVertexArrays(1, &vertex_array_obj);
+          // Bind newly generated vertex array object
+          glBindVertexArray(vertex_array_obj);
+
+          // Generate vertex buffer object
+          unsigned int vertex_buffer_obj;
+          glGenBuffers(1, &vertex_buffer_obj);
+          // Bind newly generated buffer object
+          glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
+          // Copy vertex data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
+          GL_DYNAMIC_DRAW);
+
+          // Generate element buffer object
+          unsigned int element_buffer_obj;
+          glGenBuffers(1, &element_buffer_obj);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
+          glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
+          square_indices, GL_DYNAMIC_DRAW);
+
+          // Free memory
+          delete[] vertices;
+
+          // Specify structure for currently bound buffer
+          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+          (void *) 0);
+          glEnableVertexAttribArray(0);
+
+          // Draw
+          glBindVertexArray(vertex_array_obj);
+          glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+          // Delete vertex array and buffers
+          glDeleteVertexArrays(1, &vertex_array_obj);
+          glDeleteBuffers(1, &vertex_buffer_obj);
+          glDeleteBuffers(1, &element_buffer_obj);
+
+        }
+      }
+    }
+
+    // Draw explosions
+    for(unsigned int y = 0; y < game_state.getBoardHeight(); y++) {
+      for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
+        if(game_state.getExplosionExist(y, x)) {
+
+          // Vertices for hitbox (quadrant order)
+          float *vertices = new float[12];
+          generateVertices(vertices, game_state.getExplosion(y, x)->getHitbox(),
+          game_state.getBoardHeight(), game_state.getBoardWidth());
+
+          // Generate vertex array object
+          unsigned int vertex_array_obj;
+          glGenVertexArrays(1, &vertex_array_obj);
+          // Bind newly generated vertex array object
+          glBindVertexArray(vertex_array_obj);
+
+          // Generate vertex buffer object
+          unsigned int vertex_buffer_obj;
+          glGenBuffers(1, &vertex_buffer_obj);
+          // Bind newly generated buffer object
+          glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
+          // Copy vertex data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
+          GL_DYNAMIC_DRAW);
+
+          // Generate element buffer object
+          unsigned int element_buffer_obj;
+          glGenBuffers(1, &element_buffer_obj);
+          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
+          glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
+          square_indices, GL_DYNAMIC_DRAW);
+
+          // Free memory
+          delete[] vertices;
+
+          // Specify structure for currently bound buffer
+          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+          (void *) 0);
+          glEnableVertexAttribArray(0);
+
+          // Draw
+          glBindVertexArray(vertex_array_obj);
+          glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+          // Delete vertex array and buffers
+          glDeleteVertexArrays(1, &vertex_array_obj);
+          glDeleteBuffers(1, &vertex_buffer_obj);
+          glDeleteBuffers(1, &element_buffer_obj);
+
+        }
+      }
+    }
+
+    // Swap front/back render buffers (to display new render)
     glfwSwapBuffers(window);
 
     // Handle input events in queue
@@ -192,7 +353,6 @@ void threadRoutine_Display(Game& game) {
   glfwDestroyWindow(window);
 
   // Free resources used by OpenGL
-  glDeleteBuffers(1, &vertex_buffer_obj);
   glDeleteProgram(shader_program);
 
   // Free resources used by GLFW
@@ -342,5 +502,39 @@ int mods) {
     packet.setData(&event_data, sizeof(EventData_PlaceBomb));
     game_instance->queueEvent(packet);
   }
+
+}
+
+// ------------------------------------------------------------
+
+static float translateLocation(float location, unsigned int axis_max,
+bool invert) {
+
+  return invert ? 1 - ((2.0f / axis_max) * location)
+  : -1 + ((2.0f / axis_max) * location);
+
+}
+
+// ------------------------------------------------------------
+
+static void generateVertices(float * buffer, const Hitbox *hitbox,
+unsigned int board_height, unsigned int board_width) {
+
+  float center[2] = {hitbox->getCenterY(), hitbox->getCenterX()};
+  float radius = hitbox->getHeight() / 2;
+
+  buffer[2] = 0;
+  buffer[5] = 0;
+  buffer[8] = 0;
+  buffer[11] = 0;
+
+  buffer[0] = translateLocation(center[1] + radius, board_width, false);
+  buffer[1] = translateLocation(center[0] + radius, board_width, true);
+  buffer[3] = translateLocation(center[1] - radius, board_width, false);
+  buffer[4] = translateLocation(center[0] + radius, board_width, true);
+  buffer[6] = translateLocation(center[1] - radius, board_width, false);
+  buffer[7] = translateLocation(center[0] - radius, board_width, true);
+  buffer[9] = translateLocation(center[1] + radius, board_width, false);
+  buffer[10] = translateLocation(center[0] - radius, board_width, true);
 
 }

@@ -11,7 +11,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_executable(game lib/glad.c src/core/main.cpp src/core/thread_core.cpp
 src/core/thread_display.cpp src/core/game.cpp src/core/data_packet.cpp
 src/game/game_state.cpp src/game/hitbox.cpp src/game/character.cpp
-src/game/bomb.cpp src/game/board_block.cpp)
+src/game/bomb.cpp src/game/explosion.cpp src/game/board_block.cpp)
 
 # Paths to search in for header files for executable game
 target_include_directories(game PUBLIC src/core)

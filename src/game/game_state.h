@@ -11,6 +11,7 @@
 #include "data_packet.h"
 #include "character.h"
 #include "bomb.h"
+#include "explosion.h"
 #include "board_block.h"
 
 // ------------------------------------------------------------
@@ -22,6 +23,8 @@ private:
   std::vector<Character> characters;
   Bomb **bombs;
   bool **bombs_exist;
+  Explosion **explosions;
+  bool **explosions_exist;
   BoardBlock **blocks;
   bool **blocks_exist;
 
@@ -37,6 +40,8 @@ public:
   const std::vector<Character> * getCharacters() const;
   const Bomb * getBomb(unsigned int, unsigned int) const;
   bool getBombExist(unsigned int, unsigned int) const;
+  const Explosion * getExplosion(unsigned int, unsigned int) const;
+  bool getExplosionExist(unsigned int, unsigned int) const;
   const BoardBlock * getBlock(unsigned int, unsigned int) const;
   bool getBlockExist(unsigned int, unsigned int) const;
   void internalUpdate(std::chrono::microseconds);

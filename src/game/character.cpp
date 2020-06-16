@@ -80,7 +80,8 @@ std::chrono::microseconds elapsed_time) {
         game_state->getBoardHeight(), game_state->getBoardWidth());
         // Snap to center of square if path is open
         if(!canMove && (reside_y > 0)
-        && !(game_state->getBlockExist(reside_y - 1, reside_x))) {
+        && !(game_state->getBlockExist(reside_y - 1, reside_x))
+        && !(game_state->getBombExist(reside_y - 1, reside_x))) {
           this->hitbox.setCenterX(
           static_cast<unsigned int>(this->hitbox.getCenterX())
           + (CHARACTER_WIDTH / 2));
@@ -95,7 +96,8 @@ std::chrono::microseconds elapsed_time) {
         game_state->getBoardHeight(), game_state->getBoardWidth());
         // Snap to center of square if path is open
         if(!canMove && (reside_x < game_state->getBoardWidth() - 1)
-        && !(game_state->getBlockExist(reside_y, reside_x + 1))) {
+        && !(game_state->getBlockExist(reside_y, reside_x + 1))
+        && !(game_state->getBombExist(reside_y, reside_x + 1))) {
           this->hitbox.setCenterY(
           static_cast<unsigned int>(this->hitbox.getCenterY())
           + (CHARACTER_WIDTH / 2));
@@ -110,7 +112,8 @@ std::chrono::microseconds elapsed_time) {
         game_state->getBoardHeight(), game_state->getBoardWidth());
         // Snap to center of square if path is open
         if(!canMove && (reside_y < game_state->getBoardHeight() - 1)
-        && !(game_state->getBlockExist(reside_y + 1, reside_x))) {
+        && !(game_state->getBlockExist(reside_y + 1, reside_x))
+        && !(game_state->getBombExist(reside_y + 1, reside_x))) {
           this->hitbox.setCenterX(
           static_cast<unsigned int>(this->hitbox.getCenterX())
           + (CHARACTER_WIDTH / 2));
@@ -125,7 +128,8 @@ std::chrono::microseconds elapsed_time) {
         game_state->getBoardHeight(), game_state->getBoardWidth());
         // Snap to center of square if path is open
         if(!canMove && (reside_x > 0)
-        && !(game_state->getBlockExist(reside_y, reside_x - 1))) {
+        && !(game_state->getBlockExist(reside_y, reside_x - 1))
+        && !(game_state->getBombExist(reside_y, reside_x - 1))) {
           this->hitbox.setCenterY(
           static_cast<unsigned int>(this->hitbox.getCenterY())
           + (CHARACTER_WIDTH / 2));
