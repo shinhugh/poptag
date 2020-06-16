@@ -86,23 +86,27 @@ void threadRoutine_Display(Game& game) {
   // Set to > 0 to avoid tearing
   glfwSwapInterval(1);
 
-
-
+  // Vertex shader
   unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
   glShaderSource(vertex_shader, 1, &vertex_shader_src, 0);
   glCompileShader(vertex_shader);
 
+  // Fragment shader
   unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragment_shader, 1, &fragment_shader_src, 0);
   glCompileShader(fragment_shader);
 
+  // Shader program
   unsigned int shader_program = glCreateProgram();
   glAttachShader(shader_program, vertex_shader);
   glAttachShader(shader_program, fragment_shader);
   glLinkProgram(shader_program);
 
+  // Delete shaders; already linked to shader program
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
+
+
 
   float vertices[] = {
     0.5f, 0.5f, 0.0f,
@@ -130,15 +134,33 @@ void threadRoutine_Display(Game& game) {
     GameState game_state = game.stateSnapshot();
 
     // TODO: Paint representation of game state
+
+    // DEBUG START
     std::cerr <<
-    std::string("Characters:\n")
-    + std::string("(")
+    std::string("Character: (")
     + std::to_string(game_state.getCharacters()->at(0).getHitbox()
     ->getCenterY())
     + std::string(", ")
     + std::to_string(game_state.getCharacters()->at(0).getHitbox()
     ->getCenterX())
     + std::string(")\n");
+    /*
+    for(unsigned int y = 0; y < game_state.getBoard()->getHeight(); y++) {
+      for(unsigned int x = 0; x < game_state.getBoard()->getWidth(); x++) {
+        if(game_state.getBoard()->getBlockExist(y, x)) {
+          std::cerr <<
+          std::string("Block: (")
+          + std::to_string(game_state.getBoard()->getBlock(y, x)->getHitbox()
+          ->getCenterY())
+          + std::string(", ")
+          + std::to_string(game_state.getBoard()->getBlock(y, x)->getHitbox()
+          ->getCenterX())
+          + std::string(")\n");
+        }
+      }
+    }
+    */
+    // DEBUG FINISH
 
     // Get frame dimensions and specify viewport
     int width, height;

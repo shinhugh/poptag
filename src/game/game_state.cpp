@@ -52,10 +52,14 @@ void GameState::externalUpdate(DataPacket packet) {
         if(event_data->initialize) {
           // Reset
           this->characters.clear();
-          this->characters.push_back(Character(0.5, 0.5, 1, 2));
+          this->characters.push_back(Character(1.5, 1.5, 1, 2));
           // Create blocks
+          this->board.createBlock(0, 0);
+          this->board.createBlock(1, 0);
+          this->board.createBlock(2, 0);
+          this->board.createBlock(0, 2);
+          this->board.createBlock(1, 2);
           this->board.createBlock(2, 2);
-          this->board.createBlock(3, 2);
         }
       }
       break;

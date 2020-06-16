@@ -21,9 +21,25 @@ float Hitbox::getCenterY() const {
 
 // ------------------------------------------------------------
 
+void Hitbox::setCenterY(float center_y) {
+
+  this->center[0] = center_y;
+
+}
+
+// ------------------------------------------------------------
+
 float Hitbox::getCenterX() const {
 
   return this->center[1];
+
+}
+
+// ------------------------------------------------------------
+
+void Hitbox::setCenterX(float center_x) {
+
+  this->center[1] = center_x;
 
 }
 
@@ -43,9 +59,10 @@ float Hitbox::getWidth() const {
 
 }
 
+
 // ------------------------------------------------------------
 
-void Hitbox::moveUp(float distance,
+bool Hitbox::moveUp(float distance,
 const std::vector<const Hitbox *> *neighbors,
 float area_height, float area_width) {
 
@@ -97,14 +114,22 @@ float area_height, float area_width) {
     }
   }
 
+  // Determine whether hitbox can move at all
+  bool canMove
+  = this->center[0] == closest_threshold + (this->dimensions[0] / 2)
+  ? false : true;
+
   // Move to closest collision (if at all)
   this->center[0] = closest_threshold + (this->dimensions[0] / 2);
+
+  // Return whether hitbox moved
+  return canMove;
 
 }
 
 // ------------------------------------------------------------
 
-void Hitbox::moveRight(float distance,
+bool Hitbox::moveRight(float distance,
 const std::vector<const Hitbox *> *neighbors,
 float area_height, float area_width) {
 
@@ -157,14 +182,22 @@ float area_height, float area_width) {
     }
   }
 
+  // Determine whether hitbox can move at all
+  bool canMove
+  = this->center[1] == closest_threshold - (this->dimensions[1] / 2)
+  ? false : true;
+
   // Move to closest collision (if at all)
   this->center[1] = closest_threshold - (this->dimensions[1] / 2);
+
+  // Return whether hitbox moved
+  return canMove;
 
 }
 
 // ------------------------------------------------------------
 
-void Hitbox::moveDown(float distance,
+bool Hitbox::moveDown(float distance,
 const std::vector<const Hitbox *> *neighbors,
 float area_height, float area_width) {
 
@@ -217,14 +250,22 @@ float area_height, float area_width) {
     }
   }
 
+  // Determine whether hitbox can move at all
+  bool canMove
+  = this->center[0] == closest_threshold - (this->dimensions[0] / 2)
+  ? false : true;
+
   // Move to closest collision (if at all)
   this->center[0] = closest_threshold - (this->dimensions[0] / 2);
+
+  // Return whether hitbox moved
+  return canMove;
 
 }
 
 // ------------------------------------------------------------
 
-void Hitbox::moveLeft(float distance,
+bool Hitbox::moveLeft(float distance,
 const std::vector<const Hitbox *> *neighbors,
 float area_height, float area_width) {
 
@@ -276,7 +317,15 @@ float area_height, float area_width) {
     }
   }
 
+  // Determine whether hitbox can move at all
+  bool canMove
+  = this->center[1] == closest_threshold + (this->dimensions[1] / 2)
+  ? false : true;
+
   // Move to closest collision (if at all)
   this->center[1] = closest_threshold + (this->dimensions[1] / 2);
+
+  // Return whether hitbox moved
+  return canMove;
 
 }

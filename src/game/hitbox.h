@@ -16,13 +16,15 @@ private:
 public:
   Hitbox(float, float, float, float);
   float getCenterY() const;
+  void setCenterY(float);
   float getCenterX() const;
+  void setCenterX(float);
   float getHeight() const;
   float getWidth() const;
-  void moveUp(float, const std::vector<const Hitbox *> *, float, float);
-  void moveRight(float, const std::vector<const Hitbox *> *, float, float);
-  void moveDown(float, const std::vector<const Hitbox *> *, float, float);
-  void moveLeft(float, const std::vector<const Hitbox *> *, float, float);
+  bool moveUp(float, const std::vector<const Hitbox *> *, float, float);
+  bool moveRight(float, const std::vector<const Hitbox *> *, float, float);
+  bool moveDown(float, const std::vector<const Hitbox *> *, float, float);
+  bool moveLeft(float, const std::vector<const Hitbox *> *, float, float);
 
 };
 

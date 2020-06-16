@@ -1,10 +1,12 @@
 #include "character.h"
 
+#define CHARACTER_WIDTH 1.0f
+
 // ------------------------------------------------------------
 
 Character::Character(float y, float x, float speed, unsigned int bomb_range) :
-hitbox(y, x, 1, 1), speed(speed), dir_move(stop), dir_face(down),
-bomb_range(bomb_range) {}
+hitbox(y, x, CHARACTER_WIDTH, CHARACTER_WIDTH), speed(speed), dir_move(stop),
+dir_face(down), bomb_range(bomb_range) {}
 
 // ------------------------------------------------------------
 
@@ -56,33 +58,71 @@ std::chrono::microseconds elapsed_time) {
     }
   }
 
+  // Square on board the character's center resides in
+  unsigned int reside_y
+  = static_cast<unsigned int>(this->hitbox.getCenterY());
+  unsigned int reside_x
+  = static_cast<unsigned int>(this->hitbox.getCenterX());
+
   switch(this->dir_move) {
     // Move up
     case up:
       {
-        this->hitbox.moveUp(distance, &blocks, board->getHeight(),
-        board->getWidth());
+        // Move
+        bool canMove = this->hitbox.moveUp(distance, &blocks,
+        board->getHeight(), board->getWidth());
+        // Snap to center of square if path is open
+        if(!canMove && (reside_y > 0)
+        && !(board->getBlockExist(reside_y - 1, reside_x))) {
+          this->hitbox.setCenterX(
+          static_cast<unsigned int>(this->hitbox.getCenterX())
+          + (CHARACTER_WIDTH / 2));
+        }
       }
       break;
     // Move right
     case right:
       {
-        this->hitbox.moveRight(distance, &blocks, board->getHeight(),
-        board->getWidth());
+        // Move
+        bool canMove = this->hitbox.moveRight(distance, &blocks,
+        board->getHeight(), board->getWidth());
+        // Snap to center of square if path is open
+        if(!canMove && (reside_x < board->getWidth() - 1)
+        && !(board->getBlockExist(reside_y, reside_x + 1))) {
+          this->hitbox.setCenterY(
+          static_cast<unsigned int>(this->hitbox.getCenterY())
+          + (CHARACTER_WIDTH / 2));
+        }
       }
       break;
     // Move down
     case down:
       {
-        this->hitbox.moveDown(distance, &blocks, board->getHeight(),
-        board->getWidth());
+        // Move
+        bool canMove = this->hitbox.moveDown(distance, &blocks,
+        board->getHeight(), board->getWidth());
+        // Snap to center of square if path is open
+        if(!canMove && (reside_y < board->getHeight() - 1)
+        && !(board->getBlockExist(reside_y + 1, reside_x))) {
+          this->hitbox.setCenterX(
+          static_cast<unsigned int>(this->hitbox.getCenterX())
+          + (CHARACTER_WIDTH / 2));
+        }
       }
       break;
     // Move left
     case left:
       {
-        this->hitbox.moveLeft(distance, &blocks, board->getHeight(),
-        board->getWidth());
+        // Move
+        bool canMove = this->hitbox.moveLeft(distance, &blocks,
+        board->getHeight(), board->getWidth());
+        // Snap to center of square if path is open
+        if(!canMove && (reside_x > 0)
+        && !(board->getBlockExist(reside_y, reside_x - 1))) {
+          this->hitbox.setCenterY(
+          static_cast<unsigned int>(this->hitbox.getCenterY())
+          + (CHARACTER_WIDTH / 2));
+        }
       }
       break;
     default:
