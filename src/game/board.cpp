@@ -5,16 +5,15 @@
 Board::Board(unsigned int height, unsigned int width) :
 height(height), width(width) {
 
-  // Allocate memory for terrain
-  this->terrain = new Terrain *[this->height];
+  // Allocate memory for blocks and their existential flags
+  this->blocks = new BoardBlock *[this->height];
+  this->blocks_exist = new bool *[this->height];
   for(unsigned int y = 0; y < this->height; y++) {
-    this->terrain[y] = new Terrain[this->width];
-  }
-
-  // Initialize terrain to all ground
-  for(unsigned int y = 0; y < this->height; y++) {
+    this->blocks[y] = new BoardBlock[this->width];
+    this->blocks_exist[y] = new BoardBlock[this->width];
+    // Unset all flags
     for(unsigned int x = 0; x < this->width; x++) {
-      this->terrain[y][x] = ground;
+      this->blocks_exist[y][x] = false;
     }
   }
 
@@ -25,16 +24,19 @@ height(height), width(width) {
 Board::Board(const Board& src) :
 height(src.height), width(src.width) {
 
-  // Allocate memory for terrain
-  this->terrain = new Terrain *[this->height];
+  // Allocate memory for blocks and their existential flags
+  this->blocks = new BoardBlock *[this->height];
+  this->blocks_exist = new bool *[this->height];
   for(unsigned int y = 0; y < this->height; y++) {
-    this->terrain[y] = new Terrain[this->width];
+    this->blocks[y] = new BoardBlock[this->width];
+    this->blocks_exist[y] = new BoardBlock[this->width];
   }
 
-  // Copy terrain from source
+  // Copy from source
   for(unsigned int y = 0; y < this->height; y++) {
     for(unsigned int x = 0; x < this->width; x++) {
-      this->terrain[y][x] = src.terrain[y][x];
+      this->blocks[y][x] = src.blocks[y][x];
+      this->blocks_exist[y][x] = src.blocks_exist[y][x];
     }
   }
 
@@ -44,14 +46,31 @@ height(src.height), width(src.width) {
 
 Board& Board::operator=(const Board& src) {
 
+  // Free memory previously allocated for blocks
+  for(unsigned int y = 0; y < this->height; y++) {
+    delete[] this->blocks[y];
+    delete[] this->blocks_exist[y];
+  }
+  delete[] this->blocks;
+  delete[] this->blocks_exist;
+
   // Copy width and height from source
   this->height = src.height;
   this->width = src.width;
 
-  // Copy terrain from source
+  // Allocate memory for blocks and their existential flags
+  this->blocks = new BoardBlock *[this->height];
+  this->blocks_exist = new bool *[this->height];
+  for(unsigned int y = 0; y < this->height; y++) {
+    this->blocks[y] = new BoardBlock[this->width];
+    this->blocks_exist[y] = new BoardBlock[this->width];
+  }
+
+  // Copy from source
   for(unsigned int y = 0; y < this->height; y++) {
     for(unsigned int x = 0; x < this->width; x++) {
-      this->terrain[y][x] = src.terrain[y][x];
+      this->blocks[y][x] = src.blocks[y][x];
+      this->blocks_exist[y][x] = src.blocks_exist[y][x];
     }
   }
 
@@ -63,11 +82,13 @@ Board& Board::operator=(const Board& src) {
 
 Board::~Board() {
 
-  // Free memory allocated for terrain
+  // Free memory allocated for blocks
   for(unsigned int y = 0; y < this->height; y++) {
-    delete[] this->terrain[y];
+    delete[] this->blocks[y];
+    delete[] this->blocks_exist[y];
   }
-  delete[] this->terrain;
+  delete[] this->blocks;
+  delete[] this->blocks_exist;
 
 }
 
@@ -89,14 +110,23 @@ unsigned int Board::getWidth() const {
 
 // ------------------------------------------------------------
 
-Terrain Board::getTerrain(unsigned int y, unsigned int x) const {
+bool Board::getBlockExist(unsigned int y, unsigned int x) const {
 
-  return this->terrain[y][x];
+  return this->blocks_exist[y][x];
 
 }
 
 // ------------------------------------------------------------
 
+const BoardBlock * Board::getBlock(unsigned int y, unsigned int x) const {
+
+  return &(this->blocks[y][x]);
+
+}
+
+// ------------------------------------------------------------
+
+/*
 void Board::detonateBomb(unsigned int y, unsigned int x, unsigned int range) {
 
   // Coordinates to check for terrain modification
@@ -164,3 +194,4 @@ void Board::detonateBomb(unsigned int y, unsigned int x, unsigned int range) {
   curr_x = x;
 
 }
+*/

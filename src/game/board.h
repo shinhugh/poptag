@@ -3,12 +3,10 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include "board_block.h"
+
 #define BOARD_HEIGHT 10
 #define BOARD_WIDTH 10
-
-// ------------------------------------------------------------
-
-enum Terrain {ground, breakable, unbreakable};
 
 // ------------------------------------------------------------
 
@@ -16,7 +14,8 @@ class Board {
 
 private:
   unsigned int height, width;
-  Terrain **terrain;
+  BoardBlock **blocks;
+  bool **blocks_exist;
 
 public:
   Board(unsigned int, unsigned int);
@@ -25,8 +24,9 @@ public:
   ~Board();
   unsigned int getHeight() const;
   unsigned int getWidth() const;
-  Terrain getTerrain(unsigned int, unsigned int) const;
-  void detonateBomb(unsigned int, unsigned int, unsigned int);
+  bool getBlockExist(unsigned int, unsigned int) const;
+  const BoardBlock * getBlock(unsigned int, unsigned int) const;
+  // void detonateBomb(unsigned int, unsigned int, unsigned int);
 
 };
 

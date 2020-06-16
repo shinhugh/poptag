@@ -128,6 +128,7 @@ void threadRoutine_Display(Game& game) {
     GameState game_state = game.stateSnapshot();
 
     // TODO: Paint representation of game state
+    /*
     std::cerr <<
     std::string("Characters:\n")
     + std::string("(")
@@ -135,6 +136,7 @@ void threadRoutine_Display(Game& game) {
     + std::string(", ")
     + std::to_string(game_state.getCharacters()->at(0).getX())
     + std::string(")\n");
+    */
 
     // Get frame dimensions and specify viewport
     int width, height;

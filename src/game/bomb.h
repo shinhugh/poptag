@@ -14,18 +14,17 @@ class Bomb {
 
 private:
   unsigned int y, x;
-  unsigned int tick_detonate;
-  unsigned int tick_age;
+  std::chrono::milliseconds time_detonate;
+  std::chrono::microseconds time_age;
   unsigned int range;
 
 public:
-  Bomb(unsigned int, unsigned int, unsigned int, unsigned int);
+  Bomb(unsigned int, unsigned int, std::chrono::milliseconds, unsigned int);
   unsigned int getY() const;
   unsigned int getX() const;
-  unsigned int getTickDetonate() const;
-  unsigned int getTickAge() const;
+  std::chrono::milliseconds getTimeDetonate() const;
+  std::chrono::microseconds getTimeAge() const;
   unsigned int getRange() const;
-  void setRange(unsigned int);
   void update(std::chrono::microseconds elapsed_time);
 
 };

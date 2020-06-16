@@ -35,7 +35,7 @@ void threadRoutine_Core(Game& game) {
     // End of current time window becomes start of next time window
     time_start = time_end;
 
-    // Sleep thread briefly
+    // Sleep thread briefly, just to avoid overwhelming computation
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
   }

@@ -6,6 +6,7 @@
 #define GAME_STATE_H
 
 #include <vector>
+#include <map>
 #include <chrono>
 #include "data_packet.h"
 #include "board.h"
@@ -19,7 +20,7 @@ class GameState {
 private:
   Board board;
   std::vector<Character> characters;
-  std::vector<Bomb> bombs;
+  std::map<unsigned int, Bomb> bombs;
 
 public:
   GameState();
@@ -27,7 +28,7 @@ public:
   void externalUpdate(DataPacket);
   const Board * getBoard();
   const std::vector<Character> * getCharacters();
-  const std::vector<Bomb> * getBombs();
+  const std::map<unsigned int, Bomb> * getBombs();
 
 };
 

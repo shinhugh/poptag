@@ -21,25 +21,19 @@ void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
     this->characters.at(i).update(&(this->board), elapsed_time);
   }
 
-  /*
-
   // Update ticks on all bombs
-  for(unsigned int i = 0; i < this->bombs.size(); i++) {
-    this->bombs.at(i).tick();
-  }
-
-  // Search for expired bombs
-  for(unsigned int i = 0; i < this->bombs.size();) {
-    if(this->bombs.at(i).getTickAge() >= this->bombs.at(i).getTickDetonate()) {
-      // Remove bomb from list
-      this->bombs.erase(this->bombs.begin() + i);
-      std::cerr << "BOOM!\n";
-    } else {
-      i++;
+  for(unsigned int i = 0;
+  i < (this->board.getHeight() * this->board.getWidth()); i++) {
+    if(this->bombs.count(i) > 0) {
+      this->bombs.at(i).update(elapsed_time);
+      if(this->bombs.at(i).getTimeAge()
+      >= this->bombs.at(i).getTimeDetonate()) {
+        // Remove bomb from list
+        this->bombs.erase(i);
+        std::cerr << "BOOM!\n";
+      }
     }
   }
-
-  */
 
 }
 
@@ -70,15 +64,20 @@ void GameState::externalUpdate(DataPacket packet) {
         EventData_PlaceBomb *event_data
         = static_cast<EventData_PlaceBomb *>(packet.getData());
         // Get character's bomb traits
-        float character_y
-        = this->characters.at(event_data->character_id).getY();
-        float character_x
-        = this->characters.at(event_data->character_id).getX();
+        unsigned int bomb_y
+        = static_cast<unsigned int>
+        (this->characters.at(event_data->character_id).getY());
+        unsigned int bomb_x
+        = static_cast<unsigned int>
+        (this->characters.at(event_data->character_id).getX());
         unsigned int bomb_range
         = this->characters.at(event_data->character_id).getBombRange();
-        // Place bomb at whichever square character's center lies in
-        this->bombs.push_back(Bomb(static_cast<unsigned int>(character_y),
-        static_cast<unsigned int>(character_x), TICK_DETONATE, bomb_range));
+        unsigned int bomb_key = bomb_y * this->board.getWidth() + bomb_x;
+        // Place bomb at whichever square the character's center lies in
+        if(this->bombs.count(bomb_key) == 0) {
+          this->bombs.emplace(bomb_key, Bomb(bomb_y, bomb_x,
+          std::chrono::milliseconds(2000), bomb_range));
+        }
       }
       break;
 
@@ -149,7 +148,7 @@ const std::vector<Character> * GameState::getCharacters() {
 
 // ------------------------------------------------------------
 
-const std::vector<Bomb> * GameState::getBombs() {
+const std::map<unsigned int, Bomb> * GameState::getBombs() {
 
   return &(this->bombs);
 
