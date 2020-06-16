@@ -4,24 +4,22 @@
 #define BOMB_H
 
 #include <chrono>
-#include "board.h"
-
-#define TICK_DETONATE 2000
+#include "hitbox.h"
 
 // ------------------------------------------------------------
 
 class Bomb {
 
 private:
-  unsigned int y, x;
+  Hitbox hitbox;
   std::chrono::milliseconds time_detonate;
   std::chrono::microseconds time_age;
   unsigned int range;
 
 public:
-  Bomb(unsigned int, unsigned int, std::chrono::milliseconds, unsigned int);
-  unsigned int getY() const;
-  unsigned int getX() const;
+  Bomb();
+  Bomb(unsigned int, unsigned int, unsigned int);
+  const Hitbox * getHitbox() const;
   std::chrono::milliseconds getTimeDetonate() const;
   std::chrono::microseconds getTimeAge() const;
   unsigned int getRange() const;

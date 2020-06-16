@@ -3,12 +3,200 @@
 
 #include <iostream> // DEBUG
 
+#define BOARD_HEIGHT 16
+#define BOARD_WIDTH 16
+
 // ------------------------------------------------------------
 
 GameState::GameState() :
-board(BOARD_HEIGHT, BOARD_WIDTH) {
+board_height(BOARD_HEIGHT), board_width(BOARD_WIDTH) {
 
-  this->characters.push_back(Character(0.5, 0.5, 1, 2));
+  // Allocate memory
+  this->bombs = new Bomb *[this->board_height];
+  this->bombs_exist = new bool *[this->board_height];
+  this->blocks = new BoardBlock *[this->board_height];
+  this->blocks_exist = new bool *[this->board_height];
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    this->bombs[y] = new Bomb[this->board_width];
+    this->bombs_exist[y] = new bool[this->board_width];
+    this->blocks[y] = new BoardBlock[this->board_width];
+    this->blocks_exist[y] = new bool[this->board_width];
+    // Unset all flags
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      this->bombs_exist[y][x] = false;
+      this->blocks_exist[y][x] = false;
+    }
+  }
+
+}
+
+// ------------------------------------------------------------
+
+GameState::GameState(const GameState& src) :
+board_height(src.board_height), board_width(src.board_width) {
+
+  // Allocate memory
+  this->bombs = new Bomb *[this->board_height];
+  this->bombs_exist = new bool *[this->board_height];
+  this->blocks = new BoardBlock *[this->board_height];
+  this->blocks_exist = new bool *[this->board_height];
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    this->bombs[y] = new Bomb[this->board_width];
+    this->bombs_exist[y] = new bool[this->board_width];
+    this->blocks[y] = new BoardBlock[this->board_width];
+    this->blocks_exist[y] = new bool[this->board_width];
+    // Unset all flags
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      this->bombs_exist[y][x] = false;
+      this->blocks_exist[y][x] = false;
+    }
+  }
+
+  // Copy from source
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      this->bombs[y][x] = src.bombs[y][x];
+      this->bombs_exist[y][x] = src.bombs_exist[y][x];
+      this->blocks[y][x] = src.blocks[y][x];
+      this->blocks_exist[y][x] = src.blocks_exist[y][x];
+    }
+  }
+
+}
+
+// ------------------------------------------------------------
+
+GameState& GameState::operator=(const GameState& src) {
+
+  // Free memory previously allocated
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    delete[] this->bombs[y];
+    delete[] this->bombs_exist[y];
+    delete[] this->blocks[y];
+    delete[] this->blocks_exist[y];
+  }
+  delete[] this->bombs;
+  delete[] this->bombs_exist;
+  delete[] this->blocks;
+  delete[] this->blocks_exist;
+
+  // Copy width and height from source
+  this->board_height = src.board_height;
+  this->board_width = src.board_width;
+
+  // Allocate memory
+  this->bombs = new Bomb *[this->board_height];
+  this->bombs_exist = new bool *[this->board_height];
+  this->blocks = new BoardBlock *[this->board_height];
+  this->blocks_exist = new bool *[this->board_height];
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    this->bombs[y] = new Bomb[this->board_width];
+    this->bombs_exist[y] = new bool[this->board_width];
+    this->blocks[y] = new BoardBlock[this->board_width];
+    this->blocks_exist[y] = new bool[this->board_width];
+    // Unset all flags
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      this->bombs_exist[y][x] = false;
+      this->blocks_exist[y][x] = false;
+    }
+  }
+
+  // Copy from source
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      this->bombs[y][x] = src.bombs[y][x];
+      this->bombs_exist[y][x] = src.bombs_exist[y][x];
+      this->blocks[y][x] = src.blocks[y][x];
+      this->blocks_exist[y][x] = src.blocks_exist[y][x];
+    }
+  }
+
+  return *this;
+
+}
+
+// ------------------------------------------------------------
+
+GameState::~GameState() {
+
+  // Free memory previously allocated
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    delete[] this->bombs[y];
+    delete[] this->bombs_exist[y];
+    delete[] this->blocks[y];
+    delete[] this->blocks_exist[y];
+  }
+  delete[] this->bombs;
+  delete[] this->bombs_exist;
+  delete[] this->blocks;
+  delete[] this->blocks_exist;
+
+}
+
+// ------------------------------------------------------------
+
+unsigned int GameState::getBoardHeight() const {
+
+  return this->board_height;
+
+}
+
+// ------------------------------------------------------------
+
+unsigned int GameState::getBoardWidth() const {
+
+  return this->board_width;
+
+}
+
+// ------------------------------------------------------------
+
+const std::vector<Character> * GameState::getCharacters() const {
+
+  return &(this->characters);
+
+}
+
+// ------------------------------------------------------------
+
+const Bomb * GameState::getBomb(unsigned int y, unsigned int x) const {
+
+  return &(this->bombs[y][x]);
+
+}
+
+// ------------------------------------------------------------
+
+bool GameState::getBombExist(unsigned int y, unsigned int x) const {
+
+  return this->bombs_exist[y][x];
+
+}
+
+// ------------------------------------------------------------
+
+const BoardBlock * GameState::getBlock(unsigned int y, unsigned int x) const {
+
+  return &(this->blocks[y][x]);
+
+}
+
+// ------------------------------------------------------------
+
+bool GameState::getBlockExist(unsigned int y, unsigned int x) const {
+
+  return this->blocks_exist[y][x];
+
+}
+
+// ------------------------------------------------------------
+
+void GameState::createBlock(unsigned int y, unsigned int x) {
+
+  if(!(this->blocks_exist[y][x])) {
+    this->blocks[y][x] = BoardBlock(y, x, unbreakable);
+    this->blocks_exist[y][x] = true;
+  }
 
 }
 
@@ -18,19 +206,20 @@ void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
 
   // Update positions of all characters
   for(unsigned int i = 0; i < this->characters.size(); i++) {
-    this->characters.at(i).update(&(this->board), elapsed_time);
+    this->characters.at(i).update(this, elapsed_time);
   }
 
   // Update ticks on all bombs
-  for(unsigned int i = 0;
-  i < (this->board.getHeight() * this->board.getWidth()); i++) {
-    if(this->bombs.count(i) > 0) {
-      this->bombs.at(i).update(elapsed_time);
-      if(this->bombs.at(i).getTimeAge()
-      >= this->bombs.at(i).getTimeDetonate()) {
-        // Remove bomb from list
-        this->bombs.erase(i);
-        std::cerr << "BOOM!\n";
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      if(this->bombs_exist[y][x]) {
+        this->bombs[y][x].update(elapsed_time);
+        if(this->bombs[y][x].getTimeAge()
+        >= this->bombs[y][x].getTimeDetonate()) {
+          // Remove bomb from list
+          this->bombs_exist[y][x] = false;
+          std::cerr << "BOOM!\n";
+        }
       }
     }
   }
@@ -54,12 +243,12 @@ void GameState::externalUpdate(DataPacket packet) {
           this->characters.clear();
           this->characters.push_back(Character(1.5, 1.5, 1, 2));
           // Create blocks
-          this->board.createBlock(0, 0);
-          this->board.createBlock(1, 0);
-          this->board.createBlock(2, 0);
-          this->board.createBlock(0, 2);
-          this->board.createBlock(1, 2);
-          this->board.createBlock(2, 2);
+          this->createBlock(0, 0);
+          this->createBlock(1, 0);
+          this->createBlock(2, 0);
+          this->createBlock(0, 2);
+          this->createBlock(1, 2);
+          this->createBlock(2, 2);
         }
       }
       break;
@@ -81,11 +270,10 @@ void GameState::externalUpdate(DataPacket packet) {
         ->getCenterX());
         unsigned int bomb_range
         = this->characters.at(event_data->character_id).getBombRange();
-        unsigned int bomb_key = bomb_y * this->board.getWidth() + bomb_x;
         // Place bomb at whichever square the character's center lies in
-        if(this->bombs.count(bomb_key) == 0) {
-          this->bombs.emplace(bomb_key, Bomb(bomb_y, bomb_x,
-          std::chrono::milliseconds(2000), bomb_range));
+        if(!(this->bombs_exist[bomb_y][bomb_x])) {
+          this->bombs[bomb_y][bomb_x] = Bomb(bomb_y, bomb_x, bomb_range);
+          this->bombs_exist[bomb_y][bomb_x] = true;
         }
       }
       break;
@@ -136,30 +324,6 @@ void GameState::externalUpdate(DataPacket packet) {
       break;
 
   }
-
-}
-
-// ------------------------------------------------------------
-
-const Board * GameState::getBoard() const {
-
-  return &(this->board);
-
-}
-
-// ------------------------------------------------------------
-
-const std::vector<Character> * GameState::getCharacters() const {
-
-  return &(this->characters);
-
-}
-
-// ------------------------------------------------------------
-
-const std::map<unsigned int, Bomb> * GameState::getBombs() const {
-
-  return &(this->bombs);
 
 }
 

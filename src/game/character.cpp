@@ -1,4 +1,5 @@
 #include "character.h"
+#include "game_state.h"
 
 #define CHARACTER_WIDTH 1.0f
 
@@ -42,18 +43,20 @@ void Character::setDirMove(Direction dir_move) {
 
 // ------------------------------------------------------------
 
-void Character::update(const Board *board,
+void Character::update(const void * parent_state,
 std::chrono::microseconds elapsed_time) {
+
+  const GameState * game_state = static_cast<const GameState *>(parent_state);
 
   // Distance traveled
   float distance = elapsed_time.count() * this->speed / 1000000;
 
   // Blocks on board
   std::vector<const Hitbox *> blocks;
-  for(unsigned int y = 0; y < board->getHeight(); y++) {
-    for(unsigned int x = 0; x < board->getWidth(); x++) {
-      if(board->getBlockExist(y, x)) {
-        blocks.push_back(board->getBlock(y, x)->getHitbox());
+  for(unsigned int y = 0; y < game_state->getBoardHeight(); y++) {
+    for(unsigned int x = 0; x < game_state->getBoardWidth(); x++) {
+      if(game_state->getBlockExist(y, x)) {
+        blocks.push_back(game_state->getBlock(y, x)->getHitbox());
       }
     }
   }
@@ -70,10 +73,10 @@ std::chrono::microseconds elapsed_time) {
       {
         // Move
         bool canMove = this->hitbox.moveUp(distance, &blocks,
-        board->getHeight(), board->getWidth());
+        game_state->getBoardHeight(), game_state->getBoardWidth());
         // Snap to center of square if path is open
         if(!canMove && (reside_y > 0)
-        && !(board->getBlockExist(reside_y - 1, reside_x))) {
+        && !(game_state->getBlockExist(reside_y - 1, reside_x))) {
           this->hitbox.setCenterX(
           static_cast<unsigned int>(this->hitbox.getCenterX())
           + (CHARACTER_WIDTH / 2));
@@ -85,10 +88,10 @@ std::chrono::microseconds elapsed_time) {
       {
         // Move
         bool canMove = this->hitbox.moveRight(distance, &blocks,
-        board->getHeight(), board->getWidth());
+        game_state->getBoardHeight(), game_state->getBoardWidth());
         // Snap to center of square if path is open
-        if(!canMove && (reside_x < board->getWidth() - 1)
-        && !(board->getBlockExist(reside_y, reside_x + 1))) {
+        if(!canMove && (reside_x < game_state->getBoardWidth() - 1)
+        && !(game_state->getBlockExist(reside_y, reside_x + 1))) {
           this->hitbox.setCenterY(
           static_cast<unsigned int>(this->hitbox.getCenterY())
           + (CHARACTER_WIDTH / 2));
@@ -100,10 +103,10 @@ std::chrono::microseconds elapsed_time) {
       {
         // Move
         bool canMove = this->hitbox.moveDown(distance, &blocks,
-        board->getHeight(), board->getWidth());
+        game_state->getBoardHeight(), game_state->getBoardWidth());
         // Snap to center of square if path is open
-        if(!canMove && (reside_y < board->getHeight() - 1)
-        && !(board->getBlockExist(reside_y + 1, reside_x))) {
+        if(!canMove && (reside_y < game_state->getBoardHeight() - 1)
+        && !(game_state->getBlockExist(reside_y + 1, reside_x))) {
           this->hitbox.setCenterX(
           static_cast<unsigned int>(this->hitbox.getCenterX())
           + (CHARACTER_WIDTH / 2));
@@ -115,10 +118,10 @@ std::chrono::microseconds elapsed_time) {
       {
         // Move
         bool canMove = this->hitbox.moveLeft(distance, &blocks,
-        board->getHeight(), board->getWidth());
+        game_state->getBoardHeight(), game_state->getBoardWidth());
         // Snap to center of square if path is open
         if(!canMove && (reside_x > 0)
-        && !(board->getBlockExist(reside_y, reside_x - 1))) {
+        && !(game_state->getBlockExist(reside_y, reside_x - 1))) {
           this->hitbox.setCenterY(
           static_cast<unsigned int>(this->hitbox.getCenterY())
           + (CHARACTER_WIDTH / 2));

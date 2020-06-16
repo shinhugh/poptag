@@ -1,25 +1,27 @@
 #include "bomb.h"
 
-// ------------------------------------------------------------
-
-Bomb::Bomb(unsigned int y, unsigned int x,
-std::chrono::milliseconds time_detonate, unsigned int range) :
-y(y), x(x), time_detonate(time_detonate),
-time_age(std::chrono::microseconds(0)), range(range) {}
+#define BOMB_WIDTH 1.0f
+#define BOMB_TIME_DETONATE 2000
 
 // ------------------------------------------------------------
 
-unsigned int Bomb::getY() const {
-
-  return this->y;
-
-}
+Bomb::Bomb() :
+hitbox(BOMB_WIDTH / 2, BOMB_WIDTH / 2, BOMB_WIDTH, BOMB_WIDTH),
+time_detonate(BOMB_TIME_DETONATE), time_age(std::chrono::microseconds(0)),
+range(1) {}
 
 // ------------------------------------------------------------
 
-unsigned int Bomb::getX() const {
+Bomb::Bomb(unsigned int y, unsigned int x, unsigned int range) :
+hitbox(y + (BOMB_WIDTH / 2), x + (BOMB_WIDTH / 2), BOMB_WIDTH, BOMB_WIDTH),
+time_detonate(BOMB_TIME_DETONATE), time_age(std::chrono::microseconds(0)),
+range(range) {}
 
-  return this->x;
+// ------------------------------------------------------------
+
+const Hitbox * Bomb::getHitbox() const {
+
+  return &(this->hitbox);
 
 }
 

@@ -5,7 +5,6 @@
 
 #include <chrono>
 #include "hitbox.h"
-#include "board.h"
 #include "bomb.h"
 
 // ------------------------------------------------------------
@@ -29,7 +28,7 @@ public:
   Direction getDirFace() const;
   void setDirMove(Direction);
   unsigned int getBombRange() const;
-  void update(const Board *, std::chrono::microseconds);
+  void update(const void *, std::chrono::microseconds);
 
 };
 

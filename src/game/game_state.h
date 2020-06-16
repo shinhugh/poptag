@@ -9,26 +9,38 @@
 #include <map>
 #include <chrono>
 #include "data_packet.h"
-#include "board.h"
 #include "character.h"
 #include "bomb.h"
+#include "board_block.h"
 
 // ------------------------------------------------------------
 
 class GameState {
 
 private:
-  Board board;
+  unsigned int board_height, board_width;
   std::vector<Character> characters;
-  std::map<unsigned int, Bomb> bombs;
+  Bomb **bombs;
+  bool **bombs_exist;
+  BoardBlock **blocks;
+  bool **blocks_exist;
+
+  void createBlock(unsigned int, unsigned int);
 
 public:
   GameState();
+  GameState(const GameState&);
+  GameState& operator=(const GameState&);
+  ~GameState();
+  unsigned int getBoardHeight() const;
+  unsigned int getBoardWidth() const;
+  const std::vector<Character> * getCharacters() const;
+  const Bomb * getBomb(unsigned int, unsigned int) const;
+  bool getBombExist(unsigned int, unsigned int) const;
+  const BoardBlock * getBlock(unsigned int, unsigned int) const;
+  bool getBlockExist(unsigned int, unsigned int) const;
   void internalUpdate(std::chrono::microseconds);
   void externalUpdate(DataPacket);
-  const Board * getBoard() const;
-  const std::vector<Character> * getCharacters() const;
-  const std::map<unsigned int, Bomb> * getBombs() const;
 
 };
 
