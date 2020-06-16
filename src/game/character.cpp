@@ -46,17 +46,21 @@ void Character::setDirMove(Direction dir_move) {
 void Character::update(const void * parent_state,
 std::chrono::microseconds elapsed_time) {
 
+  // Game state instance that contains this character
   const GameState * game_state = static_cast<const GameState *>(parent_state);
 
   // Distance traveled
   float distance = elapsed_time.count() * this->speed / 1000000;
 
-  // Blocks on board
+  // Hitboxes that may collide with this character
   std::vector<const Hitbox *> blocks;
   for(unsigned int y = 0; y < game_state->getBoardHeight(); y++) {
     for(unsigned int x = 0; x < game_state->getBoardWidth(); x++) {
       if(game_state->getBlockExist(y, x)) {
         blocks.push_back(game_state->getBlock(y, x)->getHitbox());
+      }
+      if(game_state->getBombExist(y, x)) {
+        blocks.push_back(game_state->getBomb(y, x)->getHitbox());
       }
     }
   }
