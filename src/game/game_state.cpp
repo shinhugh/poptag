@@ -22,7 +22,7 @@ void GameState::init() {
   this->characters_alive.push_back(true);
 
   // Re-generate blocks
-  for(unsigned int y = 2; y < this->board_height; y++) {
+  for(unsigned int y = 0; y < this->board_height; y++) {
     for(unsigned int x = 0; x < this->board_width; x++) {
       this->blocks_exist[y][x] = false;
     }
