@@ -21,6 +21,7 @@ class GameState {
 private:
   unsigned int board_height, board_width;
   std::vector<Character> characters;
+  std::vector<bool> characters_alive;
   Bomb **bombs;
   bool **bombs_exist;
   Explosion **explosions;
@@ -38,7 +39,9 @@ public:
   ~GameState();
   unsigned int getBoardHeight() const;
   unsigned int getBoardWidth() const;
-  const std::vector<Character> * getCharacters() const;
+  const Character * getCharacter(unsigned int) const;
+  bool getCharacterAlive(unsigned int) const;
+  unsigned int getCharacterCount() const;
   const Bomb * getBomb(unsigned int, unsigned int) const;
   bool getBombExist(unsigned int, unsigned int) const;
   const Explosion * getExplosion(unsigned int, unsigned int) const;

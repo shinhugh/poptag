@@ -37,6 +37,19 @@ void GameState::explodeBomb(unsigned int y, unsigned int x) {
     unsigned int coor_x = coordinates.at(i + 1);
     // Destroy block if one exists
     this->blocks_exist[coor_y][coor_x] = false;
+    // Kill character if one exists
+    for(unsigned int j = 0; j < this->characters.size(); j++) {
+      // Get coordinates of square that the character's center resides in
+      unsigned int character_y
+      = static_cast<unsigned int>(this->characters.at(j).getHitbox()
+      ->getCenterY());
+      unsigned int character_x
+      = static_cast<unsigned int>(this->characters.at(j).getHitbox()
+      ->getCenterX());
+      if(character_y == coor_y && character_x == coor_x) {
+        this->characters_alive.at(j) = false;
+      }
+    }
     // Detonate bomb if one exists
     if(this->bombs_exist[coor_y][coor_x]) {
       this->explodeBomb(coor_y, coor_x);
@@ -85,7 +98,7 @@ board_height(BOARD_HEIGHT), board_width(BOARD_WIDTH) {
 
 GameState::GameState(const GameState& src) :
 board_height(src.board_height), board_width(src.board_width),
-characters(src.characters) {
+characters(src.characters), characters_alive(src.characters_alive) {
 
   // Allocate memory
   this->bombs = new Bomb *[this->board_height];
@@ -147,6 +160,7 @@ GameState& GameState::operator=(const GameState& src) {
   this->board_height = src.board_height;
   this->board_width = src.board_width;
   this->characters = src.characters;
+  this->characters_alive = src.characters_alive;
 
   // Allocate memory
   this->bombs = new Bomb *[this->board_height];
@@ -226,9 +240,33 @@ unsigned int GameState::getBoardWidth() const {
 
 // ------------------------------------------------------------
 
-const std::vector<Character> * GameState::getCharacters() const {
+const Character * GameState::getCharacter(unsigned int id) const {
 
-  return &(this->characters);
+  if(id < this->characters.size()) {
+    return &(this->characters.at(id));
+  } else {
+    return 0;
+  }
+
+}
+
+// ------------------------------------------------------------
+
+bool GameState::getCharacterAlive(unsigned int id) const {
+
+  if(id < this->characters_alive.size()) {
+    return this->characters_alive.at(id);
+  } else {
+    return false;
+  }
+
+}
+
+// ------------------------------------------------------------
+
+unsigned int GameState::getCharacterCount() const {
+
+  return this->characters.size();
 
 }
 
@@ -334,7 +372,9 @@ void GameState::externalUpdate(DataPacket packet) {
         if(event_data->initialize) {
           // Reset
           this->characters.clear();
+          this->characters_alive.clear();
           this->characters.push_back(Character(1.5, 1.5, 5, 2));
+          this->characters_alive.push_back(true);
           // Create blocks
           this->createBlock(0, 0);
           this->createBlock(1, 0);
@@ -352,7 +392,8 @@ void GameState::externalUpdate(DataPacket packet) {
         // Parse event
         EventData_PlaceBomb *event_data
         = static_cast<EventData_PlaceBomb *>(packet.getData());
-        if(event_data->character_id < this->characters.size()) {
+        if(event_data->character_id < this->characters.size()
+        && this->characters_alive.at(event_data->character_id)) {
           // Get character's bomb traits
           unsigned int bomb_y
           = static_cast<unsigned int>
@@ -378,7 +419,8 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveStop *event_data
         = static_cast<EventData_MoveStop *>(packet.getData());
-        if(event_data->character_id < this->characters.size()) {
+        if(event_data->character_id < this->characters.size()
+        && this->characters_alive.at(event_data->character_id)) {
           this->characters.at(event_data->character_id).setDirMove(stop);
         }
       }
@@ -389,7 +431,8 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveUp *event_data
         = static_cast<EventData_MoveUp *>(packet.getData());
-        if(event_data->character_id < this->characters.size()) {
+        if(event_data->character_id < this->characters.size()
+        && this->characters_alive.at(event_data->character_id)) {
           this->characters.at(event_data->character_id).setDirMove(up);
         }
       }
@@ -400,7 +443,8 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveRight *event_data
         = static_cast<EventData_MoveRight *>(packet.getData());
-        if(event_data->character_id < this->characters.size()) {
+        if(event_data->character_id < this->characters.size()
+        && this->characters_alive.at(event_data->character_id)) {
           this->characters.at(event_data->character_id).setDirMove(right);
         }
       }
@@ -411,7 +455,8 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveDown *event_data
         = static_cast<EventData_MoveDown *>(packet.getData());
-        if(event_data->character_id < this->characters.size()) {
+        if(event_data->character_id < this->characters.size()
+        && this->characters_alive.at(event_data->character_id)) {
           this->characters.at(event_data->character_id).setDirMove(down);
         }
       }
@@ -422,7 +467,8 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveLeft *event_data
         = static_cast<EventData_MoveLeft *>(packet.getData());
-        if(event_data->character_id < this->characters.size()) {
+        if(event_data->character_id < this->characters.size()
+        && this->characters_alive.at(event_data->character_id)) {
           this->characters.at(event_data->character_id).setDirMove(left);
         }
       }
