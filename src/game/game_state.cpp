@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include "game_state.h"
 #include "event_data.h"
 
@@ -5,6 +6,46 @@
 
 #define BOARD_HEIGHT 16
 #define BOARD_WIDTH 16
+
+// ------------------------------------------------------------
+
+static bool randomBool();
+
+// ------------------------------------------------------------
+
+void GameState::init() {
+
+  // Re-generate characters
+  this->characters.clear();
+  this->characters_alive.clear();
+  this->characters.push_back(Character(0.5, 0.5, 8, 2));
+  this->characters_alive.push_back(true);
+
+  // Re-generate blocks
+  for(unsigned int y = 2; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      this->blocks_exist[y][x] = false;
+    }
+  }
+  for(unsigned int x = 2; x < this->board_width; x++) {
+    if(randomBool()) {
+      this->createBlock(0, x);
+    }
+  }
+  for(unsigned int x = 1; x < this->board_width; x++) {
+    if(randomBool()) {
+      this->createBlock(1, x);
+    }
+  }
+  for(unsigned int y = 2; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      if(randomBool()) {
+        this->createBlock(y, x);
+      }
+    }
+  }
+
+}
 
 // ------------------------------------------------------------
 
@@ -29,38 +70,72 @@ void GameState::explodeBomb(unsigned int y, unsigned int x) {
   std::vector<unsigned int> coordinates
   = this->bombs[y][x].explosionCoordinates(this->board_height,
   this->board_width);
+
+  // Whether the bomb's explosion continues through blocks
+  bool breakthrough = this->bombs[y][x].getBreakthrough();
+  bool stopped[4] = {false, false, false, false};
+
   // Remove bomb
   this->bombs_exist[y][x] = false;
+
   // Iterate through all coordinates the explosion reaches
   for(unsigned int i = 0; i + 1 < coordinates.size(); i += 2) {
+
+    // Get coordinates of this explosion
     unsigned int coor_y = coordinates.at(i);
     unsigned int coor_x = coordinates.at(i + 1);
-    // Destroy block if one exists
-    this->blocks_exist[coor_y][coor_x] = false;
-    // Kill character if one exists
-    for(unsigned int j = 0; j < this->characters.size(); j++) {
-      // Get coordinates of square that the character's center resides in
-      unsigned int character_y
-      = static_cast<unsigned int>(this->characters.at(j).getHitbox()
-      ->getCenterY());
-      unsigned int character_x
-      = static_cast<unsigned int>(this->characters.at(j).getHitbox()
-      ->getCenterX());
-      if(character_y == coor_y && character_x == coor_x) {
-        this->characters_alive.at(j) = false;
+
+    // Get direction of this explosion relative to the bomb
+    unsigned int direction = 0;
+    if(coor_x > x) {
+      direction = 1;
+    } else if(coor_y > y) {
+      direction = 2;
+    } else if(coor_x < x) {
+      direction = 3;
+    }
+
+    // If explosion in this direction hasn't been stopped
+    if(!stopped[direction]) {
+
+      // Destroy block if one exists
+      if(this->blocks_exist[coor_y][coor_x]) {
+        this->blocks_exist[coor_y][coor_x] = false;
+        // Stop explosion in this direction if breakthrough isn't true
+        if(!breakthrough) {
+          stopped[direction] = true;
+        }
       }
+
+      // Kill character if one exists
+      for(unsigned int j = 0; j < this->characters.size(); j++) {
+        // Get coordinates of square that the character's center resides in
+        unsigned int character_y
+        = static_cast<unsigned int>(this->characters.at(j).getHitbox()
+        ->getCenterY());
+        unsigned int character_x
+        = static_cast<unsigned int>(this->characters.at(j).getHitbox()
+        ->getCenterX());
+        if(character_y == coor_y && character_x == coor_x) {
+          this->characters_alive.at(j) = false;
+        }
+      }
+
+      // Detonate bomb if one exists
+      if(this->bombs_exist[coor_y][coor_x]) {
+        this->explodeBomb(coor_y, coor_x);
+      }
+
+      // Create explosion
+      if(this->explosions_exist[coor_y][coor_x]) {
+        this->explosions[coor_y][coor_x].resetTimeAge();
+      } else {
+        this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x);
+        this->explosions_exist[coor_y][coor_x] = true;
+      }
+
     }
-    // Detonate bomb if one exists
-    if(this->bombs_exist[coor_y][coor_x]) {
-      this->explodeBomb(coor_y, coor_x);
-    }
-    // Create explosion
-    if(this->explosions_exist[coor_y][coor_x]) {
-      this->explosions[coor_y][coor_x].resetTimeAge();
-    } else {
-      this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x);
-      this->explosions_exist[coor_y][coor_x] = true;
-    }
+
   }
 
 }
@@ -385,17 +460,7 @@ void GameState::externalUpdate(DataPacket packet) {
         = static_cast<EventData_Initialize *>(packet.getData());
         if(event_data->initialize) {
           // Reset
-          this->characters.clear();
-          this->characters_alive.clear();
-          this->characters.push_back(Character(1.5, 1.5, 5, 2));
-          this->characters_alive.push_back(true);
-          // Create blocks
-          this->createBlock(0, 0);
-          this->createBlock(1, 0);
-          this->createBlock(2, 0);
-          this->createBlock(0, 2);
-          this->createBlock(1, 2);
-          this->createBlock(2, 2);
+          this->init();
         }
       }
       break;
@@ -419,9 +484,12 @@ void GameState::externalUpdate(DataPacket packet) {
           ->getCenterX());
           unsigned int bomb_range
           = this->characters.at(event_data->character_id).getBombRange();
+          bool bomb_breakthrough
+          = this->characters.at(event_data->character_id).getBombBreakthrough();
           // Place bomb at whichever square the character's center lies in
           if(!(this->bombs_exist[bomb_y][bomb_x])) {
-            this->bombs[bomb_y][bomb_x] = Bomb(bomb_y, bomb_x, bomb_range);
+            this->bombs[bomb_y][bomb_x] = Bomb(bomb_y, bomb_x, bomb_range,
+            bomb_breakthrough);
             this->bombs_exist[bomb_y][bomb_x] = true;
           }
         }
@@ -494,83 +562,8 @@ void GameState::externalUpdate(DataPacket packet) {
 
 // ------------------------------------------------------------
 
-/*
+static bool randomBool() {
 
-void GameState::drawState() { // TODO: Remove
-
-  std::cerr << "\n  ";
-  for(unsigned int x = 0; x < this->board.getWidth(); x++) {
-    if(x > 0) {
-      std::cerr << " ";
-    }
-    std::cerr << std::to_string(x);
-  }
-  std::cerr << "\n +";
-  for(unsigned int x = 0; x < 2 * this->board.getWidth() - 1; x++) {
-    std::cerr << "-";
-  }
-  std::cerr << "+\n";
-  for(unsigned int y = 0; y < this->board.getHeight(); y++) {
-    if(y > 0) {
-      std::cerr << " |";
-      for(unsigned int x = 0; x < this->board.getWidth(); x++) {
-        if(x > 0) {
-          std::cerr << "+";
-        }
-        std::cerr << "-";
-      }
-      std::cerr << "|\n";
-    }
-    std::cerr << std::to_string(y) + "|";
-    for(unsigned int x = 0; x < this->board.getWidth(); x++) {
-      if(x > 0) {
-        std::cerr << "|";
-      }
-      switch(this->board.getTerrain(y, x)) {
-        case ground:
-          {
-            bool bomb_here = false;
-            for(unsigned int i = 0; i < this->bombs.size(); i++) {
-              if(this->bombs.at(i).getY() == y
-              && this->bombs.at(i).getX() == x) {
-                bomb_here = true;
-                break;
-              }
-            }
-            if(bomb_here) {
-              std::cerr << "B";
-            } else {
-              std::cerr << " ";
-            }
-          }
-          break;
-        case breakable:
-          {
-            std::cerr << "O";
-          }
-          break;
-        case unbreakable:
-          {
-            std::cerr << "X";
-          }
-          break;
-      }
-    }
-    std::cerr << "|\n";
-  }
-  std::cerr << " +";
-  for(unsigned int x = 0; x < 2 * this->board.getWidth() - 1; x++) {
-    std::cerr << "-";
-  }
-  std::cerr << "+\n\n";
-
-  std::cerr << "Character positions:\n";
-  for(unsigned int i = 0; i < this->characters.size(); i++) {
-    std::cerr << "Character " + std::to_string(i) + ":\n("
-    + std::to_string(this->characters.at(i).getY()) + ", "
-    + std::to_string(this->characters.at(i).getX()) + ")\n";
-  }
+  return (rand() % 2 == 0);
 
 }
-
-*/

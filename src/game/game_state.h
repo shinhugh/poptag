@@ -29,6 +29,7 @@ private:
   BoardBlock **blocks;
   bool **blocks_exist;
 
+  void init();
   void createBlock(unsigned int, unsigned int);
   void explodeBomb(unsigned int, unsigned int);
 

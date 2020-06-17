@@ -21,6 +21,7 @@ private:
   enum Direction dir_move;
   enum Direction dir_face;
   unsigned int bomb_range;
+  bool bomb_breakthrough;
 
 public:
   Character(float, float, float, unsigned int);
@@ -28,6 +29,7 @@ public:
   Direction getDirFace() const;
   void setDirMove(Direction);
   unsigned int getBombRange() const;
+  bool getBombBreakthrough() const;
   void update(const void *, std::chrono::microseconds);
 
 };

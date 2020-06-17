@@ -8,14 +8,15 @@
 Bomb::Bomb() :
 hitbox(BOMB_WIDTH / 2, BOMB_WIDTH / 2, BOMB_WIDTH, BOMB_WIDTH),
 time_detonate(BOMB_TIME_DETONATE), time_age(std::chrono::microseconds(0)),
-range(1) {}
+range(1), breakthrough(false) {}
 
 // ------------------------------------------------------------
 
-Bomb::Bomb(unsigned int y, unsigned int x, unsigned int range) :
+Bomb::Bomb(unsigned int y, unsigned int x, unsigned int range,
+bool breakthrough) :
 hitbox(y + (BOMB_WIDTH / 2), x + (BOMB_WIDTH / 2), BOMB_WIDTH, BOMB_WIDTH),
 time_detonate(BOMB_TIME_DETONATE), time_age(std::chrono::microseconds(0)),
-range(range) {}
+range(range), breakthrough(breakthrough) {}
 
 // ------------------------------------------------------------
 
@@ -46,6 +47,14 @@ std::chrono::microseconds Bomb::getTimeAge() const {
 unsigned int Bomb::getRange() const {
 
   return this->range;
+
+}
+
+// ------------------------------------------------------------
+
+bool Bomb::getBreakthrough() const {
+
+  return this->breakthrough;
 
 }
 

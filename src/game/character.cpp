@@ -7,7 +7,7 @@
 
 Character::Character(float y, float x, float speed, unsigned int bomb_range) :
 hitbox(y, x, CHARACTER_WIDTH, CHARACTER_WIDTH), speed(speed), dir_move(stop),
-dir_face(down), bomb_range(bomb_range) {}
+dir_face(down), bomb_range(bomb_range), bomb_breakthrough(false) {}
 
 // ------------------------------------------------------------
 
@@ -30,6 +30,14 @@ Direction Character::getDirFace() const {
 unsigned int Character::getBombRange() const {
 
   return this->bomb_range;
+
+}
+
+// ------------------------------------------------------------
+
+bool Character::getBombBreakthrough() const {
+
+  return this->bomb_breakthrough;
 
 }
 
