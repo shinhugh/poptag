@@ -332,6 +332,20 @@ void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
   for(unsigned int y = 0; y < this->board_height; y++) {
     for(unsigned int x = 0; x < this->board_width; x++) {
       if(this->explosions_exist[y][x]) {
+        // Kill character if taking up this spot
+        for(unsigned int i = 0; i < this->characters.size(); i++) {
+          // Get coordinates of square that the character's center resides in
+          unsigned int character_y
+          = static_cast<unsigned int>(this->characters.at(i).getHitbox()
+          ->getCenterY());
+          unsigned int character_x
+          = static_cast<unsigned int>(this->characters.at(i).getHitbox()
+          ->getCenterX());
+          if(character_y == y && character_x == x) {
+            this->characters_alive.at(i) = false;
+          }
+        }
+        // Update explosion time and remove if necessary
         this->explosions[y][x].update(elapsed_time);
         if(this->explosions[y][x].getTimeAge()
         >= this->explosions[y][x].getTimeDisappear()) {
