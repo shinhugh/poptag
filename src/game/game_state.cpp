@@ -352,21 +352,23 @@ void GameState::externalUpdate(DataPacket packet) {
         // Parse event
         EventData_PlaceBomb *event_data
         = static_cast<EventData_PlaceBomb *>(packet.getData());
-        // Get character's bomb traits
-        unsigned int bomb_y
-        = static_cast<unsigned int>
-        (this->characters.at(event_data->character_id).getHitbox()
-        ->getCenterY());
-        unsigned int bomb_x
-        = static_cast<unsigned int>
-        (this->characters.at(event_data->character_id).getHitbox()
-        ->getCenterX());
-        unsigned int bomb_range
-        = this->characters.at(event_data->character_id).getBombRange();
-        // Place bomb at whichever square the character's center lies in
-        if(!(this->bombs_exist[bomb_y][bomb_x])) {
-          this->bombs[bomb_y][bomb_x] = Bomb(bomb_y, bomb_x, bomb_range);
-          this->bombs_exist[bomb_y][bomb_x] = true;
+        if(event_data->character_id < this->characters.size()) {
+          // Get character's bomb traits
+          unsigned int bomb_y
+          = static_cast<unsigned int>
+          (this->characters.at(event_data->character_id).getHitbox()
+          ->getCenterY());
+          unsigned int bomb_x
+          = static_cast<unsigned int>
+          (this->characters.at(event_data->character_id).getHitbox()
+          ->getCenterX());
+          unsigned int bomb_range
+          = this->characters.at(event_data->character_id).getBombRange();
+          // Place bomb at whichever square the character's center lies in
+          if(!(this->bombs_exist[bomb_y][bomb_x])) {
+            this->bombs[bomb_y][bomb_x] = Bomb(bomb_y, bomb_x, bomb_range);
+            this->bombs_exist[bomb_y][bomb_x] = true;
+          }
         }
       }
       break;
@@ -376,7 +378,9 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveStop *event_data
         = static_cast<EventData_MoveStop *>(packet.getData());
-        this->characters.at(event_data->character_id).setDirMove(stop);
+        if(event_data->character_id < this->characters.size()) {
+          this->characters.at(event_data->character_id).setDirMove(stop);
+        }
       }
       break;
 
@@ -385,7 +389,9 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveUp *event_data
         = static_cast<EventData_MoveUp *>(packet.getData());
-        this->characters.at(event_data->character_id).setDirMove(up);
+        if(event_data->character_id < this->characters.size()) {
+          this->characters.at(event_data->character_id).setDirMove(up);
+        }
       }
       break;
 
@@ -394,7 +400,9 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveRight *event_data
         = static_cast<EventData_MoveRight *>(packet.getData());
-        this->characters.at(event_data->character_id).setDirMove(right);
+        if(event_data->character_id < this->characters.size()) {
+          this->characters.at(event_data->character_id).setDirMove(right);
+        }
       }
       break;
 
@@ -403,7 +411,9 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveDown *event_data
         = static_cast<EventData_MoveDown *>(packet.getData());
-        this->characters.at(event_data->character_id).setDirMove(down);
+        if(event_data->character_id < this->characters.size()) {
+          this->characters.at(event_data->character_id).setDirMove(down);
+        }
       }
       break;
 
@@ -412,7 +422,9 @@ void GameState::externalUpdate(DataPacket packet) {
       {
         EventData_MoveLeft *event_data
         = static_cast<EventData_MoveLeft *>(packet.getData());
-        this->characters.at(event_data->character_id).setDirMove(left);
+        if(event_data->character_id < this->characters.size()) {
+          this->characters.at(event_data->character_id).setDirMove(left);
+        }
       }
       break;
 
