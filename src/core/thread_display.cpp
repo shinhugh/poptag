@@ -134,15 +134,33 @@ void threadRoutine_Display(Game& game) {
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
 
+  // Generate and bind vertex array object
+  GLuint vertex_array_obj;
+  glGenVertexArrays(1, &vertex_array_obj);
+  glBindVertexArray(vertex_array_obj);
+
+  // Generate and bind vertex buffer object
+  GLuint vertex_buffer_obj;
+  glGenBuffers(1, &vertex_buffer_obj);
+  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
+
+  // Configure vertex array object
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+  (void *) 0);
+  glEnableVertexAttribArray(0);
+
   // Vertex index ordering to draw a square (quadrant order)
   unsigned int square_indices[] = {0, 1, 2, 0, 2, 3};
 
-  // Generate element buffer object
+  // Generate, bind, and populate element buffer object
   GLuint element_buffer_obj;
   glGenBuffers(1, &element_buffer_obj);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
   square_indices, GL_DYNAMIC_DRAW);
+
+  // Unbind vertex array object
+  glBindVertexArray(0);
 
   // Memory for vertices' coordinates
   float *vertices = new float[12];
@@ -170,38 +188,21 @@ void threadRoutine_Display(Game& game) {
         generateVertices(vertices, game_state.getCharacter(i)->getHitbox(),
         game_state.getBoardHeight(), game_state.getBoardWidth());
 
-        // Generate vertex array object
-        GLuint vertex_array_obj;
-        glGenVertexArrays(1, &vertex_array_obj);
-        // Bind newly generated vertex array object
+        // Bind vertex array object
         glBindVertexArray(vertex_array_obj);
 
-        // Generate vertex buffer object
-        GLuint vertex_buffer_obj;
-        glGenBuffers(1, &vertex_buffer_obj);
-        // Bind newly generated vertex buffer
+        // Bind vertex buffer
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
         // Copy vertex data into currently bound buffer
         glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
         GL_DYNAMIC_DRAW);
 
-        // Bind element array buffer
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
-
-        // Configure vertex array object
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-        (void *) 0);
-        glEnableVertexAttribArray(0);
-
         // Draw
         glBindVertexArray(vertex_array_obj);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        // Delete vertex array object
-        glDeleteVertexArrays(1, &vertex_array_obj);
-
-        // Delete vertex buffer object
-        glDeleteBuffers(1, &vertex_buffer_obj);
+        // Unbind vertex array object
+        glBindVertexArray(0);
 
       }
     }
@@ -215,38 +216,21 @@ void threadRoutine_Display(Game& game) {
           generateVertices(vertices, game_state.getBlock(y, x)->getHitbox(),
           game_state.getBoardHeight(), game_state.getBoardWidth());
 
-          // Generate vertex array object
-          GLuint vertex_array_obj;
-          glGenVertexArrays(1, &vertex_array_obj);
-          // Bind newly generated vertex array object
+          // Bind vertex array object
           glBindVertexArray(vertex_array_obj);
 
-          // Generate vertex buffer object
-          GLuint vertex_buffer_obj;
-          glGenBuffers(1, &vertex_buffer_obj);
-          // Bind newly generated vertex buffer
+          // Bind vertex buffer
           glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
           // Copy vertex data into currently bound buffer
           glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
           GL_DYNAMIC_DRAW);
 
-          // Bind element array buffer
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
-
-          // Configure vertex array object
-          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-          (void *) 0);
-          glEnableVertexAttribArray(0);
-
           // Draw
           glBindVertexArray(vertex_array_obj);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-          // Delete vertex array object
-          glDeleteVertexArrays(1, &vertex_array_obj);
-
-          // Delete vertex buffer object
-          glDeleteBuffers(1, &vertex_buffer_obj);
+          // Unbind vertex array object
+          glBindVertexArray(0);
 
         }
       }
@@ -261,38 +245,21 @@ void threadRoutine_Display(Game& game) {
           generateVertices(vertices, game_state.getBomb(y, x)->getHitbox(),
           game_state.getBoardHeight(), game_state.getBoardWidth());
 
-          // Generate vertex array object
-          GLuint vertex_array_obj;
-          glGenVertexArrays(1, &vertex_array_obj);
-          // Bind newly generated vertex array object
+          // Bind vertex array object
           glBindVertexArray(vertex_array_obj);
 
-          // Generate vertex buffer object
-          GLuint vertex_buffer_obj;
-          glGenBuffers(1, &vertex_buffer_obj);
-          // Bind newly generated vertex buffer
+          // Bind vertex buffer
           glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
           // Copy vertex data into currently bound buffer
           glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
           GL_DYNAMIC_DRAW);
 
-          // Bind element array buffer
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
-
-          // Configure vertex array object
-          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-          (void *) 0);
-          glEnableVertexAttribArray(0);
-
           // Draw
           glBindVertexArray(vertex_array_obj);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-          // Delete vertex array object
-          glDeleteVertexArrays(1, &vertex_array_obj);
-
-          // Delete vertex buffer object
-          glDeleteBuffers(1, &vertex_buffer_obj);
+          // Unbind vertex array object
+          glBindVertexArray(0);
 
         }
       }
@@ -307,38 +274,21 @@ void threadRoutine_Display(Game& game) {
           generateVertices(vertices, game_state.getExplosion(y, x)->getHitbox(),
           game_state.getBoardHeight(), game_state.getBoardWidth());
 
-          // Generate vertex array object
-          GLuint vertex_array_obj;
-          glGenVertexArrays(1, &vertex_array_obj);
-          // Bind newly generated vertex array object
+          // Bind vertex array object
           glBindVertexArray(vertex_array_obj);
 
-          // Generate vertex buffer object
-          GLuint vertex_buffer_obj;
-          glGenBuffers(1, &vertex_buffer_obj);
-          // Bind newly generated vertex buffer
+          // Bind vertex buffer
           glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
           // Copy vertex data into currently bound buffer
           glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
           GL_DYNAMIC_DRAW);
 
-          // Bind element array buffer
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
-
-          // Configure vertex array object
-          glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
-          (void *) 0);
-          glEnableVertexAttribArray(0);
-
           // Draw
           glBindVertexArray(vertex_array_obj);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-          // Delete vertex array object
-          glDeleteVertexArrays(1, &vertex_array_obj);
-
-          // Delete vertex buffer object
-          glDeleteBuffers(1, &vertex_buffer_obj);
+          // Unbind vertex array object
+          glBindVertexArray(0);
 
         }
       }
@@ -360,6 +310,8 @@ void threadRoutine_Display(Game& game) {
 
   // Free resources used by OpenGL
   glDeleteProgram(shader_program);
+  glDeleteVertexArrays(1, &vertex_array_obj);
+  glDeleteBuffers(1, &vertex_buffer_obj);
   glDeleteBuffers(1, &element_buffer_obj);
 
   // Free previously allocated memory
