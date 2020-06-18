@@ -43,6 +43,14 @@ bool Character::getBombBreakthrough() const {
 
 // ------------------------------------------------------------
 
+void Character::setBombBreakthrough(bool bomb_breakthrough) {
+
+  this->bomb_breakthrough = bomb_breakthrough;
+
+}
+
+// ------------------------------------------------------------
+
 void Character::setDirMove(Direction dir_move) {
 
   this->dir_move = dir_move;

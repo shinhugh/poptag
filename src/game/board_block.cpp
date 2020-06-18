@@ -17,3 +17,11 @@ const Hitbox * BoardBlock::getHitbox() const {
   return &(this->hitbox);
 
 }
+
+// ------------------------------------------------------------
+
+BlockType BoardBlock::getType() const {
+
+  return this->type;
+
+}

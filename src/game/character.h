@@ -30,6 +30,7 @@ public:
   void setDirMove(Direction);
   unsigned int getBombRange() const;
   bool getBombBreakthrough() const;
+  void setBombBreakthrough(bool);
   void update(const void *, std::chrono::microseconds);
 
 };

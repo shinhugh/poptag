@@ -21,6 +21,7 @@ public:
   BoardBlock();
   BoardBlock(unsigned int, unsigned int, BlockType);
   const Hitbox * getHitbox() const;
+  BlockType getType() const;
 
 };
 

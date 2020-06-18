@@ -20,6 +20,7 @@ void GameState::init() {
   this->characters_alive.clear();
   this->characters.push_back(Character(0.5, 0.5, 8, 2));
   this->characters_alive.push_back(true);
+  this->characters.at(0).setBombBreakthrough(true);
 
   // Re-generate blocks
   for(unsigned int y = 0; y < this->board_height; y++) {
@@ -98,12 +99,18 @@ void GameState::explodeBomb(unsigned int y, unsigned int x) {
     // If explosion in this direction hasn't been stopped
     if(!stopped[direction]) {
 
-      // Destroy block if one exists
+      // Destroy block if one exists and isn't unbreakable
       if(this->blocks_exist[coor_y][coor_x]) {
-        this->blocks_exist[coor_y][coor_x] = false;
-        // Stop explosion in this direction if breakthrough isn't true
-        if(!breakthrough) {
+        if(this->blocks[coor_y][coor_x].getType() == breakable) {
+          this->blocks_exist[coor_y][coor_x] = false;
+          // Stop explosion in this direction if breakthrough isn't true
+          if(!breakthrough) {
+            stopped[direction] = true;
+          }
+        }
+        else {
           stopped[direction] = true;
+          continue;
         }
       }
 

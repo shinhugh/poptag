@@ -135,35 +135,53 @@ void threadRoutine_Display(Game& game) {
   glDeleteShader(fragment_shader);
 
   // Generate and bind vertex array object
-  GLuint vertex_array_obj;
-  glGenVertexArrays(1, &vertex_array_obj);
-  glBindVertexArray(vertex_array_obj);
+  GLuint array_vert;
+  glGenVertexArrays(1, &array_vert);
+  glBindVertexArray(array_vert);
 
-  // Generate and bind vertex buffer object
-  GLuint vertex_buffer_obj;
-  glGenBuffers(1, &vertex_buffer_obj);
-  glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
+  // Memory for vertices' coordinates
+  float *vertices_pos = new float[12];
+  // Memory for vertices' colors
+  float *vertices_color = new float[16];
+
+  // Generate vertex buffer object for vertex position
+  GLuint buf_vert_pos;
+  glGenBuffers(1, &buf_vert_pos);
+
+  // Generate vertex buffer object for vertex color
+  GLuint buf_vert_color;
+  glGenBuffers(1, &buf_vert_color);
 
   // Configure vertex array object
+  glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
   (void *) 0);
   glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
+  (void *) 0);
+  glEnableVertexAttribArray(1);
+
+  // Generate and bind element buffer object
+  GLuint buf_elem;
+  glGenBuffers(1, &buf_elem);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf_elem);
 
   // Vertex index ordering to draw a square (quadrant order)
-  unsigned int square_indices[] = {0, 1, 2, 0, 2, 3};
+  unsigned int *indices_square = new unsigned int[6];
+  indices_square[0] = 0;
+  indices_square[1] = 1;
+  indices_square[2] = 2;
+  indices_square[3] = 0;
+  indices_square[4] = 2;
+  indices_square[5] = 3;
 
-  // Generate, bind, and populate element buffer object
-  GLuint element_buffer_obj;
-  glGenBuffers(1, &element_buffer_obj);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer_obj);
+  // Populate element buffer object
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
-  square_indices, GL_DYNAMIC_DRAW);
+  indices_square, GL_DYNAMIC_DRAW);
 
   // Unbind vertex array object
   glBindVertexArray(0);
-
-  // Memory for vertices' coordinates
-  float *vertices = new float[12];
 
   // While game is ongoing
   while (!(game.isExit()) && !glfwWindowShouldClose(window))
@@ -184,21 +202,45 @@ void threadRoutine_Display(Game& game) {
     for(unsigned int i = 0; i < game_state.getCharacterCount(); i++) {
       if(game_state.getCharacterAlive(i)) {
 
-        // Vertices for hitbox (quadrant order)
-        generateVertices(vertices, game_state.getCharacter(i)->getHitbox(),
+        // Vertex positions for hitbox (quadrant order)
+        generateVertices(vertices_pos, game_state.getCharacter(i)->getHitbox(),
         game_state.getBoardHeight(), game_state.getBoardWidth());
 
-        // Bind vertex array object
-        glBindVertexArray(vertex_array_obj);
+        // Vertex colors
+        // Red
+        for(unsigned int i = 0; i < 16; i += 4) {
+          vertices_color[i] = 0;
+        }
+        // Green
+        for(unsigned int i = 1; i < 16; i += 4) {
+          vertices_color[i] = 1;
+        }
+        // Blue
+        for(unsigned int i = 2; i < 16; i += 4) {
+          vertices_color[i] = 0;
+        }
+        // Alpha
+        for(unsigned int i = 3; i < 16; i += 4) {
+          vertices_color[i] = 1;
+        }
 
-        // Bind vertex buffer
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
-        // Copy vertex data into currently bound buffer
-        glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
+        // Bind vertex array object
+        glBindVertexArray(array_vert);
+
+        // Bind buffer for vertex position
+        glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
+        // Copy vertex position data into currently bound buffer
+        glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
+        GL_DYNAMIC_DRAW);
+
+        // Bind buffer for vertex color
+        glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
+        // Copy vertex position data into currently bound buffer
+        glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
         GL_DYNAMIC_DRAW);
 
         // Draw
-        glBindVertexArray(vertex_array_obj);
+        glBindVertexArray(array_vert);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         // Unbind vertex array object
@@ -212,21 +254,45 @@ void threadRoutine_Display(Game& game) {
       for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
         if(game_state.getBlockExist(y, x)) {
 
-          // Vertices for hitbox (quadrant order)
-          generateVertices(vertices, game_state.getBlock(y, x)->getHitbox(),
+          // Vertex positions for hitbox (quadrant order)
+          generateVertices(vertices_pos, game_state.getBlock(y, x)->getHitbox(),
           game_state.getBoardHeight(), game_state.getBoardWidth());
 
-          // Bind vertex array object
-          glBindVertexArray(vertex_array_obj);
+          // Vertex colors
+          // Red
+          for(unsigned int i = 0; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
+          // Green
+          for(unsigned int i = 1; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
+          // Blue
+          for(unsigned int i = 2; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
+          // Alpha
+          for(unsigned int i = 3; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
 
-          // Bind vertex buffer
-          glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
-          // Copy vertex data into currently bound buffer
-          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
+          // Bind vertex array object
+          glBindVertexArray(array_vert);
+
+          // Bind buffer for vertex position
+          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
+          // Copy vertex position data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
+          GL_DYNAMIC_DRAW);
+
+          // Bind buffer for vertex color
+          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
+          // Copy vertex position data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
           GL_DYNAMIC_DRAW);
 
           // Draw
-          glBindVertexArray(vertex_array_obj);
+          glBindVertexArray(array_vert);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
           // Unbind vertex array object
@@ -241,21 +307,45 @@ void threadRoutine_Display(Game& game) {
       for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
         if(game_state.getBombExist(y, x)) {
 
-          // Vertices for hitbox (quadrant order)
-          generateVertices(vertices, game_state.getBomb(y, x)->getHitbox(),
+          // Vertex positions for hitbox (quadrant order)
+          generateVertices(vertices_pos, game_state.getBomb(y, x)->getHitbox(),
           game_state.getBoardHeight(), game_state.getBoardWidth());
 
-          // Bind vertex array object
-          glBindVertexArray(vertex_array_obj);
+          // Vertex colors
+          // Red
+          for(unsigned int i = 0; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
+          // Green
+          for(unsigned int i = 1; i < 16; i += 4) {
+            vertices_color[i] = 0;
+          }
+          // Blue
+          for(unsigned int i = 2; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
+          // Alpha
+          for(unsigned int i = 3; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
 
-          // Bind vertex buffer
-          glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
-          // Copy vertex data into currently bound buffer
-          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
+          // Bind vertex array object
+          glBindVertexArray(array_vert);
+
+          // Bind buffer for vertex position
+          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
+          // Copy vertex position data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
+          GL_DYNAMIC_DRAW);
+
+          // Bind buffer for vertex color
+          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
+          // Copy vertex position data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
           GL_DYNAMIC_DRAW);
 
           // Draw
-          glBindVertexArray(vertex_array_obj);
+          glBindVertexArray(array_vert);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
           // Unbind vertex array object
@@ -270,21 +360,46 @@ void threadRoutine_Display(Game& game) {
       for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
         if(game_state.getExplosionExist(y, x)) {
 
-          // Vertices for hitbox (quadrant order)
-          generateVertices(vertices, game_state.getExplosion(y, x)->getHitbox(),
+          // Vertex positions for hitbox (quadrant order)
+          generateVertices(vertices_pos,
+          game_state.getExplosion(y, x)->getHitbox(),
           game_state.getBoardHeight(), game_state.getBoardWidth());
 
-          // Bind vertex array object
-          glBindVertexArray(vertex_array_obj);
+          // Vertex colors
+          // Red
+          for(unsigned int i = 0; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
+          // Green
+          for(unsigned int i = 1; i < 16; i += 4) {
+            vertices_color[i] = 0;
+          }
+          // Blue
+          for(unsigned int i = 2; i < 16; i += 4) {
+            vertices_color[i] = 0;
+          }
+          // Alpha
+          for(unsigned int i = 3; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
 
-          // Bind vertex buffer
-          glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer_obj);
-          // Copy vertex data into currently bound buffer
-          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices,
+          // Bind vertex array object
+          glBindVertexArray(array_vert);
+
+          // Bind buffer for vertex position
+          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
+          // Copy vertex position data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
+          GL_DYNAMIC_DRAW);
+
+          // Bind buffer for vertex color
+          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
+          // Copy vertex position data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
           GL_DYNAMIC_DRAW);
 
           // Draw
-          glBindVertexArray(vertex_array_obj);
+          glBindVertexArray(array_vert);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
           // Unbind vertex array object
@@ -310,12 +425,15 @@ void threadRoutine_Display(Game& game) {
 
   // Free resources used by OpenGL
   glDeleteProgram(shader_program);
-  glDeleteVertexArrays(1, &vertex_array_obj);
-  glDeleteBuffers(1, &vertex_buffer_obj);
-  glDeleteBuffers(1, &element_buffer_obj);
+  glDeleteVertexArrays(1, &array_vert);
+  glDeleteBuffers(1, &buf_vert_pos);
+  glDeleteBuffers(1, &buf_vert_color);
+  glDeleteBuffers(1, &buf_elem);
 
   // Free previously allocated memory
-  delete[] vertices;
+  delete[] vertices_pos;
+  delete[] vertices_color;
+  delete[] indices_square;
 
   // Free resources used by GLFW
   glfwTerminate();
@@ -444,6 +562,102 @@ int mods) {
 
   // A, released
   else if(key == GLFW_KEY_A && action == GLFW_RELEASE) {
+    if(current_direction == 4) {
+      current_direction = 0;
+      DataPacket packet;
+      EventData_MoveStop event_data;
+      event_data.character_id = 0;
+      packet.setType(moveStop);
+      packet.setData(&event_data, sizeof(EventData_MoveStop));
+      game_instance->queueEvent(packet);
+    }
+  }
+
+  // Up, pressed
+  else if(key == GLFW_KEY_UP && action == GLFW_PRESS) {
+    current_direction = 1;
+    DataPacket packet;
+    EventData_MoveUp event_data;
+    event_data.character_id = 0;
+    packet.setType(moveUp);
+    packet.setData(&event_data, sizeof(EventData_MoveUp));
+    game_instance->queueEvent(packet);
+  }
+
+  // Up, released
+  else if(key == GLFW_KEY_UP && action == GLFW_RELEASE) {
+    if(current_direction == 1) {
+      current_direction = 0;
+      DataPacket packet;
+      EventData_MoveStop event_data;
+      event_data.character_id = 0;
+      packet.setType(moveStop);
+      packet.setData(&event_data, sizeof(EventData_MoveStop));
+      game_instance->queueEvent(packet);
+    }
+  }
+
+  // Right, pressed
+  else if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+    current_direction = 2;
+    DataPacket packet;
+    EventData_MoveRight event_data;
+    event_data.character_id = 0;
+    packet.setType(moveRight);
+    packet.setData(&event_data, sizeof(EventData_MoveRight));
+    game_instance->queueEvent(packet);
+  }
+
+  // Right, released
+  else if(key == GLFW_KEY_RIGHT && action == GLFW_RELEASE) {
+    if(current_direction == 2) {
+      current_direction = 0;
+      DataPacket packet;
+      EventData_MoveStop event_data;
+      event_data.character_id = 0;
+      packet.setType(moveStop);
+      packet.setData(&event_data, sizeof(EventData_MoveStop));
+      game_instance->queueEvent(packet);
+    }
+  }
+
+  // Down, pressed
+  else if(key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+    current_direction = 3;
+    DataPacket packet;
+    EventData_MoveDown event_data;
+    event_data.character_id = 0;
+    packet.setType(moveDown);
+    packet.setData(&event_data, sizeof(EventData_MoveDown));
+    game_instance->queueEvent(packet);
+  }
+
+  // Down, released
+  else if(key == GLFW_KEY_DOWN && action == GLFW_RELEASE) {
+    if(current_direction == 3) {
+      current_direction = 0;
+      DataPacket packet;
+      EventData_MoveStop event_data;
+      event_data.character_id = 0;
+      packet.setType(moveStop);
+      packet.setData(&event_data, sizeof(EventData_MoveStop));
+      game_instance->queueEvent(packet);
+    }
+  }
+
+  // Left, pressed
+  else if(key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+    current_direction = 4;
+    DataPacket packet;
+    EventData_MoveLeft event_data;
+    event_data.character_id = 0;
+    packet.setType(moveLeft);
+    packet.setData(&event_data, sizeof(EventData_MoveLeft));
+    game_instance->queueEvent(packet);
+  }
+
+  // Left, released
+  else if(key == GLFW_KEY_LEFT && action == GLFW_RELEASE) {
     if(current_direction == 4) {
       current_direction = 0;
       DataPacket packet;
