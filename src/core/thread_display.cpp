@@ -5,6 +5,8 @@
 #include <string>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 #include "thread_display.h"
 #include "data_packet.h"
 #include "event_data.h"
@@ -12,12 +14,15 @@
 #include "hitbox.h"
 #include "character.h"
 
-// Linux
-// #define SHADER_DIR_PATH "../src/core/"
+// Unix
+// #define PATH_SHADER_DIR "../src/core/"
+// #define PATH_TEXTURE_DIR "../assets/"
 // MSVC
-#define SHADER_DIR_PATH "../../src/core/"
+#define PATH_SHADER_DIR "../../src/core/"
+#define PATH_TEXTURE_DIR "../../assets/"
 // Portable
-// #define SHADER_DIR_PATH "./"
+// #define PATH_SHADER_DIR "./"
+// #define PATH_TEXTURE_DIR "./"
 
 // ------------------------------------------------------------
 
@@ -88,7 +93,7 @@ void threadRoutine_Display(Game& game) {
   glfwSwapInterval(1);
 
   // Vertex shader
-  std::string vertex_shader_src = readFile(std::string(SHADER_DIR_PATH)
+  std::string vertex_shader_src = readFile(std::string(PATH_SHADER_DIR)
   + "shader.vert");
   const char * vertex_shader_src_c = vertex_shader_src.c_str();
   GLuint vertex_shader = glCreateShader(GL_VERTEX_SHADER);
@@ -104,7 +109,7 @@ void threadRoutine_Display(Game& game) {
   }
 
   // Fragment shader
-  std::string fragment_shader_src = readFile(std::string(SHADER_DIR_PATH)
+  std::string fragment_shader_src = readFile(std::string(PATH_SHADER_DIR)
   + "shader.frag");
   const char * fragment_shader_src_c = fragment_shader_src.c_str();
   GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -134,38 +139,117 @@ void threadRoutine_Display(Game& game) {
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
 
+  // Texture for bomb
+  int texture_width, texture_height, texture_channel_count;
+  unsigned char *texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
+  + "bomb.png").c_str(),
+  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
+  GLuint texture_bomb;
+  glGenTextures(1, &texture_bomb);
+  glBindTexture(GL_TEXTURE_2D, texture_bomb);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
+  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+  stbi_image_free(texture_data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  // Texture for board block, unbreakable
+  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
+  + "block_unbreakable.png").c_str(),
+  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
+  GLuint texture_block_unbreakable;
+  glGenTextures(1, &texture_block_unbreakable);
+  glBindTexture(GL_TEXTURE_2D, texture_block_unbreakable);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
+  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+  stbi_image_free(texture_data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  // Texture for board block, breakable
+  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
+  + "block_breakable.png").c_str(),
+  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
+  GLuint texture_block_breakable;
+  glGenTextures(1, &texture_block_breakable);
+  glBindTexture(GL_TEXTURE_2D, texture_block_breakable);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
+  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+  stbi_image_free(texture_data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  // Texture for character
+  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
+  + "character.png").c_str(),
+  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
+  GLuint texture_character;
+  glGenTextures(1, &texture_character);
+  glBindTexture(GL_TEXTURE_2D, texture_character);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
+  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+  stbi_image_free(texture_data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  // Texture for explosion
+  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
+  + "explosion.png").c_str(),
+  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
+  GLuint texture_explosion;
+  glGenTextures(1, &texture_explosion);
+  glBindTexture(GL_TEXTURE_2D, texture_explosion);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
+  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+  stbi_image_free(texture_data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
   // Generate and bind vertex array object
-  GLuint array_vert;
-  glGenVertexArrays(1, &array_vert);
-  glBindVertexArray(array_vert);
+  GLuint vert_array;
+  glGenVertexArrays(1, &vert_array);
+  glBindVertexArray(vert_array);
 
-  // Memory for vertices' coordinates
+  // Memory for vertices' position coordinates
   float *vertices_pos = new float[12];
-  // Memory for vertices' colors
-  float *vertices_color = new float[16];
-
   // Generate vertex buffer object for vertex position
   GLuint buf_vert_pos;
   glGenBuffers(1, &buf_vert_pos);
-
-  // Generate vertex buffer object for vertex color
-  GLuint buf_vert_color;
-  glGenBuffers(1, &buf_vert_color);
-
   // Configure vertex array object
   glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
   (void *) 0);
   glEnableVertexAttribArray(0);
+
+  // Memory for vertices' colors
+  float *vertices_color = new float[16];
+  // Generate vertex buffer object for vertex color
+  GLuint buf_vert_color;
+  glGenBuffers(1, &buf_vert_color);
+  // Configure vertex array object
   glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
   (void *) 0);
   glEnableVertexAttribArray(1);
 
-  // Generate and bind element buffer object
-  GLuint buf_elem;
-  glGenBuffers(1, &buf_elem);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf_elem);
+  // Texture coordinates (quadrant order)
+  float *vertices_texture = new float[8];
+  vertices_texture[0] = 1.0f;
+  vertices_texture[1] = 1.0f;
+  vertices_texture[2] = 0.0f;
+  vertices_texture[3] = 1.0f;
+  vertices_texture[4] = 0.0f;
+  vertices_texture[5] = 0.0f;
+  vertices_texture[6] = 1.0f;
+  vertices_texture[7] = 0.0f;
+  // Generate and bind vertex buffer object for texture coordinates
+  GLuint buf_vert_texture;
+  glGenBuffers(1, &buf_vert_texture);
+  glBindBuffer(GL_ARRAY_BUFFER, buf_vert_texture);
+  // Populate texture coordinate buffer
+  glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), vertices_texture,
+  GL_STATIC_DRAW);
+  // Free memory
+  delete[] vertices_texture;
+  // Configure vertex array object
+  glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
+  (void *) 0);
+  glEnableVertexAttribArray(2);
 
   // Vertex index ordering to draw a square (quadrant order)
   unsigned int *indices_square = new unsigned int[6];
@@ -175,10 +259,15 @@ void threadRoutine_Display(Game& game) {
   indices_square[3] = 0;
   indices_square[4] = 2;
   indices_square[5] = 3;
-
-  // Populate element buffer object
+  // Generate and bind element buffer object
+  GLuint buf_elem;
+  glGenBuffers(1, &buf_elem);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf_elem);
+  // Populate element buffer
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
-  indices_square, GL_DYNAMIC_DRAW);
+  indices_square, GL_STATIC_DRAW);
+  // Free memory
+  delete[] indices_square;
 
   // Unbind vertex array object
   glBindVertexArray(0);
@@ -198,60 +287,12 @@ void threadRoutine_Display(Game& game) {
     // Clear display
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Draw characters
-    for(unsigned int i = 0; i < game_state.getCharacterCount(); i++) {
-      if(game_state.getCharacterAlive(i)) {
-
-        // Vertex positions for hitbox (quadrant order)
-        generateVertices(vertices_pos, game_state.getCharacter(i)->getHitbox(),
-        game_state.getBoardHeight(), game_state.getBoardWidth());
-
-        // Vertex colors
-        // Red
-        for(unsigned int i = 0; i < 16; i += 4) {
-          vertices_color[i] = 0;
-        }
-        // Green
-        for(unsigned int i = 1; i < 16; i += 4) {
-          vertices_color[i] = 1;
-        }
-        // Blue
-        for(unsigned int i = 2; i < 16; i += 4) {
-          vertices_color[i] = 0;
-        }
-        // Alpha
-        for(unsigned int i = 3; i < 16; i += 4) {
-          vertices_color[i] = 1;
-        }
-
-        // Bind vertex array object
-        glBindVertexArray(array_vert);
-
-        // Bind buffer for vertex position
-        glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
-        // Copy vertex position data into currently bound buffer
-        glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
-        GL_DYNAMIC_DRAW);
-
-        // Bind buffer for vertex color
-        glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
-        // Copy vertex position data into currently bound buffer
-        glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
-        GL_DYNAMIC_DRAW);
-
-        // Draw
-        glBindVertexArray(array_vert);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        // Unbind vertex array object
-        glBindVertexArray(0);
-
-      }
-    }
-
-    // Draw board blocks
+    // Draw board blocks and bombs
     for(unsigned int y = 0; y < game_state.getBoardHeight(); y++) {
+
       for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
+
+        // Board blocks
         if(game_state.getBlockExist(y, x)) {
 
           // Vertex positions for hitbox (quadrant order)
@@ -260,43 +301,13 @@ void threadRoutine_Display(Game& game) {
 
           // Vertex colors
           if(game_state.getBlock(y, x)->getType() == unbreakable) {
-            // Red
-            for(unsigned int i = 0; i < 16; i += 4) {
-              vertices_color[i] = 1;
-            }
-            // Green
-            for(unsigned int i = 1; i < 16; i += 4) {
-              vertices_color[i] = 1;
-            }
-            // Blue
-            for(unsigned int i = 2; i < 16; i += 4) {
-              vertices_color[i] = 1;
-            }
-            // Alpha
-            for(unsigned int i = 3; i < 16; i += 4) {
-              vertices_color[i] = 1;
-            }
+            glBindTexture(GL_TEXTURE_2D, texture_block_unbreakable);
           } else {
-            // Red
-            for(unsigned int i = 0; i < 16; i += 4) {
-              vertices_color[i] = 0.8;
-            }
-            // Green
-            for(unsigned int i = 1; i < 16; i += 4) {
-              vertices_color[i] = 0.8;
-            }
-            // Blue
-            for(unsigned int i = 2; i < 16; i += 4) {
-              vertices_color[i] = 0.8;
-            }
-            // Alpha
-            for(unsigned int i = 3; i < 16; i += 4) {
-              vertices_color[i] = 1;
-            }
+            glBindTexture(GL_TEXTURE_2D, texture_block_breakable);
           }
 
           // Bind vertex array object
-          glBindVertexArray(array_vert);
+          glBindVertexArray(vert_array);
 
           // Bind buffer for vertex position
           glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
@@ -311,19 +322,15 @@ void threadRoutine_Display(Game& game) {
           GL_DYNAMIC_DRAW);
 
           // Draw
-          glBindVertexArray(array_vert);
+          glBindVertexArray(vert_array);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
           // Unbind vertex array object
           glBindVertexArray(0);
 
         }
-      }
-    }
 
-    // Draw bombs
-    for(unsigned int y = 0; y < game_state.getBoardHeight(); y++) {
-      for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
+        // Bombs
         if(game_state.getBombExist(y, x)) {
 
           // Vertex positions for hitbox (quadrant order)
@@ -349,7 +356,7 @@ void threadRoutine_Display(Game& game) {
           }
 
           // Bind vertex array object
-          glBindVertexArray(array_vert);
+          glBindVertexArray(vert_array);
 
           // Bind buffer for vertex position
           glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
@@ -364,7 +371,63 @@ void threadRoutine_Display(Game& game) {
           GL_DYNAMIC_DRAW);
 
           // Draw
-          glBindVertexArray(array_vert);
+          glBindTexture(GL_TEXTURE_2D, texture_bomb);
+          glBindVertexArray(vert_array);
+          glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+          // Unbind vertex array object
+          glBindVertexArray(0);
+
+        }
+
+      }
+
+      // Draw characters
+      for(unsigned int i = 0; i < game_state.getCharacterCount(); i++) {
+        if(game_state.getCharacterAlive(i)
+        && static_cast<unsigned int>(game_state.getCharacter(i)->getHitbox()
+        ->getCenterY()) == y) {
+
+          // Vertex positions for hitbox (quadrant order)
+          generateVertices(vertices_pos, game_state.getCharacter(i)->getHitbox(),
+          game_state.getBoardHeight(), game_state.getBoardWidth());
+
+          // Vertex colors
+          // Red
+          for(unsigned int i = 0; i < 16; i += 4) {
+            vertices_color[i] = 0;
+          }
+          // Green
+          for(unsigned int i = 1; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
+          // Blue
+          for(unsigned int i = 2; i < 16; i += 4) {
+            vertices_color[i] = 0;
+          }
+          // Alpha
+          for(unsigned int i = 3; i < 16; i += 4) {
+            vertices_color[i] = 1;
+          }
+
+          // Bind vertex array object
+          glBindVertexArray(vert_array);
+
+          // Bind buffer for vertex position
+          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
+          // Copy vertex position data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
+          GL_DYNAMIC_DRAW);
+
+          // Bind buffer for vertex color
+          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
+          // Copy vertex position data into currently bound buffer
+          glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
+          GL_DYNAMIC_DRAW);
+
+          // Draw
+          glBindTexture(GL_TEXTURE_2D, texture_character);
+          glBindVertexArray(vert_array);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
           // Unbind vertex array object
@@ -372,10 +435,8 @@ void threadRoutine_Display(Game& game) {
 
         }
       }
-    }
 
-    // Draw explosions
-    for(unsigned int y = 0; y < game_state.getBoardHeight(); y++) {
+      // Draw explosions
       for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
         if(game_state.getExplosionExist(y, x)) {
 
@@ -403,7 +464,7 @@ void threadRoutine_Display(Game& game) {
           }
 
           // Bind vertex array object
-          glBindVertexArray(array_vert);
+          glBindVertexArray(vert_array);
 
           // Bind buffer for vertex position
           glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
@@ -418,7 +479,8 @@ void threadRoutine_Display(Game& game) {
           GL_DYNAMIC_DRAW);
 
           // Draw
-          glBindVertexArray(array_vert);
+          glBindTexture(GL_TEXTURE_2D, texture_explosion);
+          glBindVertexArray(vert_array);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
           // Unbind vertex array object
@@ -426,6 +488,7 @@ void threadRoutine_Display(Game& game) {
 
         }
       }
+
     }
 
     // Swap front/back render buffers (to display new render)
@@ -444,15 +507,20 @@ void threadRoutine_Display(Game& game) {
 
   // Free resources used by OpenGL
   glDeleteProgram(shader_program);
-  glDeleteVertexArrays(1, &array_vert);
+  glDeleteTextures(1, &texture_bomb);
+  glDeleteTextures(1, &texture_block_unbreakable);
+  glDeleteTextures(1, &texture_block_breakable);
+  glDeleteTextures(1, &texture_character);
+  glDeleteTextures(1, &texture_explosion);
+  glDeleteVertexArrays(1, &vert_array);
   glDeleteBuffers(1, &buf_vert_pos);
   glDeleteBuffers(1, &buf_vert_color);
+  glDeleteBuffers(1, &buf_vert_texture);
   glDeleteBuffers(1, &buf_elem);
 
   // Free previously allocated memory
   delete[] vertices_pos;
   delete[] vertices_color;
-  delete[] indices_square;
 
   // Free resources used by GLFW
   glfwTerminate();
@@ -746,6 +814,7 @@ unsigned int board_height, unsigned int board_width) {
   buffer[8] = 0;
   buffer[11] = 0;
 
+  // Quadrant order
   buffer[0] = translateLocation(center[1] + radius, board_width, false);
   buffer[1] = translateLocation(center[0] + radius, board_width, true);
   buffer[3] = translateLocation(center[1] - radius, board_width, false);

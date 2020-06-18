@@ -4,8 +4,8 @@
 
 #include <iostream> // DEBUG
 
-#define BOARD_HEIGHT 16
-#define BOARD_WIDTH 16
+#define BOARD_HEIGHT 6 // 15
+#define BOARD_WIDTH 6 // 15
 
 // ------------------------------------------------------------
 
