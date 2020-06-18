@@ -259,21 +259,40 @@ void threadRoutine_Display(Game& game) {
           game_state.getBoardHeight(), game_state.getBoardWidth());
 
           // Vertex colors
-          // Red
-          for(unsigned int i = 0; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-          // Green
-          for(unsigned int i = 1; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-          // Blue
-          for(unsigned int i = 2; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-          // Alpha
-          for(unsigned int i = 3; i < 16; i += 4) {
-            vertices_color[i] = 1;
+          if(game_state.getBlock(y, x)->getType() == unbreakable) {
+            // Red
+            for(unsigned int i = 0; i < 16; i += 4) {
+              vertices_color[i] = 1;
+            }
+            // Green
+            for(unsigned int i = 1; i < 16; i += 4) {
+              vertices_color[i] = 1;
+            }
+            // Blue
+            for(unsigned int i = 2; i < 16; i += 4) {
+              vertices_color[i] = 1;
+            }
+            // Alpha
+            for(unsigned int i = 3; i < 16; i += 4) {
+              vertices_color[i] = 1;
+            }
+          } else {
+            // Red
+            for(unsigned int i = 0; i < 16; i += 4) {
+              vertices_color[i] = 0.8;
+            }
+            // Green
+            for(unsigned int i = 1; i < 16; i += 4) {
+              vertices_color[i] = 0.8;
+            }
+            // Blue
+            for(unsigned int i = 2; i < 16; i += 4) {
+              vertices_color[i] = 0.8;
+            }
+            // Alpha
+            for(unsigned int i = 3; i < 16; i += 4) {
+              vertices_color[i] = 1;
+            }
           }
 
           // Bind vertex array object

@@ -30,7 +30,7 @@ private:
   bool **blocks_exist;
 
   void init();
-  void createBlock(unsigned int, unsigned int);
+  void createBlock(unsigned int, unsigned int, BlockType);
   void explodeBomb(unsigned int, unsigned int);
 
 public:

@@ -20,7 +20,6 @@ void GameState::init() {
   this->characters_alive.clear();
   this->characters.push_back(Character(0.5, 0.5, 8, 2));
   this->characters_alive.push_back(true);
-  this->characters.at(0).setBombBreakthrough(true);
 
   // Re-generate blocks
   for(unsigned int y = 0; y < this->board_height; y++) {
@@ -30,18 +29,30 @@ void GameState::init() {
   }
   for(unsigned int x = 2; x < this->board_width; x++) {
     if(randomBool()) {
-      this->createBlock(0, x);
+      if(randomBool()) {
+        this->createBlock(0, x, breakable);
+      } else {
+        this->createBlock(0, x, unbreakable);
+      }
     }
   }
   for(unsigned int x = 1; x < this->board_width; x++) {
     if(randomBool()) {
-      this->createBlock(1, x);
+      if(randomBool()) {
+        this->createBlock(1, x, breakable);
+      } else {
+        this->createBlock(1, x, unbreakable);
+      }
     }
   }
   for(unsigned int y = 2; y < this->board_height; y++) {
     for(unsigned int x = 0; x < this->board_width; x++) {
       if(randomBool()) {
-        this->createBlock(y, x);
+        if(randomBool()) {
+          this->createBlock(y, x, breakable);
+        } else {
+          this->createBlock(y, x, unbreakable);
+        }
       }
     }
   }
@@ -50,10 +61,10 @@ void GameState::init() {
 
 // ------------------------------------------------------------
 
-void GameState::createBlock(unsigned int y, unsigned int x) {
+void GameState::createBlock(unsigned int y, unsigned int x, BlockType type) {
 
   if(!(this->blocks_exist[y][x])) {
-    this->blocks[y][x] = BoardBlock(y, x, unbreakable);
+    this->blocks[y][x] = BoardBlock(y, x, type);
     this->blocks_exist[y][x] = true;
   }
 
