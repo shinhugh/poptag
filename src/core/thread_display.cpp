@@ -24,7 +24,7 @@
 // #define PATH_SHADER_DIR "./"
 // #define PATH_TEXTURE_DIR "./"
 
-#define SLIT_HEIGHT 0.2f
+#define SLIT_HEIGHT 0.1f
 
 // ------------------------------------------------------------
 
@@ -146,7 +146,7 @@ void threadRoutine_Display(Game& game) {
   // Texture for background
   int texture_width, texture_height, texture_channel_count;
   unsigned char *texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
-  + "background.jpg").c_str(),
+  + "background.png").c_str(),
   &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
   GLuint texture_bg;
   glGenTextures(1, &texture_bg);
@@ -303,36 +303,36 @@ void threadRoutine_Display(Game& game) {
     // Clear display
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Create plane for floor background
-    vertices_pos[0] = 1.0f;
-    vertices_pos[1] = 1.0f;
-    vertices_pos[2] = 0.0f;
-    vertices_pos[3] = -1.0f;
-    vertices_pos[4] = 1.0f;
-    vertices_pos[5] = 0.0f;
-    vertices_pos[6] = -1.0f;
-    vertices_pos[7] = -1.0f;
-    vertices_pos[8] = 0.0f;
-    vertices_pos[9] = 1.0f;
-    vertices_pos[10] = -1.0f;
-    vertices_pos[11] = 0.0f;
+    // Draw background
+    Hitbox background_space(0.5, 0.5, 1, 1);
+    for(unsigned int y = 0; y < game_state.getBoardHeight(); y++) {
+      for(unsigned int x = 0; x < game_state.getBoardWidth(); x++) {
 
-    // Bind vertex array object
-    glBindVertexArray(vert_array);
+        background_space.setCenterY(y + 0.5);
+        background_space.setCenterX(x + 0.5);
+        generateVertices(vertices_pos, &background_space,
+        game_state.getBoardHeight(), game_state.getBoardWidth());
+        augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
-    // Bind buffer for vertex position
-    glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
-    // Copy vertex position data into currently bound buffer
-    glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
-    GL_STATIC_DRAW);
+        // Bind vertex array object
+        glBindVertexArray(vert_array);
 
-    // Draw
-    glBindTexture(GL_TEXTURE_2D, texture_bg);
-    glBindVertexArray(vert_array);
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        // Bind buffer for vertex position
+        glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
+        // Copy vertex position data into currently bound buffer
+        glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
+        GL_STATIC_DRAW);
 
-    // Unbind vertex array object
-    glBindVertexArray(0);
+        // Draw
+        glBindTexture(GL_TEXTURE_2D, texture_bg);
+        glBindVertexArray(vert_array);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // Unbind vertex array object
+        glBindVertexArray(0);
+
+      }
+    }
 
     // Draw board blocks and bombs
     for(unsigned int y = 0; y < game_state.getBoardHeight(); y++) {
