@@ -24,6 +24,8 @@
 // #define PATH_SHADER_DIR "./"
 // #define PATH_TEXTURE_DIR "./"
 
+#define SLIT_HEIGHT 0.2f
+
 // ------------------------------------------------------------
 
 // Game instance being rendered; pointer is updated when thread is initialized
@@ -41,6 +43,8 @@ static float translateLocation(float, unsigned int, bool);
 
 static void generateVertices(float *, const Hitbox *, unsigned int,
 unsigned int);
+
+static void augmentYCoordinates(float *, float);
 
 // ------------------------------------------------------------
 
@@ -298,6 +302,7 @@ void threadRoutine_Display(Game& game) {
           // Vertex positions for hitbox (quadrant order)
           generateVertices(vertices_pos, game_state.getBlock(y, x)->getHitbox(),
           game_state.getBoardHeight(), game_state.getBoardWidth());
+          augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
           // Vertex colors
           if(game_state.getBlock(y, x)->getType() == unbreakable) {
@@ -336,6 +341,7 @@ void threadRoutine_Display(Game& game) {
           // Vertex positions for hitbox (quadrant order)
           generateVertices(vertices_pos, game_state.getBomb(y, x)->getHitbox(),
           game_state.getBoardHeight(), game_state.getBoardWidth());
+          augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
           // Vertex colors
           // Red
@@ -389,8 +395,10 @@ void threadRoutine_Display(Game& game) {
         ->getCenterY()) == y) {
 
           // Vertex positions for hitbox (quadrant order)
-          generateVertices(vertices_pos, game_state.getCharacter(i)->getHitbox(),
-          game_state.getBoardHeight(), game_state.getBoardWidth());
+          generateVertices(vertices_pos, game_state.getCharacter(i)
+          ->getHitbox(), game_state.getBoardHeight(),
+          game_state.getBoardWidth());
+          augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
           // Vertex colors
           // Red
@@ -444,6 +452,7 @@ void threadRoutine_Display(Game& game) {
           generateVertices(vertices_pos,
           game_state.getExplosion(y, x)->getHitbox(),
           game_state.getBoardHeight(), game_state.getBoardWidth());
+          augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
           // Vertex colors
           // Red
@@ -823,5 +832,17 @@ unsigned int board_height, unsigned int board_width) {
   buffer[7] = translateLocation(center[0] - radius, board_width, true);
   buffer[9] = translateLocation(center[1] + radius, board_width, false);
   buffer[10] = translateLocation(center[0] - radius, board_width, true);
+
+}
+
+// ------------------------------------------------------------
+
+static void augmentYCoordinates(float * buffer, float slit_height) {
+
+  buffer[1] = (2.0f / (2.0f + slit_height)) * (buffer[1] + 1) - 1;
+  buffer[4] = (2.0f / (2.0f + slit_height)) * (buffer[4] + 1) - 1;
+  buffer[7] = (2.0f / (2.0f + slit_height)) * (buffer[7] + 1 + slit_height) - 1;
+  buffer[10] = (2.0f / (2.0f + slit_height)) * (buffer[10] + 1 + slit_height)
+  - 1;
 
 }
