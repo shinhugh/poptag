@@ -15,6 +15,14 @@ static bool randomBool();
 
 void GameState::init() {
 
+  // Remove bombs and explosions
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      this->bombs_exist[y][x] = false;
+      this->explosions_exist[y][x] = false;
+    }
+  }
+
   // Re-generate characters
   this->characters.clear();
   this->characters_alive.clear();

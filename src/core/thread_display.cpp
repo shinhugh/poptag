@@ -143,9 +143,21 @@ void threadRoutine_Display(Game& game) {
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
 
-  // Texture for bomb
+  // Texture for background
   int texture_width, texture_height, texture_channel_count;
   unsigned char *texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
+  + "background.jpg").c_str(),
+  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
+  GLuint texture_bg;
+  glGenTextures(1, &texture_bg);
+  glBindTexture(GL_TEXTURE_2D, texture_bg);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
+  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+  stbi_image_free(texture_data);
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  // Texture for bomb
+  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
   + "bomb.png").c_str(),
   &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
   GLuint texture_bomb;
@@ -291,6 +303,37 @@ void threadRoutine_Display(Game& game) {
     // Clear display
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // Create plane for floor background
+    vertices_pos[0] = 1.0f;
+    vertices_pos[1] = 1.0f;
+    vertices_pos[2] = 0.0f;
+    vertices_pos[3] = -1.0f;
+    vertices_pos[4] = 1.0f;
+    vertices_pos[5] = 0.0f;
+    vertices_pos[6] = -1.0f;
+    vertices_pos[7] = -1.0f;
+    vertices_pos[8] = 0.0f;
+    vertices_pos[9] = 1.0f;
+    vertices_pos[10] = -1.0f;
+    vertices_pos[11] = 0.0f;
+
+    // Bind vertex array object
+    glBindVertexArray(vert_array);
+
+    // Bind buffer for vertex position
+    glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
+    // Copy vertex position data into currently bound buffer
+    glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
+    GL_STATIC_DRAW);
+
+    // Draw
+    glBindTexture(GL_TEXTURE_2D, texture_bg);
+    glBindVertexArray(vert_array);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Unbind vertex array object
+    glBindVertexArray(0);
+
     // Draw board blocks and bombs
     for(unsigned int y = 0; y < game_state.getBoardHeight(); y++) {
 
@@ -304,7 +347,7 @@ void threadRoutine_Display(Game& game) {
           game_state.getBoardHeight(), game_state.getBoardWidth());
           augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
-          // Vertex colors
+          // Texture
           if(game_state.getBlock(y, x)->getType() == unbreakable) {
             glBindTexture(GL_TEXTURE_2D, texture_block_unbreakable);
           } else {
@@ -318,12 +361,6 @@ void threadRoutine_Display(Game& game) {
           glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
           // Copy vertex position data into currently bound buffer
           glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
-          GL_DYNAMIC_DRAW);
-
-          // Bind buffer for vertex color
-          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
-          // Copy vertex position data into currently bound buffer
-          glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
           GL_DYNAMIC_DRAW);
 
           // Draw
@@ -343,24 +380,6 @@ void threadRoutine_Display(Game& game) {
           game_state.getBoardHeight(), game_state.getBoardWidth());
           augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
-          // Vertex colors
-          // Red
-          for(unsigned int i = 0; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-          // Green
-          for(unsigned int i = 1; i < 16; i += 4) {
-            vertices_color[i] = 0;
-          }
-          // Blue
-          for(unsigned int i = 2; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-          // Alpha
-          for(unsigned int i = 3; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-
           // Bind vertex array object
           glBindVertexArray(vert_array);
 
@@ -368,12 +387,6 @@ void threadRoutine_Display(Game& game) {
           glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
           // Copy vertex position data into currently bound buffer
           glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
-          GL_DYNAMIC_DRAW);
-
-          // Bind buffer for vertex color
-          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
-          // Copy vertex position data into currently bound buffer
-          glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
           GL_DYNAMIC_DRAW);
 
           // Draw
@@ -400,24 +413,6 @@ void threadRoutine_Display(Game& game) {
           game_state.getBoardWidth());
           augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
-          // Vertex colors
-          // Red
-          for(unsigned int i = 0; i < 16; i += 4) {
-            vertices_color[i] = 0;
-          }
-          // Green
-          for(unsigned int i = 1; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-          // Blue
-          for(unsigned int i = 2; i < 16; i += 4) {
-            vertices_color[i] = 0;
-          }
-          // Alpha
-          for(unsigned int i = 3; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-
           // Bind vertex array object
           glBindVertexArray(vert_array);
 
@@ -425,12 +420,6 @@ void threadRoutine_Display(Game& game) {
           glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
           // Copy vertex position data into currently bound buffer
           glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
-          GL_DYNAMIC_DRAW);
-
-          // Bind buffer for vertex color
-          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
-          // Copy vertex position data into currently bound buffer
-          glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
           GL_DYNAMIC_DRAW);
 
           // Draw
@@ -454,24 +443,6 @@ void threadRoutine_Display(Game& game) {
           game_state.getBoardHeight(), game_state.getBoardWidth());
           augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
-          // Vertex colors
-          // Red
-          for(unsigned int i = 0; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-          // Green
-          for(unsigned int i = 1; i < 16; i += 4) {
-            vertices_color[i] = 0;
-          }
-          // Blue
-          for(unsigned int i = 2; i < 16; i += 4) {
-            vertices_color[i] = 0;
-          }
-          // Alpha
-          for(unsigned int i = 3; i < 16; i += 4) {
-            vertices_color[i] = 1;
-          }
-
           // Bind vertex array object
           glBindVertexArray(vert_array);
 
@@ -479,12 +450,6 @@ void threadRoutine_Display(Game& game) {
           glBindBuffer(GL_ARRAY_BUFFER, buf_vert_pos);
           // Copy vertex position data into currently bound buffer
           glBufferData(GL_ARRAY_BUFFER, 12 * sizeof(float), vertices_pos,
-          GL_DYNAMIC_DRAW);
-
-          // Bind buffer for vertex color
-          glBindBuffer(GL_ARRAY_BUFFER, buf_vert_color);
-          // Copy vertex position data into currently bound buffer
-          glBufferData(GL_ARRAY_BUFFER, 16 * sizeof(float), vertices_color,
           GL_DYNAMIC_DRAW);
 
           // Draw
@@ -516,6 +481,7 @@ void threadRoutine_Display(Game& game) {
 
   // Free resources used by OpenGL
   glDeleteProgram(shader_program);
+  glDeleteTextures(1, &texture_bg);
   glDeleteTextures(1, &texture_bomb);
   glDeleteTextures(1, &texture_block_unbreakable);
   glDeleteTextures(1, &texture_block_breakable);
