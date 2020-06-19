@@ -1,9 +1,17 @@
-# Poptag Game
+# Poptag
 
-This project is actively under development. No documentation is ready yet.
+A recreation of Nexon's famous *Crazy Arcade*, my childhood favorite.
+
+*This project is actively under development. No documentation is ready yet.*
 
 The game will be available for Windows and Linux.
 
-Screenshot [6/19/2020]:
+**Game state engine**: Created from scratch!
+
+**Graphics**: OpenGL + GLFW + GLAD
+
+**Networking** (Coming soon): Socket.IO
+
+**Screenshot** [6/19/2020]:
 
 ![Screenshot](teaser.jpg)
