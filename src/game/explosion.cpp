@@ -1,7 +1,7 @@
 #include "explosion.h"
 
 #define EXPLOSION_WIDTH 1.0f
-#define EXPLOSION_TIME_DISAPPEAR 500
+#define EXPLOSION_TIME_DISAPPEAR 400
 
 // ------------------------------------------------------------
 

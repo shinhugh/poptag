@@ -1,7 +1,7 @@
 #include "bomb.h"
 
 #define BOMB_WIDTH 1.0f
-#define BOMB_TIME_DETONATE 2000
+#define BOMB_TIME_DETONATE 1500
 
 // ------------------------------------------------------------
 
