@@ -12,6 +12,8 @@ The game will be available for Windows and Linux.
 
 **Networking** (Coming soon): Socket.IO
 
+**Build**: CMake
+
 **Screenshot** [6/19/2020]:
 
 ![Screenshot](teaser.jpg)
