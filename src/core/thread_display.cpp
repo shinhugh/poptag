@@ -46,6 +46,8 @@ unsigned int);
 
 static void augmentYCoordinates(float *, float);
 
+static void generateTexture(GLuint *id, const char *);
+
 // ------------------------------------------------------------
 
 void threadRoutine_Display(Game& game) {
@@ -144,77 +146,41 @@ void threadRoutine_Display(Game& game) {
   glDeleteShader(fragment_shader);
 
   // Texture for background
-  int texture_width, texture_height, texture_channel_count;
-  unsigned char *texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
-  + "background.png").c_str(),
-  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
   GLuint texture_bg;
-  glGenTextures(1, &texture_bg);
-  glBindTexture(GL_TEXTURE_2D, texture_bg);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
-  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
-  stbi_image_free(texture_data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-
+  generateTexture(&texture_bg, (std::string(PATH_TEXTURE_DIR)
+  + "background.png").c_str());
   // Texture for bomb
-  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
-  + "bomb.png").c_str(),
-  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
   GLuint texture_bomb;
-  glGenTextures(1, &texture_bomb);
-  glBindTexture(GL_TEXTURE_2D, texture_bomb);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
-  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
-  stbi_image_free(texture_data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-
+  generateTexture(&texture_bomb, (std::string(PATH_TEXTURE_DIR)
+  + "bomb.png").c_str());
   // Texture for board block, unbreakable
-  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
-  + "block_unbreakable.png").c_str(),
-  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
   GLuint texture_block_unbreakable;
-  glGenTextures(1, &texture_block_unbreakable);
-  glBindTexture(GL_TEXTURE_2D, texture_block_unbreakable);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
-  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
-  stbi_image_free(texture_data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-
+  generateTexture(&texture_block_unbreakable, (std::string(PATH_TEXTURE_DIR)
+  + "block_unbreakable.png").c_str());
   // Texture for board block, breakable
-  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
-  + "block_breakable.png").c_str(),
-  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
   GLuint texture_block_breakable;
-  glGenTextures(1, &texture_block_breakable);
-  glBindTexture(GL_TEXTURE_2D, texture_block_breakable);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
-  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
-  stbi_image_free(texture_data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-
+  generateTexture(&texture_block_breakable, (std::string(PATH_TEXTURE_DIR)
+  + "block_breakable.png").c_str());
   // Texture for character
-  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
-  + "character.png").c_str(),
-  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
   GLuint texture_character;
-  glGenTextures(1, &texture_character);
-  glBindTexture(GL_TEXTURE_2D, texture_character);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
-  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
-  stbi_image_free(texture_data);
-  glGenerateMipmap(GL_TEXTURE_2D);
-
-  // Texture for explosion
-  texture_data = stbi_load((std::string(PATH_TEXTURE_DIR)
-  + "explosion.png").c_str(),
-  &texture_width, &texture_height, &texture_channel_count, STBI_rgb_alpha);
-  GLuint texture_explosion;
-  glGenTextures(1, &texture_explosion);
-  glBindTexture(GL_TEXTURE_2D, texture_explosion);
-  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
-  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
-  stbi_image_free(texture_data);
-  glGenerateMipmap(GL_TEXTURE_2D);
+  generateTexture(&texture_character, (std::string(PATH_TEXTURE_DIR)
+  + "character.png").c_str());
+  // Texture for explosion, up
+  GLuint texture_explosion_up;
+  generateTexture(&texture_explosion_up, (std::string(PATH_TEXTURE_DIR)
+  + "explosion_up.png").c_str());
+  // Texture for explosion, right
+  GLuint texture_explosion_right;
+  generateTexture(&texture_explosion_right, (std::string(PATH_TEXTURE_DIR)
+  + "explosion_right.png").c_str());
+  // Texture for explosion, down
+  GLuint texture_explosion_down;
+  generateTexture(&texture_explosion_down, (std::string(PATH_TEXTURE_DIR)
+  + "explosion_down.png").c_str());
+  // Texture for explosion, left
+  GLuint texture_explosion_left;
+  generateTexture(&texture_explosion_left, (std::string(PATH_TEXTURE_DIR)
+  + "explosion_left.png").c_str());
 
   // Generate and bind vertex array object
   GLuint vert_array;
@@ -314,6 +280,9 @@ void threadRoutine_Display(Game& game) {
         game_state.getBoardHeight(), game_state.getBoardWidth());
         augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
+        // Texture
+        glBindTexture(GL_TEXTURE_2D, texture_bg);
+
         // Bind vertex array object
         glBindVertexArray(vert_array);
 
@@ -324,7 +293,6 @@ void threadRoutine_Display(Game& game) {
         GL_STATIC_DRAW);
 
         // Draw
-        glBindTexture(GL_TEXTURE_2D, texture_bg);
         glBindVertexArray(vert_array);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -380,6 +348,9 @@ void threadRoutine_Display(Game& game) {
           game_state.getBoardHeight(), game_state.getBoardWidth());
           augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
+          // Texture
+          glBindTexture(GL_TEXTURE_2D, texture_bomb);
+
           // Bind vertex array object
           glBindVertexArray(vert_array);
 
@@ -390,7 +361,6 @@ void threadRoutine_Display(Game& game) {
           GL_DYNAMIC_DRAW);
 
           // Draw
-          glBindTexture(GL_TEXTURE_2D, texture_bomb);
           glBindVertexArray(vert_array);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -413,6 +383,9 @@ void threadRoutine_Display(Game& game) {
           game_state.getBoardWidth());
           augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
+          // Texture
+          glBindTexture(GL_TEXTURE_2D, texture_character);
+
           // Bind vertex array object
           glBindVertexArray(vert_array);
 
@@ -423,7 +396,6 @@ void threadRoutine_Display(Game& game) {
           GL_DYNAMIC_DRAW);
 
           // Draw
-          glBindTexture(GL_TEXTURE_2D, texture_character);
           glBindVertexArray(vert_array);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -443,6 +415,17 @@ void threadRoutine_Display(Game& game) {
           game_state.getBoardHeight(), game_state.getBoardWidth());
           augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
+          // Texture
+          if(game_state.getExplosion(y, x)->getDirection() == up) {
+            glBindTexture(GL_TEXTURE_2D, texture_explosion_up);
+          } else if(game_state.getExplosion(y, x)->getDirection() == right) {
+            glBindTexture(GL_TEXTURE_2D, texture_explosion_right);
+          } else if(game_state.getExplosion(y, x)->getDirection() == down) {
+            glBindTexture(GL_TEXTURE_2D, texture_explosion_down);
+          } else {
+            glBindTexture(GL_TEXTURE_2D, texture_explosion_left);
+          }
+
           // Bind vertex array object
           glBindVertexArray(vert_array);
 
@@ -453,7 +436,6 @@ void threadRoutine_Display(Game& game) {
           GL_DYNAMIC_DRAW);
 
           // Draw
-          glBindTexture(GL_TEXTURE_2D, texture_explosion);
           glBindVertexArray(vert_array);
           glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -486,7 +468,10 @@ void threadRoutine_Display(Game& game) {
   glDeleteTextures(1, &texture_block_unbreakable);
   glDeleteTextures(1, &texture_block_breakable);
   glDeleteTextures(1, &texture_character);
-  glDeleteTextures(1, &texture_explosion);
+  glDeleteTextures(1, &texture_explosion_up);
+  glDeleteTextures(1, &texture_explosion_right);
+  glDeleteTextures(1, &texture_explosion_down);
+  glDeleteTextures(1, &texture_explosion_left);
   glDeleteVertexArrays(1, &vert_array);
   glDeleteBuffers(1, &buf_vert_pos);
   glDeleteBuffers(1, &buf_vert_color);
@@ -810,5 +795,21 @@ static void augmentYCoordinates(float * buffer, float slit_height) {
   buffer[7] = (2.0f / (2.0f + slit_height)) * (buffer[7] + 1 + slit_height) - 1;
   buffer[10] = (2.0f / (2.0f + slit_height)) * (buffer[10] + 1 + slit_height)
   - 1;
+
+}
+
+// ------------------------------------------------------------
+
+static void generateTexture(GLuint *id, const char *file_name) {
+
+  int texture_width, texture_height, texture_channel_count;
+  unsigned char *texture_data = stbi_load(file_name, &texture_width,
+  &texture_height, &texture_channel_count, STBI_rgb_alpha);
+  glGenTextures(1, id);
+  glBindTexture(GL_TEXTURE_2D, *id);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_width, texture_height, 0,
+  GL_RGBA, GL_UNSIGNED_BYTE, texture_data);
+  stbi_image_free(texture_data);
+  glGenerateMipmap(GL_TEXTURE_2D);
 
 }

@@ -6,10 +6,7 @@
 #include <chrono>
 #include "hitbox.h"
 #include "bomb.h"
-
-// ------------------------------------------------------------
-
-enum Direction {stop, up, right, down, left};
+#include "common.h"
 
 // ------------------------------------------------------------
 
@@ -27,6 +24,7 @@ public:
   Character(float, float, float, unsigned int);
   const Hitbox * getHitbox() const;
   Direction getDirFace() const;
+  Direction getDirMove() const;
   void setDirMove(Direction);
   unsigned int getBombRange() const;
   bool getBombBreakthrough() const;

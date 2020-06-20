@@ -1,0 +1,7 @@
+- character facing/movement direction
+- animation with sprite frames
+- set specific sprite image dimensions
+- set specific game display dimensions
+- make window display scale with resize while preserving intended dimension
+  ratio
+- multiplayer

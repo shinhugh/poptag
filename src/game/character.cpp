@@ -27,6 +27,14 @@ Direction Character::getDirFace() const {
 
 // ------------------------------------------------------------
 
+Direction Character::getDirMove() const {
+
+  return this->dir_move;
+
+}
+
+// ------------------------------------------------------------
+
 unsigned int Character::getBombRange() const {
 
   return this->bomb_range;

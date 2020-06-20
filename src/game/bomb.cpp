@@ -70,6 +70,7 @@ unsigned int board_width) const {
   coordinates.push_back(center_y);
   coordinates.push_back(center_x);
 
+  // BFS
   for(unsigned int curr_range = 1; curr_range <= this->range; curr_range++) {
     // Up
     if(center_y >= curr_range) {

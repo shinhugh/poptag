@@ -9,15 +9,15 @@ Explosion::Explosion() :
 hitbox(EXPLOSION_WIDTH / 2, EXPLOSION_WIDTH / 2, EXPLOSION_WIDTH,
 EXPLOSION_WIDTH),
 time_disappear(EXPLOSION_TIME_DISAPPEAR),
-time_age(std::chrono::microseconds(0)) {}
+time_age(std::chrono::microseconds(0)), direction(up) {}
 
 // ------------------------------------------------------------
 
-Explosion::Explosion(unsigned int y, unsigned int x) :
+Explosion::Explosion(unsigned int y, unsigned int x, Direction direction) :
 hitbox(y + (EXPLOSION_WIDTH / 2), x + (EXPLOSION_WIDTH / 2), EXPLOSION_WIDTH,
 EXPLOSION_WIDTH),
 time_disappear(EXPLOSION_TIME_DISAPPEAR),
-time_age(std::chrono::microseconds(0)) {}
+time_age(std::chrono::microseconds(0)), direction(direction) {}
 
 // ------------------------------------------------------------
 
@@ -48,6 +48,22 @@ std::chrono::microseconds Explosion::getTimeAge() const {
 void Explosion::resetTimeAge() {
 
   this->time_age = std::chrono::microseconds(0);
+
+}
+
+// ------------------------------------------------------------
+
+Direction Explosion::getDirection() const {
+
+  return this->direction;
+
+}
+
+// ------------------------------------------------------------
+
+void Explosion::setDirection(Direction direction) {
+
+  this->direction = direction;
 
 }
 
