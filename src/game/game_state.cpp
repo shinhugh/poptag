@@ -1,5 +1,6 @@
 #include <queue>
 #include "game_state.h"
+#include "game_common.h"
 #include "event_data.h"
 
 #define BOARD_HEIGHT 15
@@ -8,221 +9,6 @@
 // ------------------------------------------------------------
 
 static bool randomBool();
-
-// ------------------------------------------------------------
-
-void GameState::init() {
-
-  // Remove bombs and explosions
-  for(unsigned int y = 0; y < this->board_height; y++) {
-    for(unsigned int x = 0; x < this->board_width; x++) {
-      this->bombs_exist[y][x] = false;
-      this->explosions_exist[y][x] = false;
-    }
-  }
-
-  // Re-generate characters
-  this->characters.clear();
-  this->characters_alive.clear();
-  this->characters.push_back(Character(0.5, 0.5, 5, 2));
-  this->characters_alive.push_back(true);
-
-  // Re-generate blocks
-  for(unsigned int y = 0; y < this->board_height; y++) {
-    for(unsigned int x = 0; x < this->board_width; x++) {
-      this->blocks_exist[y][x] = false;
-    }
-  }
-  for(unsigned int x = 2; x < this->board_width; x++) {
-    if(randomBool()) {
-      if(randomBool()) {
-        this->createBlock(0, x, breakable);
-      } else {
-        this->createBlock(0, x, unbreakable);
-      }
-    }
-  }
-  for(unsigned int x = 1; x < this->board_width; x++) {
-    if(randomBool()) {
-      if(randomBool()) {
-        this->createBlock(1, x, breakable);
-      } else {
-        this->createBlock(1, x, unbreakable);
-      }
-    }
-  }
-  for(unsigned int y = 2; y < this->board_height; y++) {
-    for(unsigned int x = 0; x < this->board_width; x++) {
-      if(randomBool()) {
-        if(randomBool()) {
-          this->createBlock(y, x, breakable);
-        } else {
-          this->createBlock(y, x, unbreakable);
-        }
-      }
-    }
-  }
-
-}
-
-// ------------------------------------------------------------
-
-void GameState::createBlock(unsigned int y, unsigned int x, BlockType type) {
-
-  if(!(this->blocks_exist[y][x])) {
-    this->blocks[y][x] = BoardBlock(y, x, type);
-    this->blocks_exist[y][x] = true;
-  }
-
-}
-
-// ------------------------------------------------------------
-
-void GameState::explodeBomb(unsigned int y, unsigned int x) {
-
-  // TODO: Make changes locally within function memory, then push updates
-  // to this game state
-  // Old explosions should be overwritten
-  // New explosions in previous iterations should be overwritten except when
-  // it is the bomb center
-
-  std::queue<unsigned int> bomb_coordinates;
-  bomb_coordinates.push(y);
-  bomb_coordinates.push(x);
-
-  std::vector<unsigned int> destroyed_block_coordinates;
-
-  while(!bomb_coordinates.empty()) {
-
-    y = bomb_coordinates.front();
-    bomb_coordinates.pop();
-    x = bomb_coordinates.front();
-    bomb_coordinates.pop();
-
-    if(!(this->bombs_exist[y][x])) {
-      continue;
-    }
-
-    // Get coordintes the explosion reaches (BFS)
-    std::vector<unsigned int> coordinates
-    = this->bombs[y][x].explosionCoordinates(this->board_height,
-    this->board_width);
-
-    // Whether the bomb's explosion continues through blocks
-    bool breakthrough = this->bombs[y][x].getBreakthrough();
-    bool stopped[5] = {false, false, false, false, false};
-
-    // Remove bomb
-    this->bombs_exist[y][x] = false;
-
-    // Iterate through all coordinates the explosion reaches
-    for(unsigned int i = 0; i + 1 < coordinates.size(); i += 2) {
-
-      // Get coordinates of this explosion
-      unsigned int coor_y = coordinates.at(i);
-      unsigned int coor_x = coordinates.at(i + 1);
-
-      // Get direction of this explosion relative to the bomb
-      unsigned int direction = 0;
-      if(coor_y < y) {
-        direction = 1;
-      } else if(coor_x > x) {
-        direction = 2;
-      } else if(coor_y > y) {
-        direction = 3;
-      } else if(coor_x < x) {
-        direction = 4;
-      }
-
-      // If explosion in this direction hasn't been stopped
-      if(!stopped[direction]) {
-
-        // Queue block to be destroyed if one exists and isn't unbreakable
-        if(this->blocks_exist[coor_y][coor_x]) {
-          if(this->blocks[coor_y][coor_x].getType() == breakable) {
-            destroyed_block_coordinates.push_back(coor_y);
-            destroyed_block_coordinates.push_back(coor_x);
-            // Stop explosion in this direction if breakthrough isn't true
-            if(!breakthrough) {
-              stopped[direction] = true;
-            }
-          }
-          else {
-            stopped[direction] = true;
-            continue;
-          }
-        }
-
-        // Kill character if one exists
-        for(unsigned int j = 0; j < this->characters.size(); j++) {
-          if(this->characters_alive.at(j)) {
-            // Get coordinates of square that the character's center resides in
-            unsigned int character_y
-            = static_cast<unsigned int>(this->characters.at(j).getHitbox()
-            ->getCenterY());
-            unsigned int character_x
-            = static_cast<unsigned int>(this->characters.at(j).getHitbox()
-            ->getCenterX());
-            if(character_y == coor_y && character_x == coor_x) {
-              this->characters_alive.at(j) = false;
-            }
-          }
-        }
-
-        // Detonate bomb if one exists (add to queue of bombs to detonate)
-        if(this->bombs_exist[coor_y][coor_x]) {
-          bomb_coordinates.push(coor_y);
-          bomb_coordinates.push(coor_x);
-        }
-
-        // Create explosion
-        switch(direction) {
-          case 0:
-            {
-              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
-              stop);
-            }
-            break;
-          case 1:
-            {
-              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
-              up);
-            }
-            break;
-          case 2:
-            {
-              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
-              right);
-            }
-            break;
-          case 3:
-            {
-              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
-              down);
-            }
-            break;
-          case 4:
-            {
-              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
-              left);
-            }
-            break;
-        }
-        this->explosions_exist[coor_y][coor_x] = true;
-
-      }
-
-    }
-
-  }
-
-  // Actually destroy blocks
-  for(unsigned int i = 0; i + 1 < destroyed_block_coordinates.size(); i += 2) {
-    this->blocks_exist[destroyed_block_coordinates.at(i)]
-    [destroyed_block_coordinates.at(i + 1)] = false;
-  }
-
-}
 
 // ------------------------------------------------------------
 
@@ -297,6 +83,28 @@ characters(src.characters), characters_alive(src.characters_alive) {
 
 // ------------------------------------------------------------
 
+GameState::~GameState() {
+
+  // Free memory previously allocated
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    delete[] this->bombs[y];
+    delete[] this->bombs_exist[y];
+    delete[] this->explosions[y];
+    delete[] this->explosions_exist[y];
+    delete[] this->blocks[y];
+    delete[] this->blocks_exist[y];
+  }
+  delete[] this->bombs;
+  delete[] this->bombs_exist;
+  delete[] this->explosions;
+  delete[] this->explosions_exist;
+  delete[] this->blocks;
+  delete[] this->blocks_exist;
+
+}
+
+// ------------------------------------------------------------
+
 GameState& GameState::operator=(const GameState& src) {
 
   // Free memory previously allocated
@@ -356,28 +164,6 @@ GameState& GameState::operator=(const GameState& src) {
   }
 
   return *this;
-
-}
-
-// ------------------------------------------------------------
-
-GameState::~GameState() {
-
-  // Free memory previously allocated
-  for(unsigned int y = 0; y < this->board_height; y++) {
-    delete[] this->bombs[y];
-    delete[] this->bombs_exist[y];
-    delete[] this->explosions[y];
-    delete[] this->explosions_exist[y];
-    delete[] this->blocks[y];
-    delete[] this->blocks_exist[y];
-  }
-  delete[] this->bombs;
-  delete[] this->bombs_exist;
-  delete[] this->explosions;
-  delete[] this->explosions_exist;
-  delete[] this->blocks;
-  delete[] this->blocks_exist;
 
 }
 
@@ -520,13 +306,12 @@ void GameState::internalUpdate(std::chrono::microseconds elapsed_time) {
     for(unsigned int x = 0; x < this->board_width; x++) {
       if(this->bombs_exist[y][x]) {
         this->bombs[y][x].update(elapsed_time);
-        if(this->bombs[y][x].getTimeAge()
-        >= this->bombs[y][x].getTimeDetonate()) {
-          this->explodeBomb(y, x);
-        }
       }
     }
   }
+
+  // Detonate bombs
+  this->detonateBombs();
 
 }
 
@@ -640,6 +425,224 @@ void GameState::externalUpdate(DataPacket packet) {
       }
       break;
 
+  }
+
+}
+
+// ------------------------------------------------------------
+
+void GameState::init() {
+
+  // Remove bombs and explosions
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      this->bombs_exist[y][x] = false;
+      this->explosions_exist[y][x] = false;
+    }
+  }
+
+  // Re-generate characters
+  this->characters.clear();
+  this->characters_alive.clear();
+  this->characters.push_back(Character(0.5, 0.5, 5, 4));
+  this->characters_alive.push_back(true);
+
+  // Re-generate blocks
+  for(unsigned int y = 0; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      this->blocks_exist[y][x] = false;
+    }
+  }
+  for(unsigned int x = 2; x < this->board_width; x++) {
+    if(randomBool()) {
+      if(randomBool()) {
+        this->createBlock(0, x, breakable);
+      } else {
+        this->createBlock(0, x, unbreakable);
+      }
+    }
+  }
+  for(unsigned int x = 1; x < this->board_width; x++) {
+    if(randomBool()) {
+      if(randomBool()) {
+        this->createBlock(1, x, breakable);
+      } else {
+        this->createBlock(1, x, unbreakable);
+      }
+    }
+  }
+  for(unsigned int y = 2; y < this->board_height; y++) {
+    for(unsigned int x = 0; x < this->board_width; x++) {
+      if(randomBool()) {
+        if(randomBool()) {
+          this->createBlock(y, x, breakable);
+        } else {
+          this->createBlock(y, x, unbreakable);
+        }
+      }
+    }
+  }
+
+}
+
+// ------------------------------------------------------------
+
+void GameState::createBlock(unsigned int y, unsigned int x, BlockType type) {
+
+  if(!(this->blocks_exist[y][x])) {
+    this->blocks[y][x] = BoardBlock(y, x, type);
+    this->blocks_exist[y][x] = true;
+  }
+
+}
+
+// ------------------------------------------------------------
+
+void GameState::detonateBombs() {
+
+  // List of coordinates of blocks to destroy
+  std::vector<unsigned int> destroyed_blocks_coordinates;
+
+  // List of coordinates at which a bomb exploded on this update
+  std::vector<unsigned int> explosion_center_coordinates;
+
+  // Queue of coordinates at which a bomb exploded on this update
+  std::queue<unsigned int> bomb_coordinates;
+
+  // Find bombs that are due for detonation
+  for(unsigned int y_bomb = 0; y_bomb < this->board_height; y_bomb++) {
+    for(unsigned int x_bomb = 0; x_bomb < this->board_width; x_bomb++) {
+      if(this->bombs_exist[y_bomb][x_bomb]
+      && (this->bombs[y_bomb][x_bomb].getTimeAge()
+      >= this->bombs[y_bomb][x_bomb].getTimeDetonate())) {
+        bomb_coordinates.push(y_bomb);
+        bomb_coordinates.push(x_bomb);
+      }
+    }
+  }
+
+  // Handle each bomb due for detonation
+  while(!bomb_coordinates.empty()) {
+
+    // Coordinates of bomb to detonate
+    unsigned int y_bomb = bomb_coordinates.front();
+    bomb_coordinates.pop();
+    unsigned int x_bomb = bomb_coordinates.front();
+    bomb_coordinates.pop();
+
+    // If bomb hasn't been handled yet
+    if(this->bombs_exist[y_bomb][x_bomb]) {
+
+      // Get coordinates that this bomb's explosion would hit
+      std::vector<unsigned int> explosion_coordinates
+      = this->bombs[y_bomb][x_bomb].explosionCoordinates(this->board_height,
+      this->board_width);
+
+      // Whether explosion is stopped by a block, for each direction
+      bool direction_stopped[4] = {false, false, false, false};
+
+      // Handle each explosion unit
+      for(unsigned int i = 0; i + 1 < explosion_coordinates.size(); i += 2) {
+
+        // Coordinates of explosion unit
+        unsigned int y_expl = explosion_coordinates.at(i);
+        unsigned int x_expl = explosion_coordinates.at(i + 1);
+
+        // Get direction of explosion relative to source bomb
+        Direction explosion_direction = stop;
+        if(y_expl < y_bomb) {
+          explosion_direction = up;
+        } else if(x_expl > x_bomb) {
+          explosion_direction = right;
+        } else if(y_expl > y_bomb) {
+          explosion_direction = down;
+        } else if(x_expl < x_bomb) {
+          explosion_direction = left;
+        }
+        unsigned int direction_index;
+        switch(explosion_direction) {
+          case up:
+            {
+              direction_index = 0;
+            }
+            break;
+          case right:
+            {
+              direction_index = 1;
+            }
+            break;
+          case down:
+            {
+              direction_index = 2;
+            }
+            break;
+          case left:
+            {
+              direction_index = 3;
+            }
+            break;
+          default:
+            {
+              direction_index = 0;
+            }
+            break;
+        }
+
+        // If explosion in this direction hasn't been stopped
+        if(!direction_stopped[direction_index]) {
+
+          // Handle interaction with block if one exists
+          if(this->blocks_exist[y_expl][x_expl]) {
+            // Unbreakable block
+            if(this->blocks[y_expl][x_expl].getType() == unbreakable) {
+              direction_stopped[direction_index] = true;
+            }
+            // Breakable block
+            else {
+              if(!this->bombs[y_bomb][x_bomb].getBreakthrough()) {
+                direction_stopped[direction_index] = true;
+              }
+              destroyed_blocks_coordinates.push_back(y_expl);
+              destroyed_blocks_coordinates.push_back(x_expl);
+            }
+          }
+
+          // Handle interaction with another bomb if one exists
+          if(this->bombs_exist[y_expl][x_expl]
+          && !(y_bomb == y_expl && x_bomb == x_expl)) {
+            bomb_coordinates.push(y_expl);
+            bomb_coordinates.push(x_expl);
+          }
+
+          // Create explosion instance
+          this->explosions[y_expl][x_expl] = Explosion(y_expl, x_expl,
+          explosion_direction);
+          this->explosions_exist[y_expl][x_expl] = true;
+
+        }
+
+      }
+
+      // Remove detonated bomb and add to list of explosion centers
+      this->bombs_exist[y_bomb][x_bomb] = false;
+      explosion_center_coordinates.push_back(y_bomb);
+      explosion_center_coordinates.push_back(x_bomb);
+
+    }
+
+  }
+
+  // Update explosion centers
+  for(unsigned int i = 0; i + 1 < explosion_center_coordinates.size(); i += 2) {
+    unsigned int y = explosion_center_coordinates.at(i);
+    unsigned int x = explosion_center_coordinates.at(i + 1);
+    this->explosions[y][x] = Explosion(y, x, stop);
+  }
+
+  // Actually destroy blocks
+  for(unsigned int i = 0; i + 1 < destroyed_blocks_coordinates.size(); i += 2) {
+    this->blocks_exist[destroyed_blocks_coordinates.at(i)]
+    [destroyed_blocks_coordinates.at(i + 1)] = false;
   }
 
 }

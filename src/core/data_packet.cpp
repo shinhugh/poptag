@@ -22,6 +22,16 @@ type(src.type), data_size(src.data_size) {
 
 // ------------------------------------------------------------
 
+DataPacket::~DataPacket() {
+
+  if(this->data) {
+    delete[] this->data;
+  }
+
+}
+
+// ------------------------------------------------------------
+
 DataPacket& DataPacket::operator=(const DataPacket& src) {
 
   this->type = src.type;
@@ -37,16 +47,6 @@ DataPacket& DataPacket::operator=(const DataPacket& src) {
   }
 
   return *this;
-
-}
-
-// ------------------------------------------------------------
-
-DataPacket::~DataPacket() {
-
-  if(this->data) {
-    delete[] this->data;
-  }
 
 }
 

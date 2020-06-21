@@ -31,14 +31,14 @@ private:
 
   void init();
   void createBlock(unsigned int, unsigned int, BlockType);
-  void explodeBomb(unsigned int, unsigned int);
+  void detonateBombs();
 
 public:
 
   GameState();
   GameState(const GameState&);
-  GameState& operator=(const GameState&);
   ~GameState();
+  GameState& operator=(const GameState&);
   unsigned int getBoardHeight() const;
   unsigned int getBoardWidth() const;
   const Character * getCharacter(unsigned int) const;

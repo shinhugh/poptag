@@ -22,8 +22,8 @@ public:
 
   DataPacket();
   DataPacket(const DataPacket&);
-  DataPacket& operator=(const DataPacket&);
   ~DataPacket();
+  DataPacket& operator=(const DataPacket&);
   unsigned int getType();
   void setType(unsigned int);
   void * getData();
