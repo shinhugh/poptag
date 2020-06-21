@@ -592,11 +592,15 @@ void GameState::detonateBombs() {
         // If explosion in this direction hasn't been stopped
         if(!direction_stopped[direction_index]) {
 
+          // Whether to create explosion instance
+          bool explosion_qualify = true;
+
           // Handle interaction with block if one exists
           if(this->blocks_exist[y_expl][x_expl]) {
             // Unbreakable block
             if(this->blocks[y_expl][x_expl].getType() == unbreakable) {
               direction_stopped[direction_index] = true;
+              explosion_qualify = false;
             }
             // Breakable block
             else {
@@ -616,9 +620,11 @@ void GameState::detonateBombs() {
           }
 
           // Create explosion instance
-          this->explosions[y_expl][x_expl] = Explosion(y_expl, x_expl,
-          explosion_direction);
-          this->explosions_exist[y_expl][x_expl] = true;
+          if(explosion_qualify) {
+            this->explosions[y_expl][x_expl] = Explosion(y_expl, x_expl,
+            explosion_direction);
+            this->explosions_exist[y_expl][x_expl] = true;
+          }
 
         }
 
