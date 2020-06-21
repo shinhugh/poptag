@@ -25,6 +25,8 @@
 // #define PATH_SHADER_DIR "./"
 // #define PATH_TEXTURE_DIR "./"
 
+#define WINDOW_HEIGHT 720
+#define WINDOW_WIDTH 720
 #define SLIT_HEIGHT 0.1f
 
 // ------------------------------------------------------------
@@ -72,7 +74,8 @@ void threadRoutine_Display(Game& game) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
   // Create OpenGl context and containing window
-  GLFWwindow* window = glfwCreateWindow(720, 720, "Test", NULL, NULL);
+  GLFWwindow* window = glfwCreateWindow(WINDOW_HEIGHT, WINDOW_WIDTH, "Test",
+  NULL, NULL);
   if (!window)
   {
     // Window or OpenGL context creation failed
@@ -80,6 +83,9 @@ void threadRoutine_Display(Game& game) {
     glfwTerminate();
     return;
   }
+
+  // Set window aspect ratio
+  glfwSetWindowAspectRatio(window, 1, 1);
 
   // Set key event handler function
   glfwSetKeyCallback(window, keyCallback);
@@ -162,10 +168,58 @@ void threadRoutine_Display(Game& game) {
   GLuint texture_block_breakable;
   generateTexture(&texture_block_breakable, (std::string(PATH_TEXTURE_DIR)
   + "block_breakable.png").c_str());
-  // Texture for character
-  GLuint texture_character;
-  generateTexture(&texture_character, (std::string(PATH_TEXTURE_DIR)
-  + "character.png").c_str());
+  /*
+  // Texture for character, up stop
+  GLuint texture_character_up_stop;
+  generateTexture(&texture_character_up_stop, (std::string(PATH_TEXTURE_DIR)
+  + "character_up_stop.png").c_str());
+  // Texture for character, up move 1
+  GLuint texture_character_up_move_1;
+  generateTexture(&texture_character_up_move_1, (std::string(PATH_TEXTURE_DIR)
+  + "character_up_move_1.png").c_str());
+  // Texture for character, up move 2
+  GLuint texture_character_up_move_2;
+  generateTexture(&texture_character_up_move_2, (std::string(PATH_TEXTURE_DIR)
+  + "character_up_move_2.png").c_str());
+  // Texture for character, right stop
+  GLuint texture_character_right_stop;
+  generateTexture(&texture_character_right_stop, (std::string(PATH_TEXTURE_DIR)
+  + "character_right_stop.png").c_str());
+  // Texture for character, right move 1
+  GLuint texture_character_right_move_1;
+  generateTexture(&texture_character_right_move_1,
+  (std::string(PATH_TEXTURE_DIR) + "character_right_move_1.png").c_str());
+  // Texture for character, right move 2
+  GLuint texture_character_right_move_2;
+  generateTexture(&texture_character_right_move_2,
+  (std::string(PATH_TEXTURE_DIR) + "character_right_move_2.png").c_str());
+  */
+  // Texture for character, down stop
+  GLuint texture_character_down_stop;
+  generateTexture(&texture_character_down_stop, (std::string(PATH_TEXTURE_DIR)
+  + "character_down_stop.png").c_str());
+  /*
+  // Texture for character, down move 1
+  GLuint texture_character_down_move_1;
+  generateTexture(&texture_character_down_move_1, (std::string(PATH_TEXTURE_DIR)
+  + "character_down_move_1.png").c_str());
+  // Texture for character, down move 2
+  GLuint texture_character_down_move_2;
+  generateTexture(&texture_character_down_move_2, (std::string(PATH_TEXTURE_DIR)
+  + "character_down_move_2.png").c_str());
+  // Texture for character, left stop
+  GLuint texture_character_left_stop;
+  generateTexture(&texture_character_left_stop, (std::string(PATH_TEXTURE_DIR)
+  + "character_left_stop.png").c_str());
+  // Texture for character, left move 1
+  GLuint texture_character_left_move_1;
+  generateTexture(&texture_character_left_move_1, (std::string(PATH_TEXTURE_DIR)
+  + "character_left_move_1.png").c_str());
+  // Texture for character, left move 2
+  GLuint texture_character_left_move_2;
+  generateTexture(&texture_character_left_move_2, (std::string(PATH_TEXTURE_DIR)
+  + "character_left_move_2.png").c_str());
+  */
   // Texture for explosion, bomb
   GLuint texture_explosion_bomb;
   generateTexture(&texture_explosion_bomb, (std::string(PATH_TEXTURE_DIR)
@@ -389,7 +443,60 @@ void threadRoutine_Display(Game& game) {
           augmentYCoordinates(vertices_pos, SLIT_HEIGHT);
 
           // Texture
-          glBindTexture(GL_TEXTURE_2D, texture_character);
+          glBindTexture(GL_TEXTURE_2D, texture_character_down_stop);
+          /*
+          switch(game_state.getCharacter(i)->getDirMove()) {
+            case stop:
+              {
+                switch(game_state.getCharacter(i)->getDirFace()) {
+                  case up:
+                    {
+                      glBindTexture(GL_TEXTURE_2D, texture_character_up_stop);
+                    }
+                    break;
+                  case right:
+                    {
+                      glBindTexture(GL_TEXTURE_2D,
+                      texture_character_right_stop);
+                    }
+                    break;
+                  case down:
+                    {
+                      glBindTexture(GL_TEXTURE_2D, texture_character_down_stop);
+                    }
+                    break;
+                  case left:
+                    {
+                      glBindTexture(GL_TEXTURE_2D, texture_character_left_stop);
+                    }
+                    break;
+                  default:
+                    break;
+                }
+              }
+              break;
+            case up:
+              {
+                glBindTexture(GL_TEXTURE_2D, texture_character_up_move_1);
+              }
+              break;
+            case right:
+              {
+                glBindTexture(GL_TEXTURE_2D, texture_character_right_move_1);
+              }
+              break;
+            case down:
+              {
+                glBindTexture(GL_TEXTURE_2D, texture_character_down_move_1);
+              }
+              break;
+            case left:
+              {
+                glBindTexture(GL_TEXTURE_2D, texture_character_left_move_1);
+              }
+              break;
+          }
+          */
 
           // Bind vertex array object
           glBindVertexArray(vert_array);
@@ -474,7 +581,18 @@ void threadRoutine_Display(Game& game) {
   glDeleteTextures(1, &texture_bomb);
   glDeleteTextures(1, &texture_block_unbreakable);
   glDeleteTextures(1, &texture_block_breakable);
-  glDeleteTextures(1, &texture_character);
+  //glDeleteTextures(1, &texture_character_up_stop);
+  //glDeleteTextures(1, &texture_character_up_move_1);
+  //glDeleteTextures(1, &texture_character_up_move_2);
+  //glDeleteTextures(1, &texture_character_right_stop);
+  //glDeleteTextures(1, &texture_character_right_move_1);
+  //glDeleteTextures(1, &texture_character_right_move_2);
+  glDeleteTextures(1, &texture_character_down_stop);
+  //glDeleteTextures(1, &texture_character_down_move_1);
+  //glDeleteTextures(1, &texture_character_down_move_2);
+  //glDeleteTextures(1, &texture_character_left_stop);
+  //glDeleteTextures(1, &texture_character_left_move_1);
+  //glDeleteTextures(1, &texture_character_left_move_2);
   glDeleteTextures(1, &texture_explosion_bomb);
   glDeleteTextures(1, &texture_explosion_up);
   glDeleteTextures(1, &texture_explosion_right);

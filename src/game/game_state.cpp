@@ -444,7 +444,7 @@ void GameState::init() {
   // Re-generate characters
   this->characters.clear();
   this->characters_alive.clear();
-  this->characters.push_back(Character(0.5, 0.5, 5, 4));
+  this->characters.push_back(Character(0.5, 0.5, 4, 2));
   this->characters_alive.push_back(true);
 
   // Re-generate blocks
