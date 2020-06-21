@@ -10,10 +10,12 @@
 class Hitbox {
 
 private:
+
   float center[2];
   float dimensions[2];
 
 public:
+
   Hitbox(float, float, float, float);
   float getCenterY() const;
   void setCenterY(float);

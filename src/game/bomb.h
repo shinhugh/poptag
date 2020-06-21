@@ -12,6 +12,7 @@
 class Bomb {
 
 private:
+
   Hitbox hitbox;
   std::chrono::milliseconds time_detonate;
   std::chrono::microseconds time_age;
@@ -19,6 +20,7 @@ private:
   bool breakthrough;
 
 public:
+
   Bomb();
   Bomb(unsigned int, unsigned int, unsigned int, bool);
   const Hitbox * getHitbox() const;

@@ -12,6 +12,7 @@
 class Character {
 
 private:
+
   Hitbox hitbox;
   float speed;
   enum Direction dir_move;
@@ -20,6 +21,7 @@ private:
   bool bomb_breakthrough;
 
 public:
+
   Character(float, float, float, unsigned int);
   const Hitbox * getHitbox() const;
   Direction getDirFace() const;

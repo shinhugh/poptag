@@ -14,10 +14,12 @@ enum BlockType {breakable, unbreakable};
 class BoardBlock {
 
 private:
+
   Hitbox hitbox;
   BlockType type;
 
 public:
+
   BoardBlock();
   BoardBlock(unsigned int, unsigned int, BlockType);
   const Hitbox * getHitbox() const;

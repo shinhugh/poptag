@@ -17,6 +17,7 @@
 class Game {
 
 private:
+
   GameState state;
   std::mutex state_mutex;
   std::queue<DataPacket> event_queue;
@@ -25,6 +26,7 @@ private:
   std::mutex exit_flag_mutex;
 
 public:
+
   Game();
   void exit();
   bool isExit();

@@ -13,11 +13,13 @@
 class DataPacket {
 
 private:
+
   unsigned int type;
   unsigned char *data;
   unsigned int data_size;
 
 public:
+
   DataPacket();
   DataPacket(const DataPacket&);
   DataPacket& operator=(const DataPacket&);

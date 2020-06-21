@@ -12,12 +12,14 @@
 class Explosion {
 
 private:
+
   Hitbox hitbox;
   std::chrono::milliseconds time_disappear;
   std::chrono::microseconds time_age;
   Direction direction;
 
 public:
+
   Explosion();
   Explosion(unsigned int, unsigned int, Direction);
   const Hitbox * getHitbox() const;

@@ -18,6 +18,7 @@
 class GameState {
 
 private:
+
   unsigned int board_height, board_width;
   std::vector<Character> characters;
   std::vector<bool> characters_alive;
@@ -33,6 +34,7 @@ private:
   void explodeBomb(unsigned int, unsigned int);
 
 public:
+
   GameState();
   GameState(const GameState&);
   GameState& operator=(const GameState&);
