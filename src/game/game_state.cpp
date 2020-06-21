@@ -1,4 +1,5 @@
 #include <queue>
+#include <cstdlib>
 #include "game_state.h"
 #include "game_common.h"
 #include "event_data.h"
