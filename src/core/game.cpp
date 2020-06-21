@@ -1,8 +1,5 @@
 #include "game.h"
 
-#include <iostream> // DEBUG
-#include <string> // DEBUG
-
 // ------------------------------------------------------------
 
 Game::Game() : exit_flag(false) {}

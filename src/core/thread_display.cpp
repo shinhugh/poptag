@@ -8,6 +8,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 #include "thread_display.h"
+#include "game_common.h"
 #include "data_packet.h"
 #include "event_data.h"
 #include "game_state.h"
@@ -165,6 +166,10 @@ void threadRoutine_Display(Game& game) {
   GLuint texture_character;
   generateTexture(&texture_character, (std::string(PATH_TEXTURE_DIR)
   + "character.png").c_str());
+  // Texture for explosion, bomb
+  GLuint texture_explosion_bomb;
+  generateTexture(&texture_explosion_bomb, (std::string(PATH_TEXTURE_DIR)
+  + "explosion_bomb.png").c_str());
   // Texture for explosion, up
   GLuint texture_explosion_up;
   generateTexture(&texture_explosion_up, (std::string(PATH_TEXTURE_DIR)
@@ -422,8 +427,10 @@ void threadRoutine_Display(Game& game) {
             glBindTexture(GL_TEXTURE_2D, texture_explosion_right);
           } else if(game_state.getExplosion(y, x)->getDirection() == down) {
             glBindTexture(GL_TEXTURE_2D, texture_explosion_down);
-          } else {
+          } else if(game_state.getExplosion(y, x)->getDirection() == left) {
             glBindTexture(GL_TEXTURE_2D, texture_explosion_left);
+          } else {
+            glBindTexture(GL_TEXTURE_2D, texture_explosion_bomb);
           }
 
           // Bind vertex array object
@@ -468,6 +475,7 @@ void threadRoutine_Display(Game& game) {
   glDeleteTextures(1, &texture_block_unbreakable);
   glDeleteTextures(1, &texture_block_breakable);
   glDeleteTextures(1, &texture_character);
+  glDeleteTextures(1, &texture_explosion_bomb);
   glDeleteTextures(1, &texture_explosion_up);
   glDeleteTextures(1, &texture_explosion_right);
   glDeleteTextures(1, &texture_explosion_down);

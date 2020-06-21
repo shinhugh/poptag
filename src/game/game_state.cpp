@@ -1,9 +1,6 @@
-#include <cstdlib>
 #include <queue>
 #include "game_state.h"
 #include "event_data.h"
-
-#include <iostream> // DEBUG
 
 #define BOARD_HEIGHT 15
 #define BOARD_WIDTH 15
@@ -27,7 +24,7 @@ void GameState::init() {
   // Re-generate characters
   this->characters.clear();
   this->characters_alive.clear();
-  this->characters.push_back(Character(0.5, 0.5, 8, 4));
+  this->characters.push_back(Character(0.5, 0.5, 5, 2));
   this->characters_alive.push_back(true);
 
   // Re-generate blocks
@@ -83,6 +80,12 @@ void GameState::createBlock(unsigned int y, unsigned int x, BlockType type) {
 
 void GameState::explodeBomb(unsigned int y, unsigned int x) {
 
+  // TODO: Make changes locally within function memory, then push updates
+  // to this game state
+  // Old explosions should be overwritten
+  // New explosions in previous iterations should be overwritten except when
+  // it is the bomb center
+
   std::queue<unsigned int> bomb_coordinates;
   bomb_coordinates.push(y);
   bomb_coordinates.push(x);
@@ -107,7 +110,7 @@ void GameState::explodeBomb(unsigned int y, unsigned int x) {
 
     // Whether the bomb's explosion continues through blocks
     bool breakthrough = this->bombs[y][x].getBreakthrough();
-    bool stopped[4] = {false, false, false, false};
+    bool stopped[5] = {false, false, false, false, false};
 
     // Remove bomb
     this->bombs_exist[y][x] = false;
@@ -121,12 +124,14 @@ void GameState::explodeBomb(unsigned int y, unsigned int x) {
 
       // Get direction of this explosion relative to the bomb
       unsigned int direction = 0;
-      if(coor_x > x) {
+      if(coor_y < y) {
         direction = 1;
-      } else if(coor_y > y) {
+      } else if(coor_x > x) {
         direction = 2;
-      } else if(coor_x < x) {
+      } else if(coor_y > y) {
         direction = 3;
+      } else if(coor_x < x) {
+        direction = 4;
       }
 
       // If explosion in this direction hasn't been stopped
@@ -171,37 +176,39 @@ void GameState::explodeBomb(unsigned int y, unsigned int x) {
         }
 
         // Create explosion
-        if(this->explosions_exist[coor_y][coor_x]) {
-          this->explosions[coor_y][coor_x].resetTimeAge();
-        } else {
-          switch(direction) {
-            case 0:
-              {
-                this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
-                up);
-              }
-              break;
-            case 1:
-              {
-                this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
-                right);
-              }
-              break;
-            case 2:
-              {
-                this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
-                down);
-              }
-              break;
-            case 3:
-              {
-                this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
-                left);
-              }
-              break;
-          }
-          this->explosions_exist[coor_y][coor_x] = true;
+        switch(direction) {
+          case 0:
+            {
+              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
+              stop);
+            }
+            break;
+          case 1:
+            {
+              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
+              up);
+            }
+            break;
+          case 2:
+            {
+              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
+              right);
+            }
+            break;
+          case 3:
+            {
+              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
+              down);
+            }
+            break;
+          case 4:
+            {
+              this->explosions[coor_y][coor_x] = Explosion(coor_y, coor_x,
+              left);
+            }
+            break;
         }
+        this->explosions_exist[coor_y][coor_x] = true;
 
       }
 

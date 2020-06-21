@@ -2,9 +2,6 @@
 #include <chrono>
 #include "thread_core.h"
 
-#include <iostream> // DEBUG
-#include <string> // DEBUG
-
 // ------------------------------------------------------------
 
 void threadRoutine_Core(Game& game) {
@@ -22,12 +19,6 @@ void threadRoutine_Core(Game& game) {
     std::chrono::microseconds elapsed_time
     = std::chrono::duration_cast<std::chrono::microseconds>
     (time_end - time_start);
-
-    /*
-    // DEBUG
-    std::cerr << std::string("Elapsed time: ") << elapsed_time.count() << '\n';
-    // DEBUG
-    */
 
     // Update state according to elapsed time
     game.updateState(elapsed_time);

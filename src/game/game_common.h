@@ -1,7 +1,7 @@
 // Types common to many files
 
-#ifndef COMMON_H
-#define COMMON_H
+#ifndef GAME_COMMON_H
+#define GAME_COMMON_H
 
 // ------------------------------------------------------------
 

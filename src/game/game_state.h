@@ -6,7 +6,6 @@
 #define GAME_STATE_H
 
 #include <vector>
-#include <map>
 #include <chrono>
 #include "data_packet.h"
 #include "character.h"

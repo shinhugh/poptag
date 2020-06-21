@@ -5,8 +5,7 @@
 
 #include <chrono>
 #include "hitbox.h"
-#include "bomb.h"
-#include "common.h"
+#include "game_common.h"
 
 // ------------------------------------------------------------
 
